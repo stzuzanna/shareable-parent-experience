@@ -1,0 +1,354 @@
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .all-\[unset\] {
+    all: unset;
+  }
+}
+
+:root {
+  --brandblueb-400: rgba(6, 122, 239, 1);
+  --brandneutralsn-0: rgba(255, 255, 255, 1);
+  --brandneutralsn-200: rgba(147, 149, 159, 1);
+  --brandneutralsn-25: rgba(250, 250, 250, 1);
+  --brandneutralsn-400: rgba(48, 49, 54, 1);
+  --brandneutralsn-500: rgba(24, 24, 27, 1);
+  --brandneutralsn-75: rgba(223, 223, 226, 1);
+  --elevation-elevation-1: 0px 3px 2px 0px rgba(104, 111, 125, 0.08), 0px 0px
+    2px 0px rgba(104, 111, 125, 0.04);
+  --elevation-elevation-4: 0px 15px 12px 0px rgba(104, 111, 125, 0.08), 0px 8px
+    5px 0px rgba(104, 111, 125, 0.04);
+  --error: rgba(210, 36, 25, 1);
+  --famly-ui-backgroundspure-white: rgba(255, 255, 255, 1);
+  --famly-ui-neutralt80: rgba(233, 234, 236, 1);
+  --highlightred: rgba(255, 229, 229, 1);
+  --MF-body-text-body-emphasis-font-family: "Matter", Helvetica;
+  --MF-body-text-body-emphasis-font-size: 16px;
+  --MF-body-text-body-emphasis-font-style: normal;
+  --MF-body-text-body-emphasis-font-weight: 600;
+  --MF-body-text-body-emphasis-letter-spacing: 0px;
+  --MF-body-text-body-emphasis-line-height: 120.00000762939453%;
+  --MF-body-text-body-small-emphasis-font-family: "Matter", Helvetica;
+  --MF-body-text-body-small-emphasis-font-size: 14px;
+  --MF-body-text-body-small-emphasis-font-style: normal;
+  --MF-body-text-body-small-emphasis-font-weight: 600;
+  --MF-body-text-body-small-emphasis-letter-spacing: 0px;
+  --MF-body-text-body-small-emphasis-line-height: 120.00000762939453%;
+  --MF-body-text-body-small-font-family: "Matter", Helvetica;
+  --MF-body-text-body-small-font-size: 14px;
+  --MF-body-text-body-small-font-style: normal;
+  --MF-body-text-body-small-font-weight: 400;
+  --MF-body-text-body-small-letter-spacing: 0px;
+  --MF-body-text-body-small-line-height: 120.00000762939453%;
+  --MF-body-text-micro-text-font-family: "Inter", Helvetica;
+  --MF-body-text-micro-text-font-size: 12px;
+  --MF-body-text-micro-text-font-style: normal;
+  --MF-body-text-micro-text-font-weight: 400;
+  --MF-body-text-micro-text-letter-spacing: -0.12px;
+  --MF-body-text-micro-text-line-height: 120.00000762939453%;
+  --MF-headings-h4-font-family: "Matter", Helvetica;
+  --MF-headings-h4-font-size: 32px;
+  --MF-headings-h4-font-style: normal;
+  --MF-headings-h4-font-weight: 400;
+  --MF-headings-h4-letter-spacing: -0.32px;
+  --MF-headings-h4-line-height: 120.00000762939453%;
+  --MF-headings-h6-emphasis-font-family: "Matter", Helvetica;
+  --MF-headings-h6-emphasis-font-size: 20px;
+  --MF-headings-h6-emphasis-font-style: normal;
+  --MF-headings-h6-emphasis-font-weight: 600;
+  --MF-headings-h6-emphasis-letter-spacing: 0px;
+  --MF-headings-h6-emphasis-line-height: 115%;
+  --mfneutralsn-0: rgba(255, 255, 255, 1);
+  --mfneutralsn-200: rgba(198, 198, 210, 1);
+  --mfneutralsn-300: rgba(101, 101, 129, 1);
+  --mfneutralsn-400: rgba(45, 45, 57, 1);
+  --mfneutralsn-50: rgba(249, 249, 251, 1);
+  --mfneutralsn-500: rgba(2, 2, 3, 1);
+  --mforangeo-400: rgba(249, 122, 31, 1);
+  --mfprimaryp-100: rgba(244, 237, 252, 1);
+  --mfprimaryp-400: rgba(78, 22, 156, 1);
+  --mfredr-400: rgba(194, 10, 10, 1);
+  --mfyellowy-100: rgba(254, 249, 235, 1);
+  --mfyellowy-400: rgba(250, 193, 46, 1);
+  --modern-famly-body-text-body-font-family: "Matter", Helvetica;
+  --modern-famly-body-text-body-font-size: 16px;
+  --modern-famly-body-text-body-font-style: normal;
+  --modern-famly-body-text-body-font-weight: 400;
+  --modern-famly-body-text-body-letter-spacing: 0px;
+  --modern-famly-body-text-body-line-height: 120.00000762939453%;
+  --modern-famlyneutraln0: rgba(255, 255, 255, 1);
+  --modern-famlyneutralsn75: rgba(241, 241, 244, 1);
+  --text-primary: rgba(35, 31, 32, 1);
+}
+
+:root {
+  --animate-spin: spin 1s linear infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 1s var(--animation-delay, 0s) ease forwards;
+}
+
+.animate-fade-up {
+  animation: fade-up 1s var(--animation-delay, 0s) ease forwards;
+}
+
+.animate-marquee {
+  animation: marquee var(--duration) infinite linear;
+}
+
+.animate-marquee-vertical {
+  animation: marquee-vertical var(--duration) linear infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 8s infinite;
+}
+
+.animate-spin {
+  animation: var(--animate-spin);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes image-glow {
+  0% {
+    opacity: 0;
+    animation-timing-function: cubic-bezier(0.74, 0.25, 0.76, 1);
+  }
+
+  10% {
+    opacity: 0.7;
+    animation-timing-function: cubic-bezier(0.12, 0.01, 0.08, 0.99);
+  }
+
+  to {
+    opacity: 0.4;
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes shimmer {
+  0%,
+  90%,
+  to {
+    background-position: calc(-100% - var(--shimmer-width)) 0;
+  }
+
+  30%,
+  60% {
+    background-position: calc(100% + var(--shimmer-width)) 0;
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translate(0);
+  }
+
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+  }
+}
+
+@keyframes marquee-vertical {
+  0% {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(calc(-100% - var(--gap)));
+  }
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Enhanced hover effects for interactive elements */
+@layer utilities {
+  .hover-heart:hover {
+    transform: scale(1.1);
+    filter: drop-shadow(0 2px 4px rgba(239, 68, 68, 0.3));
+  }
+  
+  .hover-bounce:hover {
+    animation: gentle-bounce 0.6s ease-in-out;
+  }
+}
+
+@keyframes gentle-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Touch device specific styles */
+@media (hover: none) and (pointer: coarse) {
+  .touch\:h-screen {
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for mobile browsers */
+  }
+  
+  .touch\:pb-20 {
+    padding-bottom: 5rem;
+  }
+}
+
+/* Device frame stability */
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
+/* Hide scrollbars */
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  /* Prevent zoom on double tap */
+  touch-action: manipulation;
+}
+
+*::-webkit-scrollbar {
+  display: none; /* WebKit */
+}
+
+/* Prevent zoom on touch devices */
+.no-zoom {
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Bottom navigation specific styles */
+.bottom-nav {
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bottom-nav button {
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+
+    --card: transparent;
+    --card-foreground: 222.2 47.4% 11.2%;
+
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 210 40% 98%;
+
+    --ring: 215 20.2% 65.1%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+
+    --accent: 216 34% 17%;
+    --accent-foreground: 210 40% 98%;
+
+    --popover: 224 71% 4%;
+    --popover-foreground: 215 20.2% 65.1%;
+
+    --border: 216 34% 17%;
+    --input: 216 34% 17%;
+
+    --card: transparent;
+    --card-foreground: 213 31% 91%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 1.2%;
+
+    --secondary: 222.2 47.4% 11.2%;
+    --secondary-foreground: 210 40% 98%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    --ring: 216 34% 17%;
+
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
