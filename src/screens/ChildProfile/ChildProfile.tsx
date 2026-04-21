@@ -10,72 +10,36 @@ import { Button } from "../../components/ui/button";
 import { ChildProfileHeader } from "./components/ChildProfileHeader/ChildProfileHeader";
 import { ChildProfileInfo } from "./components/ChildProfileInfo/ChildProfileInfo";
 import { ChildProfileTabs } from "./components/ChildProfileTabs/ChildProfileTabs";
-import { ActivityGrid } from "./components/ActivityGrid/ActivityGrid";
-import { ActivityFeed } from "./components/ActivityFeed/ActivityFeed";
-import { AboutPage } from "./components/AboutPage/AboutPage";
-import { FamilyPage } from "./components/FamilyPage/FamilyPage";
-import { PhotosPage } from "./components/PhotosPage/PhotosPage";
-
-const navigationItems = [
-  {
-  icon: `${BASE_PATH}navigation.svg`,
-    isActive: false,
-    hasNotification: false,
-  },
-  {
-  icon: `${BASE_PATH}navigation-2.svg`,
-    isActive: false,
-    hasNotification: true,
-  },
-  {
-  icon: `${BASE_PATH}navigation-1.svg`,
-    isActive: false,
-    hasNotification: true,
-  },
-];
+import { OverviewContent } from "./components/OverviewContent/OverviewContent";
+import { HealthAndSafetyContent } from "./components/HealthAndSafetyContent/HealthAndSafetyContent";
+import { DocumentsContent } from "./components/DocumentsContent/DocumentsContent";
 
 export const ChildProfile = (): JSX.Element => {
   const { shouldShowFrame } = useDeviceDetection();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('activity');
+  const [activeTab, setActiveTab] = useState('overview');
 
-  // If About tab is active, show the About page instead
-  if (activeTab === 'about') {
-    return (
-      <DeviceFrame showFrame={shouldShowFrame}>
-        <AboutPage onClose={() => setActiveTab('activity')} />
-      </DeviceFrame>
-    );
-  }
-
-  // If Family tab is active, show the Family page instead
-  if (activeTab === 'family') {
-    return (
-      <DeviceFrame showFrame={shouldShowFrame}>
-        <FamilyPage onClose={() => setActiveTab('activity')} />
-      </DeviceFrame>
-    );
-  }
-
-  // If Photos tab is active, show the Photos page instead
-  if (activeTab === 'photos') {
-    return (
-      <DeviceFrame showFrame={shouldShowFrame}>
-        <PhotosPage onClose={() => setActiveTab('activity')} />
-      </DeviceFrame>
-    );
-  }
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'health':
+        return <HealthAndSafetyContent />;
+      case 'documents':
+        return <DocumentsContent />;
+      default:
+        return <OverviewContent />;
+    }
+  };
 
   const appContent = (
-    <div className={`flex flex-col bg-neutral-100 ${shouldShowFrame ? 'h-full' : 'min-h-screen'} ${!shouldShowFrame ? 'touch:h-screen' : ''}`}>
+    <div className={`flex flex-col bg-white ${shouldShowFrame ? 'h-full' : 'min-h-screen'} ${!shouldShowFrame ? 'touch:h-screen' : ''}`}>
       <ChildProfileHeader />
-      <div className={`flex-1 overflow-y-auto bg-white ${!shouldShowFrame ? 'touch:pb-20' : ''}`}>
+      <div className={`flex-1 overflow-y-auto ${!shouldShowFrame ? 'touch:pb-20' : ''}`}>
         <ChildProfileInfo />
         <ChildProfileTabs activeTab={activeTab} onTabChange={setActiveTab} />
-        <ActivityGrid />
-        <ActivityFeed />
+        {renderTabContent()}
       </div>
 
+      {/* Bottom Navigation */}
       <div className={`bottom-nav flex flex-col max-w-screen-md items-center justify-end px-[9px] py-0 w-full bg-mfneutralsn-0 rounded-[0px_0px_16px_16px] ${!shouldShowFrame ? 'sticky bottom-0 z-50 shadow-lg' : ''}`}>
         <div className="flex items-center gap-[46px] pl-2 pr-4 pt-3 pb-[21px] relative self-stretch w-full flex-[0_0_auto]">
           <div className="flex items-center justify-between relative flex-1 grow">
@@ -165,7 +129,7 @@ export const ChildProfile = (): JSX.Element => {
       {appContent}
       {tipsEnabled && (
         <DesktopNudge
-          text="Here parents can see everything you’ve logged for their child"
+          text="Here parents can see everything you've logged for their child"
           side="left"
           visible={true}
         />
