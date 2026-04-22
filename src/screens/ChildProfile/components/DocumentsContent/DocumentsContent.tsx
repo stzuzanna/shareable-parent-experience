@@ -168,7 +168,7 @@ export const DocumentsContent = (): JSX.Element => {
   }
 
   return (
-    <div className="flex flex-col bg-mfneutralsn-50 pt-4 pb-24 gap-4">
+    <div className="flex flex-col bg-mfneutralsn-50 pb-24 gap-4">
       {/* Notes */}
       <Card>
         <CardHeader title="Notes" count={1} onPress={() => setSection("notes")} />
