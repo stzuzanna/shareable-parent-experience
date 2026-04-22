@@ -1,4 +1,6 @@
 import { BASE_PATH } from '../../constants';
+import { BottomNav } from "../../components/BottomNav/BottomNav";
+import { ChevronRightIcon } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { DeviceFrame } from "../../components/DeviceFrame/DeviceFrame";
@@ -144,6 +146,27 @@ export const IphoneProMax = (): JSX.Element => {
     return (
       <div className="flex-1 overflow-y-auto" ref={scrollContainerRef}>
         <div className="flex flex-col gap-4 p-4">
+          {/* To-do's widget */}
+          <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3">
+              <span className="text-sm font-semibold text-mfneutralsn-500">To-do's (3)</span>
+              <ChevronRightIcon className="w-4 h-4 text-mfneutralsn-300" />
+            </div>
+            <div className="border-t border-gray-100 px-4 py-3 flex items-start gap-3">
+              <div className="w-9 h-9 rounded-xl bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1" stroke="#656581" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" stroke="#656581" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <line x1="9" y1="12" x2="15" y2="12" stroke="#656581" strokeWidth="1.5" strokeLinecap="round"/>
+                  <line x1="9" y1="16" x2="12" y2="16" stroke="#656581" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-mfneutralsn-500">Fill out form · Raj</p>
+                <p className="text-xs text-mfneutralsn-300 mt-0.5">Getting to know me (0- 12 months)</p>
+              </div>
+            </div>
+          </div>
           <div ref={invoiceRef}>
             <CommentSection isPaid={isPaid} onPaymentSuccess={() => setIsPaid(true)} />
           </div>
@@ -184,7 +207,7 @@ export const IphoneProMax = (): JSX.Element => {
   };
 
   const appContent = (
-    <div className={`flex flex-col bg-gray-50 ${shouldShowFrame ? 'h-full' : 'min-h-screen'} ${!shouldShowFrame ? 'touch:h-screen' : ''}`}>
+    <div className={`flex flex-col bg-mfneutralsn-50 ${shouldShowFrame ? 'h-full' : 'min-h-screen'} ${!shouldShowFrame ? 'touch:h-screen' : ''}`}>
       <PostFeedSection activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab as any)} />
 
       {renderTabContent()}
@@ -211,85 +234,8 @@ export const IphoneProMax = (): JSX.Element => {
       )}
 
       {/* Bottom Navigation */}
-      <div className={`bottom-nav flex flex-col max-w-screen-md items-center justify-end px-[9px] py-0 w-full bg-mfneutralsn-0 rounded-[0px_0px_16px_16px] ${!shouldShowFrame ? 'sticky bottom-0 z-50 shadow-lg' : ''}`}>
-        <div className="flex items-center gap-[46px] pl-2 pr-4 pt-3 pb-[21px] relative self-stretch w-full flex-[0_0_auto]">
-          <div className="flex items-center justify-between relative flex-1 grow">
-            {/* Newsfeed - active */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="no-zoom flex w-14 h-14 items-center justify-center px-4 py-3 relative rounded-xl bg-mfprimaryp-100"
-            >
-              <img
-                className="relative w-7 h-7 ml-[-2.00px] mr-[-2.00px]"
-                alt="Newsfeed"
-                src={`${BASE_PATH}navigation.svg`}
-              />
-            </Button>
-
-            {/* Child Profile */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate('/child-profile')}
-              className="no-zoom flex w-14 h-14 items-center justify-center px-4 py-3 relative rounded-xl"
-            >
-              <Avatar className="w-12 h-12">
-                <AvatarImage
-                  src={`${BASE_PATH}infant--girl--profile-picture--caucasian--dark-hair.png`}
-                  alt="Child profile"
-                  className="border border-solid border-white object-cover"
-                />
-                <AvatarFallback>CP</AvatarFallback>
-              </Avatar>
-            </Button>
-
-            {/* Messages */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate('/messages')}
-              className="no-zoom flex w-14 h-14 items-center justify-center px-4 py-3 relative rounded-xl"
-            >
-              <img
-                className="relative w-7 h-7 ml-[-2.00px] mr-[-2.00px]"
-                alt="Messages"
-                src={`${BASE_PATH}navigation-2.svg`}
-              />
-            </Button>
-
-            {/* Notifications */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate('/notifications')}
-              className="no-zoom flex w-14 h-14 items-center justify-center px-4 py-3 relative rounded-xl"
-            >
-              <img
-                className="relative w-7 h-7 ml-[-2.00px] mr-[-2.00px]"
-                alt="Notifications"
-                src={`${BASE_PATH}navigation-1.svg`}
-              />
-            </Button>
-
-            {/* Account */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate('/menu')}
-              className="no-zoom flex w-14 h-14 items-center justify-center px-4 py-3 relative rounded-xl"
-            >
-              <Avatar className="w-12 h-12">
-                <AvatarImage
-                  src={`${BASE_PATH}avatar-2.png`}
-                  alt="Account"
-                  className="border border-solid border-white object-cover"
-                />
-                <AvatarFallback>AC</AvatarFallback>
-              </Avatar>
-            </Button>
-          </div>
-        </div>
+      <div className={!shouldShowFrame ? 'sticky bottom-0 z-50' : ''}>
+        <BottomNav />
       </div>
     </div>
   );

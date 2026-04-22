@@ -1,5 +1,4 @@
 import React from "react";
-import { Button } from "../../../../components/ui/button";
 
 interface ChildProfileTabsProps {
   activeTab: string;
@@ -9,28 +8,27 @@ interface ChildProfileTabsProps {
 const tabs = [
   { id: 'overview', label: 'Overview' },
   { id: 'health', label: 'Health and safety' },
-  { id: 'documents', label: 'Documents' },
+  { id: 'documents', label: 'Paperwork' },
 ];
 
 export const ChildProfileTabs: React.FC<ChildProfileTabsProps> = ({ activeTab, onTabChange }): JSX.Element => {
   return (
-    <div className="flex items-center bg-white border-b border-gray-100 sticky top-[96px] z-10">
-      {tabs.map((tab) => (
-        <Button
-          key={tab.id}
-          variant="ghost"
-          onClick={() => onTabChange(tab.id)}
-          className={`flex-1 h-12 rounded-none border-b-2 transition-all duration-200 px-1 ${
-            activeTab === tab.id
-              ? 'border-mfprimaryp-400 text-mfprimaryp-400'
-              : 'border-transparent text-mfneutralsn-300 hover:text-mfneutralsn-400'
-          }`}
-        >
-          <span className="font-modern-famly-body-text-body font-[number:var(--modern-famly-body-text-body-font-weight)] text-[length:var(--modern-famly-body-text-body-font-size)] tracking-[var(--modern-famly-body-text-body-letter-spacing)] leading-[var(--modern-famly-body-text-body-line-height)] [font-style:var(--modern-famly-body-text-body-font-style)] text-xs sm:text-sm">
+    <div className="bg-mfneutralsn-50 px-4 pb-3 sticky top-[96px] z-10">
+      <div className="flex items-center bg-gray-100 rounded-2xl p-1 gap-0.5">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => onTabChange(tab.id)}
+            className={`flex-1 py-2 px-2 rounded-xl text-sm transition-all duration-200 text-center ${
+              activeTab === tab.id
+                ? 'bg-white shadow-sm font-semibold text-mfneutralsn-500'
+                : 'font-normal text-mfneutralsn-300'
+            }`}
+          >
             {tab.label}
-          </span>
-        </Button>
-      ))}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

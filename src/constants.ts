@@ -1,1 +1,1 @@
-export const BASE_PATH = "/app-tryfamly.co/parent-demo-experience/";
+export const BASE_PATH = "/";
