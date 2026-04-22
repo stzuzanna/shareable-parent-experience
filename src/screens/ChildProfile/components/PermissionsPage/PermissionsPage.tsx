@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDeviceDetection } from "../../../../hooks/useDeviceDetection";
-import { DeviceFrame } from "../../../../components/DeviceFrame/DeviceFrame";
 import { Button } from "../../../../components/ui/button";
 import { BASE_PATH } from "../../../../constants";
 import { CheckCircle2, XCircle, HelpCircle, X as XIcon, FileText, ChevronRight } from "lucide-react";
@@ -121,11 +120,7 @@ export const PermissionsPage = (): JSX.Element => {
     </div>
   );
 
-  return (
-    <DeviceFrame showFrame={shouldShowFrame}>
-      {page}
-    </DeviceFrame>
-  );
+  return page;
 };
 
 

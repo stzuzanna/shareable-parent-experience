@@ -2,7 +2,6 @@ import { BASE_PATH } from '../../constants';
 import { BottomNav } from "../../components/BottomNav/BottomNav";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { DeviceFrame } from "../../components/DeviceFrame/DeviceFrame";
 import { useDeviceDetection } from "../../hooks/useDeviceDetection";
 import { useInteractivity } from "../../hooks/useInteractivity";
 import {
@@ -87,13 +86,11 @@ export const IphoneProMax = (): JSX.Element => {
 
   if (showRSVP) {
     return (
-      <DeviceFrame showFrame={shouldShowFrame}>
-        <RSVPPage
-          onClose={() => setShowRSVP(false)}
-          initialState={rsvpState}
-          onStateChange={setRsvpState}
-        />
-      </DeviceFrame>
+      <RSVPPage
+        onClose={() => setShowRSVP(false)}
+        initialState={rsvpState}
+        onStateChange={setRsvpState}
+      />
     );
   }
 
@@ -224,9 +221,5 @@ export const IphoneProMax = (): JSX.Element => {
     </div>
   );
 
-  return (
-    <DeviceFrame showFrame={shouldShowFrame}>
-      {appContent}
-    </DeviceFrame>
-  );
+  return appContent;
 };

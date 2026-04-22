@@ -1,7 +1,6 @@
 import { BASE_PATH } from '../../constants';
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { DeviceFrame } from "../../components/DeviceFrame/DeviceFrame";
 import { useDeviceDetection } from "../../hooks/useDeviceDetection";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
 import { Button } from "../../components/ui/button";
@@ -470,9 +469,5 @@ export const ActivityPlans = (): JSX.Element => {
     </>
   );
 
-  return (
-    <DeviceFrame showFrame={shouldShowFrame}>
-      {appContent}
-    </DeviceFrame>
-  );
+  return appContent;
 };

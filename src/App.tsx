@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { BASE_PATH } from './constants';
 import { useToast } from './hooks/useToast';
+import { useDeviceDetection } from './hooks/useDeviceDetection';
+import { DeviceFrame } from './components/DeviceFrame/DeviceFrame';
 import { PlusIcon } from 'lucide-react';
 import { IphoneProMax } from './screens/IphoneProMax/IphoneProMax';
 import { ChildProfile } from './screens/ChildProfile/ChildProfile';
@@ -92,11 +94,12 @@ function AppRoutes() {
 }
 
 function App() {
+  const { shouldShowFrame } = useDeviceDetection();
   return (
     <BrowserRouter basename={BASE_PATH}>
-      <div className="w-full h-full">
+      <DeviceFrame showFrame={shouldShowFrame}>
         <AppRoutes />
-      </div>
+      </DeviceFrame>
     </BrowserRouter>
   );
 }

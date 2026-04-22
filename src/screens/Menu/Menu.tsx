@@ -2,7 +2,6 @@ import { BASE_PATH } from '../../constants';
 import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { DeviceFrame } from "../../components/DeviceFrame/DeviceFrame";
 import { useDeviceDetection } from "../../hooks/useDeviceDetection";
 import { AccountSettings } from "../../components/AccountSettings/AccountSettings";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
@@ -23,11 +22,7 @@ export const Menu = (): JSX.Element => {
   const [showAccountSettings, setShowAccountSettings] = useState(false);
 
   if (showAccountSettings) {
-    return (
-      <DeviceFrame showFrame={shouldShowFrame}>
-        <AccountSettings onClose={() => setShowAccountSettings(false)} />
-      </DeviceFrame>
-    );
+    return <AccountSettings onClose={() => setShowAccountSettings(false)} />;
   }
 
   const menuItems = [
@@ -158,9 +153,5 @@ export const Menu = (): JSX.Element => {
     </div>
   );
 
-  return (
-    <DeviceFrame showFrame={shouldShowFrame}>
-      {appContent}
-    </DeviceFrame>
-  );
+  return appContent;
 };

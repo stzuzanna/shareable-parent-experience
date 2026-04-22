@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { DeviceFrame } from "../../components/DeviceFrame/DeviceFrame";
 import { DesktopNudge } from "../../components/DesktopNudge";
 import { useDeviceDetection } from "../../hooks/useDeviceDetection";
 import { BottomNav } from "../../components/BottomNav/BottomNav";
@@ -47,7 +46,7 @@ export const ChildProfile = (): JSX.Element => {
 
   const tipsEnabled = new URLSearchParams(window.location.search).get('tips') === '1';
   return (
-    <DeviceFrame showFrame={shouldShowFrame}>
+    <>
       {appContent}
       {tipsEnabled && (
         <DesktopNudge
@@ -56,6 +55,6 @@ export const ChildProfile = (): JSX.Element => {
           visible={true}
         />
       )}
-    </DeviceFrame>
+    </>
   );
 };
