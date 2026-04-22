@@ -22,6 +22,10 @@ import { Toast } from './components/Toast/Toast';
 function AppRoutes() {
   const navigate = useNavigate();
   const { toasts, showToast, removeToast } = useToast();
+  const { shouldShowFrame } = useDeviceDetection();
+  // Inside the scaled DeviceFrame use absolute (contained in the 430×932 area).
+  // On mobile use fixed (viewport-anchored so overlays stay visible while scrolling).
+  const overlayPos = shouldShowFrame ? 'absolute' : 'fixed';
 
   const [showAddSheet, setShowAddSheet] = useState(false);
   const [showAbsenceOverlay, setShowAbsenceOverlay] = useState(false);
@@ -61,10 +65,10 @@ function AppRoutes() {
         <Route path="/notifications" element={<Notifications />} />
       </Routes>
 
-      {/* Global FAB — fixed, always on top */}
+      {/* Global FAB */}
       <button
         onClick={() => setShowAddSheet(true)}
-        className="fixed bottom-24 right-4 w-14 h-14 rounded-full bg-mfprimaryp-400 shadow-elevation-elevation-4 flex items-center justify-center z-[60] active:scale-95 transition-transform"
+        className={`${overlayPos} bottom-24 right-4 w-14 h-14 rounded-full bg-mfprimaryp-400 shadow-elevation-elevation-4 flex items-center justify-center z-[60] active:scale-95 transition-transform`}
       >
         <PlusIcon className="w-6 h-6 text-white" />
       </button>
@@ -74,17 +78,18 @@ function AppRoutes() {
         isOpen={showAddSheet}
         onClose={() => setShowAddSheet(false)}
         onAction={handleAddAction}
+        useAbsolute={shouldShowFrame}
       />
 
       {/* Absence overlay */}
       {showAbsenceOverlay && (
-        <div className="fixed inset-0 z-[90]">
+        <div className={`${overlayPos} inset-0 z-[90]`}>
           <AbsenceOverlay type="sick" onClose={() => setShowAbsenceOverlay(false)} />
         </div>
       )}
 
       {/* Toasts */}
-      <div className="fixed top-4 left-4 right-4 z-[100] flex flex-col gap-2">
+      <div className={`${overlayPos} top-4 left-4 right-4 z-[100] flex flex-col gap-2`}>
         {toasts.map((toast) => (
           <Toast key={toast.id} message={toast.message} type={toast.type} onClose={() => removeToast(toast.id)} />
         ))}
@@ -98,7 +103,10 @@ function App() {
   return (
     <BrowserRouter basename={BASE_PATH}>
       <DeviceFrame showFrame={shouldShowFrame}>
-        <AppRoutes />
+        {/* relative wrapper so absolute overlays (FAB, sheets, toasts) fill exactly the screen area */}
+        <div className="relative w-full h-full">
+          <AppRoutes />
+        </div>
       </DeviceFrame>
     </BrowserRouter>
   );

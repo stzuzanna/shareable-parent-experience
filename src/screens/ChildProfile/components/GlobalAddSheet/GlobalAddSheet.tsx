@@ -28,13 +28,18 @@ interface GlobalAddSheetProps {
   isOpen: boolean;
   onClose: () => void;
   onAction: (actionId: string) => void;
+  /** Use absolute positioning (inside scaled device frame) instead of fixed (mobile viewport) */
+  useAbsolute?: boolean;
 }
 
 export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
   isOpen,
   onClose,
   onAction,
+  useAbsolute = false,
 }) => {
+  const pos = useAbsolute ? 'absolute' : 'fixed';
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -45,7 +50,7 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/40 z-[70]"
+            className={`${pos} inset-0 bg-black/40 z-[70]`}
             onClick={onClose}
           />
 
@@ -55,7 +60,7 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 28, stiffness: 350 }}
-            className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-[80]"
+            className={`${pos} bottom-0 left-0 right-0 bg-white rounded-t-3xl z-[80]`}
           >
             {/* Drag handle */}
             <div className="flex justify-center pt-3 pb-4">
