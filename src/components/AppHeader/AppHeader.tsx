@@ -1,0 +1,30 @@
+import { BASE_PATH } from "../../constants";
+import React from "react";
+import { SearchIcon } from "lucide-react";
+import { useDeviceDetection } from "../../hooks/useDeviceDetection";
+
+interface AppHeaderProps {
+  title: string;
+  showSearch?: boolean;
+  rightSlot?: React.ReactNode;
+}
+
+export const AppHeader = ({ title, showSearch = true, rightSlot }: AppHeaderProps): JSX.Element => {
+  const { shouldShowFrame } = useDeviceDetection();
+
+  return (
+    <header className={`flex flex-col w-full bg-mfneutralsn-50 ${!shouldShowFrame ? "sticky top-0 z-50" : ""}`}>
+      {/* Status bar — only shown inside device frame */}
+      <div className={`flex items-center justify-between px-5 pt-2 pb-1 ${!shouldShowFrame ? "hidden" : ""}`}>
+        <span className="font-semibold text-mfneutralsn-500 text-[15px] tracking-[-0.3px]">9:41</span>
+        <img className="h-4" alt="Status icons" src={`${BASE_PATH}right-side.svg`} />
+      </div>
+
+      {/* Title row */}
+      <div className="flex items-center justify-between px-5 pt-3 pb-6">
+        <h1 className="text-[20px] font-bold text-mfneutralsn-500 tracking-tight leading-tight">{title}</h1>
+        {rightSlot ?? (showSearch && <SearchIcon className="w-5 h-5 text-mfneutralsn-400" />)}
+      </div>
+    </header>
+  );
+};

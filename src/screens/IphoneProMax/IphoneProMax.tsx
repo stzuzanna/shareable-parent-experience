@@ -1,6 +1,5 @@
 import { BASE_PATH } from '../../constants';
 import { BottomNav } from "../../components/BottomNav/BottomNav";
-import { ChevronRightIcon } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { DeviceFrame } from "../../components/DeviceFrame/DeviceFrame";
@@ -12,7 +11,7 @@ import {
   AvatarImage,
 } from "../../components/ui/avatar";
 import { Button } from "../../components/ui/button";
-import { CommentSection } from "./sections/CommentSection/CommentSection";
+import { TodosWidget } from "./sections/TodosWidget/TodosWidget";
 import { NavigationSection } from "./sections/NavigationSection/NavigationSection";
 import { NewsPostSection } from "./sections/NewsPostSection/NewsPostSection";
 import { PostFeedSection } from "./sections/PostFeedSection/PostFeedSection";
@@ -37,6 +36,7 @@ export const IphoneProMax = (): JSX.Element => {
   const [isPaid, setIsPaid] = useState(false);
   const [showRSVP, setShowRSVP] = useState(false);
   const [activeTab, setActiveTab] = useState<'home' | 'activity' | 'photos' | 'saved'>('home');
+  const [activityTypeFilter, setActivityTypeFilter] = useState('all');
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [rsvpState, setRsvpState] = useState({
     hasReplied: false,
@@ -101,7 +101,7 @@ export const IphoneProMax = (): JSX.Element => {
     if (activeTab === 'activity') {
       return (
         <div className="flex-1 overflow-y-auto">
-          <ActivitySection onClose={() => setActiveTab('home')} />
+          <ActivitySection onClose={() => setActiveTab('home')} typeFilter={activityTypeFilter} />
         </div>
       );
     }
@@ -146,29 +146,8 @@ export const IphoneProMax = (): JSX.Element => {
     return (
       <div className="flex-1 overflow-y-auto" ref={scrollContainerRef}>
         <div className="flex flex-col gap-4 p-4">
-          {/* To-do's widget */}
-          <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-3">
-              <span className="text-sm font-semibold text-mfneutralsn-500">To-do's (3)</span>
-              <ChevronRightIcon className="w-4 h-4 text-mfneutralsn-300" />
-            </div>
-            <div className="border-t border-gray-100 px-4 py-3 flex items-start gap-3">
-              <div className="w-9 h-9 rounded-xl bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1" stroke="#656581" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" stroke="#656581" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  <line x1="9" y1="12" x2="15" y2="12" stroke="#656581" strokeWidth="1.5" strokeLinecap="round"/>
-                  <line x1="9" y1="16" x2="12" y2="16" stroke="#656581" strokeWidth="1.5" strokeLinecap="round"/>
-                </svg>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-mfneutralsn-500">Fill out form · Raj</p>
-                <p className="text-xs text-mfneutralsn-300 mt-0.5">Getting to know me (0- 12 months)</p>
-              </div>
-            </div>
-          </div>
           <div ref={invoiceRef}>
-            <CommentSection isPaid={isPaid} onPaymentSuccess={() => setIsPaid(true)} />
+            <TodosWidget isPaid={isPaid} onPaymentSuccess={() => setIsPaid(true)} />
           </div>
           <div ref={photoRef}>
             <PhotoPostSection
@@ -208,7 +187,12 @@ export const IphoneProMax = (): JSX.Element => {
 
   const appContent = (
     <div className={`flex flex-col bg-mfneutralsn-50 ${shouldShowFrame ? 'h-full' : 'min-h-screen'} ${!shouldShowFrame ? 'touch:h-screen' : ''}`}>
-      <PostFeedSection activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab as any)} />
+      <PostFeedSection
+        activeTab={activeTab}
+        onTabChange={(tab) => setActiveTab(tab as any)}
+        activityTypeFilter={activityTypeFilter}
+        onActivityTypeFilterChange={setActivityTypeFilter}
+      />
 
       {renderTabContent()}
 

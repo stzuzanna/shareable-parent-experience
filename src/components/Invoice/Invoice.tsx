@@ -47,7 +47,7 @@ export const Invoice: React.FC<InvoiceProps> = ({ onClose, isPaid, onPaymentSucc
   };
 
   return (
-    <div className="absolute inset-0 bg-white z-50 overflow-y-auto">
+    <div className="fixed inset-0 bg-white z-[65] overflow-y-auto">
       {/* Toast notifications */}
       {toasts.map((toast) => (
         <Toast

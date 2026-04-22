@@ -21,8 +21,8 @@ export const ChildProfileHeader = (): JSX.Element => {
       </div>
 
       {/* Title row */}
-      <div className="flex items-center justify-between px-5 pt-3 pb-4">
-        <h1 className="text-[26px] font-bold text-mfneutralsn-500 tracking-tight leading-tight">
+      <div className="flex items-center justify-between px-5 pt-3 pb-6">
+        <h1 className="text-[20px] font-bold text-mfneutralsn-500 tracking-tight leading-tight">
           Child profile
         </h1>
         <SearchIcon className="w-5 h-5 text-mfneutralsn-400" />

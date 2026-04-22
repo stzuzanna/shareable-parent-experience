@@ -4,31 +4,35 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { BASE_PATH } from "../../constants";
 
+// Active state: white rounded square with subtle gray border (Figma: bg-white border-[#e2e2e9] rounded-[8px])
+const activeBtn = "bg-white border border-[#e2e2e9]";
+const baseBtn = "no-zoom flex items-center justify-center w-10 h-10 rounded-[10px] transition-all";
+
 export const BottomNav = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const isActive = (path: string) => location.pathname === path;
 
-  const iconClass = (path: string) =>
-    `w-6 h-6 transition-colors ${isActive(path) ? "text-mfneutralsn-500" : "text-mfneutralsn-400"}`;
+  const iconColor = (path: string) =>
+    isActive(path) ? "text-mfneutralsn-500" : "text-mfneutralsn-300";
 
   return (
-    <div className="flex items-center justify-between px-5 py-2.5 bg-white rounded-3xl mx-3 mb-3 border border-gray-100 shadow-sm">
+    <div className="flex items-center justify-between px-3 py-2 bg-mfneutralsn-50 rounded-2xl mx-2 mb-2 border border-gray-100">
       {/* Home / Newsfeed */}
       <button
         onClick={() => navigate("/")}
-        className="no-zoom flex items-center justify-center w-12 h-12 rounded-2xl"
+        className={`${baseBtn} ${isActive("/") ? activeBtn : ""}`}
       >
-        <HomeIcon className={iconClass("/")} />
+        <HomeIcon className={`w-6 h-6 ${iconColor("/")}`} />
       </button>
 
-      {/* Child profile */}
+      {/* Child profile — avatar, no active bg (avatar is its own indicator) */}
       <button
         onClick={() => navigate("/child-profile")}
-        className="no-zoom flex items-center justify-center w-12 h-12 rounded-2xl"
+        className={`${baseBtn} ${isActive("/child-profile") ? activeBtn : ""}`}
       >
-        <Avatar className="w-10 h-10">
+        <Avatar className="w-8 h-8">
           <AvatarImage
             src={`${BASE_PATH}pexels-daisy-anderson-5581091-1.png`}
             alt="Child profile"
@@ -41,26 +45,26 @@ export const BottomNav = (): JSX.Element => {
       {/* Messages */}
       <button
         onClick={() => navigate("/messages")}
-        className="no-zoom flex items-center justify-center w-12 h-12 rounded-2xl"
+        className={`${baseBtn} ${isActive("/messages") ? activeBtn : ""}`}
       >
-        <MessageSquareIcon className={iconClass("/messages")} />
+        <MessageSquareIcon className={`w-6 h-6 ${iconColor("/messages")}`} />
       </button>
 
-      {/* Notifications */}
+      {/* Notifications — with red dot badge */}
       <button
         onClick={() => navigate("/notifications")}
-        className="no-zoom flex items-center justify-center w-12 h-12 rounded-2xl relative"
+        className={`${baseBtn} ${isActive("/notifications") ? activeBtn : ""} relative`}
       >
-        <BellIcon className={iconClass("/notifications")} />
-        <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full" />
+        <BellIcon className={`w-6 h-6 ${iconColor("/notifications")}`} />
+        <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
       </button>
 
-      {/* Account */}
+      {/* Account — avatar with menu badge */}
       <button
         onClick={() => navigate("/menu")}
-        className="no-zoom flex items-center justify-center w-12 h-12 rounded-2xl relative"
+        className={`${baseBtn} ${isActive("/menu") ? activeBtn : ""} relative`}
       >
-        <Avatar className="w-10 h-10">
+        <Avatar className="w-8 h-8">
           <AvatarImage
             src={`${BASE_PATH}avatar-2.png`}
             alt="Account"
@@ -68,8 +72,8 @@ export const BottomNav = (): JSX.Element => {
           />
           <AvatarFallback>AP</AvatarFallback>
         </Avatar>
-        <div className="absolute bottom-1 right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center border border-gray-200 shadow-sm">
-          <AlignJustifyIcon className="w-2.5 h-2.5 text-mfneutralsn-500" />
+        <div className="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 bg-white rounded-full flex items-center justify-center border border-gray-200">
+          <AlignJustifyIcon className="w-2 h-2 text-mfneutralsn-500" />
         </div>
       </button>
     </div>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { XIcon, ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon } from "lucide-react";
 
 // ── Icons ─────────────────────────────────────────────────────────────────────
 
@@ -161,32 +161,55 @@ const DateGroup = ({ label, activities, defaultOpen = true }: { label: string; a
   );
 };
 
-// ── Sleep graph (simple bar chart placeholder) ────────────────────────────────
+// ── Sleep bar chart data ──────────────────────────────────────────────────────
 
-const SleepGraph = () => {
-  const max = 120;
-  const bars = sleepHistory.slice(0, 7);
+const sleepByDay = [
+  { label: "Mon", minutes: 90 },
+  { label: "Tue", minutes: 45 },
+  { label: "Wed", minutes: 120 },
+  { label: "Thu", minutes: 30 },
+  { label: "Fri", minutes: 60 },
+  { label: "Sat", minutes: 75 },
+  { label: "Today", minutes: 45 },
+];
+
+// ── Summary card (shown at top when a type filter is active) ──────────────────
+
+const SleepSummaryCard = () => {
+  const max = Math.max(...sleepByDay.map((d) => d.minutes));
+  const todayMinutes = sleepByDay[sleepByDay.length - 1].minutes;
+  const avg = Math.round(sleepByDay.reduce((s, d) => s + d.minutes, 0) / sleepByDay.length);
+
   return (
-    <div className="bg-white rounded-xl mx-4 mb-4 p-4 shadow-sm border border-gray-100">
-      <div className="flex items-center gap-3 mb-3">
-        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-500">
+    <div className="bg-white rounded-2xl mx-4 mb-4 p-4 border border-gray-100 shadow-sm">
+      {/* Header row */}
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-500 flex-shrink-0">
           <SleepIcon />
         </div>
-        <div>
+        <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-mfneutralsn-500">Sleep</p>
-          <div className="w-16 h-1.5 bg-gray-200 rounded-full mt-1" />
+          <div className="flex gap-3 mt-0.5">
+            <span className="text-xs text-mfneutralsn-300">{todayMinutes} min today</span>
+            <span className="text-xs text-mfneutralsn-300">avg {avg} min / day</span>
+          </div>
         </div>
       </div>
+
       {/* Bar chart */}
-      <div className="flex items-end gap-1 h-16">
-        {bars.map((entry, i) => {
-          const heightPct = (entry.duration / max) * 100;
+      <div className="flex items-end gap-1.5 h-20">
+        {sleepByDay.map((entry, i) => {
+          const isToday = i === sleepByDay.length - 1;
+          const heightPct = max > 0 ? (entry.minutes / max) * 100 : 0;
           return (
-            <div key={i} className="flex-1 flex flex-col items-center justify-end h-full">
+            <div key={i} className="flex-1 flex flex-col items-center justify-end h-full gap-1">
               <div
-                className="w-full bg-indigo-300 rounded-t-sm"
-                style={{ height: `${heightPct}%` }}
+                className={`w-full rounded-t-md transition-all ${isToday ? 'bg-indigo-500' : 'bg-indigo-200'}`}
+                style={{ height: `${heightPct}%`, minHeight: entry.minutes > 0 ? 4 : 0 }}
               />
+              <span className={`text-[9px] leading-none ${isToday ? 'text-indigo-500 font-semibold' : 'text-mfneutralsn-300'}`}>
+                {entry.label}
+              </span>
             </div>
           );
         })}
@@ -195,24 +218,37 @@ const SleepGraph = () => {
   );
 };
 
-// ── Sleep filtered list ───────────────────────────────────────────────────────
+const GenericSummaryCard = ({ typeFilter }: { typeFilter: string }) => {
+  const cfg = typeConfig[typeFilter as ActivityType];
+  if (!cfg) return null;
+  const Icon = cfg.icon;
+  const label = allActivityTypes.find((t) => t.id === typeFilter)?.label ?? typeFilter;
 
-const SleepList = () => (
-  <div className="bg-white rounded-xl mx-4 overflow-hidden shadow-sm border border-gray-100">
-    {sleepHistory.map((entry, i) => (
-      <div key={i} className="flex items-center gap-3 py-3 px-4 border-b border-gray-50 last:border-0">
-        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-500 flex-shrink-0">
-          <SleepIcon />
+  const allActivities = [...todayActivities, ...yesterdayActivities];
+  const todayCount = todayActivities.filter((a) =>
+    typeFilter === "sign-out" ? a.type === "sign-out" || a.type === "sign-in" : a.type === typeFilter
+  ).length;
+  const totalCount = allActivities.filter((a) =>
+    typeFilter === "sign-out" ? a.type === "sign-out" || a.type === "sign-in" : a.type === typeFilter
+  ).length;
+
+  return (
+    <div className="bg-white rounded-2xl mx-4 mb-4 p-4 border border-gray-100 shadow-sm">
+      <div className="flex items-center gap-3">
+        <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${cfg.bg} ${cfg.color}`}>
+          <Icon />
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-mfneutralsn-500">Sleep {entry.duration} min</p>
-          <p className="text-xs text-mfneutralsn-300">by {entry.by}</p>
+        <div>
+          <p className="text-sm font-semibold text-mfneutralsn-500">{label}</p>
+          <div className="flex gap-3 mt-0.5">
+            <span className="text-xs text-mfneutralsn-300">{todayCount} today</span>
+            <span className="text-xs text-mfneutralsn-300">{totalCount} this week</span>
+          </div>
         </div>
-        <span className="text-xs text-mfneutralsn-300 flex-shrink-0 text-right">{entry.date}</span>
       </div>
-    ))}
-  </div>
-);
+    </div>
+  );
+};
 
 // ── Type filter dropdown ──────────────────────────────────────────────────────
 
@@ -251,10 +287,10 @@ const TypeFilter = ({ selected, onSelect }: { selected: string; onSelect: (id: s
 
 interface ActivitySectionProps {
   onClose: () => void;
+  typeFilter?: string;
 }
 
-export const ActivitySection = ({ onClose }: ActivitySectionProps): JSX.Element => {
-  const [typeFilter, setTypeFilter] = useState("all");
+export const ActivitySection = ({ onClose, typeFilter = "all" }: ActivitySectionProps): JSX.Element => {
 
   const filterActivities = (activities: Activity[]) => {
     if (typeFilter === "all") return activities;
@@ -262,49 +298,31 @@ export const ActivitySection = ({ onClose }: ActivitySectionProps): JSX.Element 
     return activities.filter((a) => a.type === typeFilter);
   };
 
-  const showSleepGraph = typeFilter === "sleep";
   const todayFiltered = filterActivities(todayActivities);
   const yesterdayFiltered = filterActivities(yesterdayActivities);
+  const hasResults = todayFiltered.length > 0 || yesterdayFiltered.length > 0;
 
   return (
     <div className="flex flex-col bg-gray-50 h-full">
-      {/* Filter bar */}
-      <div className="flex items-center gap-2 px-4 py-3 bg-white border-b border-gray-100 sticky top-0 z-10">
-        <button
-          onClick={onClose}
-          className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors flex-shrink-0"
-        >
-          <XIcon className="w-4 h-4 text-mfneutralsn-400" />
-        </button>
-        <div className="flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium bg-mfprimaryp-400 text-white">
-          Activity
-        </div>
-        <TypeFilter selected={typeFilter} onSelect={setTypeFilter} />
-      </div>
-
-      {/* Content */}
       <div className="flex-1 overflow-y-auto pt-3">
-        {showSleepGraph && (
-          <>
-            <SleepGraph />
-            <SleepList />
-          </>
+        {/* Summary card — shown whenever a specific type is selected */}
+        {typeFilter !== "all" && (
+          typeFilter === "sleep"
+            ? <SleepSummaryCard />
+            : <GenericSummaryCard typeFilter={typeFilter} />
         )}
 
-        {!showSleepGraph && (
-          <>
-            {todayFiltered.length > 0 && (
-              <DateGroup label="Today" activities={todayFiltered} defaultOpen={true} />
-            )}
-            {yesterdayFiltered.length > 0 && (
-              <DateGroup label="Yesterday" activities={yesterdayFiltered} defaultOpen={false} />
-            )}
-            {todayFiltered.length === 0 && yesterdayFiltered.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-16 px-8">
-                <p className="text-sm text-mfneutralsn-300 text-center">No activities found for the selected type.</p>
-              </div>
-            )}
-          </>
+        {/* Date-grouped activity list */}
+        {todayFiltered.length > 0 && (
+          <DateGroup label="Today" activities={todayFiltered} defaultOpen={true} />
+        )}
+        {yesterdayFiltered.length > 0 && (
+          <DateGroup label="Yesterday" activities={yesterdayFiltered} defaultOpen={false} />
+        )}
+        {!hasResults && (
+          <div className="flex flex-col items-center justify-center py-16 px-8">
+            <p className="text-sm text-mfneutralsn-300 text-center">No activities found for the selected type.</p>
+          </div>
         )}
         <div className="h-8" />
       </div>
