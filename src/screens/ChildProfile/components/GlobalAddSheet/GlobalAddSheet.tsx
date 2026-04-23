@@ -23,7 +23,6 @@ const actions: Action[] = [
   { id: "vacation", icon: SunIcon, label: "Log vacation" },
   { id: "sickness", icon: ThermometerIcon, label: "Log sickness" },
   { id: "message", icon: MessageSquareIcon, label: "Send message to key teacher" },
-  { id: "feedback", icon: SmileIcon, label: "Let us know what you think" },
 ];
 
 interface GlobalAddSheetProps {
@@ -84,6 +83,25 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
                   </button>
                 );
               })}
+
+              {/* Divider with label */}
+              <div className="flex items-center gap-3 pt-1">
+                <div className="flex-1 h-px bg-gray-100" />
+                <span className="text-[11px] text-mfneutralsn-300 uppercase tracking-wide">Testing this prototype?</span>
+                <div className="flex-1 h-px bg-gray-100" />
+              </div>
+
+              {/* Feedback action */}
+              <button
+                className="flex items-center gap-3 px-4 py-3.5 rounded-xl border border-mfprimaryp-400 bg-mfprimaryp-50 active:bg-mfprimaryp-100 transition-colors text-left w-full"
+                onClick={() => onAction("feedback")}
+              >
+                <SmileIcon className="w-5 h-5 text-mfprimaryp-400 flex-shrink-0" />
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium text-mfprimaryp-400">Let us know what you think</span>
+                  <span className="text-xs text-mfprimaryp-300 mt-0.5">Your feedback helps us improve</span>
+                </div>
+              </button>
             </div>
           </motion.div>
         </>
