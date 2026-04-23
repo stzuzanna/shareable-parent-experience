@@ -121,7 +121,7 @@ export const FeedbackSheet: React.FC<FeedbackSheetProps> = ({
               <form onSubmit={handleSubmit} className="px-5 pb-10 flex flex-col gap-3">
                 <input
                   type="text"
-                  placeholder="Your name (optional)"
+                  placeholder="Your email (optional) – for follow-up questions"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-mfneutralsn-500 placeholder:text-mfneutralsn-300 focus:outline-none focus:border-mfprimaryp-400 bg-gray-50"
