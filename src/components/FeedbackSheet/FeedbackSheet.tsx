@@ -2,13 +2,15 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { XIcon, SendIcon, CheckIcon } from "lucide-react";
 
+const FEEDBACK_EMAIL = "zs@famly.co";
+
 interface FeedbackSheetProps {
   isOpen: boolean;
   onClose: () => void;
   useAbsolute?: boolean;
 }
 
-type Status = "idle" | "sending" | "success" | "error";
+type Status = "idle" | "success";
 
 export const FeedbackSheet: React.FC<FeedbackSheetProps> = ({
   isOpen,
@@ -21,39 +23,23 @@ export const FeedbackSheet: React.FC<FeedbackSheetProps> = ({
 
   const pos = useAbsolute ? "absolute" : "fixed";
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
 
-    setStatus("sending");
-    try {
-      const body = new URLSearchParams({
-        "form-name": "feedback",
-        "bot-field": "",
-        name: name.trim(),
-        message: message.trim(),
-      });
+    const subject = encodeURIComponent("Prototype feedback");
+    const body = encodeURIComponent(
+      name.trim() ? `From: ${name.trim()}\n\n${message.trim()}` : message.trim()
+    );
+    window.open(`mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`);
 
-      const res = await fetch("/", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: body.toString(),
-      });
-
-      if (res.ok) {
-        setStatus("success");
-        setTimeout(() => {
-          setStatus("idle");
-          setName("");
-          setMessage("");
-          onClose();
-        }, 2000);
-      } else {
-        setStatus("error");
-      }
-    } catch {
-      setStatus("error");
-    }
+    setStatus("success");
+    setTimeout(() => {
+      setStatus("idle");
+      setName("");
+      setMessage("");
+      onClose();
+    }, 2000);
   };
 
   const handleClose = () => {
@@ -133,18 +119,13 @@ export const FeedbackSheet: React.FC<FeedbackSheetProps> = ({
                   rows={4}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-mfneutralsn-500 placeholder:text-mfneutralsn-300 focus:outline-none focus:border-mfprimaryp-400 bg-gray-50 resize-none"
                 />
-                {status === "error" && (
-                  <p className="text-xs text-red-500">
-                    Something went wrong — please try again.
-                  </p>
-                )}
                 <button
                   type="submit"
-                  disabled={!message.trim() || status === "sending"}
+                  disabled={!message.trim()}
                   className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-mfprimaryp-400 text-white text-sm font-medium disabled:opacity-40 transition-opacity"
                 >
                   <SendIcon className="w-4 h-4" />
-                  {status === "sending" ? "Sending…" : "Send feedback"}
+                  Send feedback
                 </button>
               </form>
             )}
