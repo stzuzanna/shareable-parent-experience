@@ -17,6 +17,7 @@ import { ActivityPlans } from './screens/ActivityPlans/ActivityPlans';
 import { Notifications } from './screens/Notifications/Notifications';
 import { GlobalAddSheet } from './screens/ChildProfile/components/GlobalAddSheet/GlobalAddSheet';
 import { AbsenceOverlay } from './components/AbsenceOverlay/AbsenceOverlay';
+import { FeedbackSheet } from './components/FeedbackSheet/FeedbackSheet';
 import { Toast } from './components/Toast/Toast';
 
 function AppRoutes() {
@@ -29,6 +30,7 @@ function AppRoutes() {
 
   const [showAddSheet, setShowAddSheet] = useState(false);
   const [showAbsenceOverlay, setShowAbsenceOverlay] = useState(false);
+  const [showFeedbackSheet, setShowFeedbackSheet] = useState(false);
 
   const handleAddAction = (actionId: string) => {
     setShowAddSheet(false);
@@ -40,6 +42,9 @@ function AppRoutes() {
         break;
       case 'message':
         navigate('/messages');
+        break;
+      case 'feedback':
+        setShowFeedbackSheet(true);
         break;
       case 'meals':
       case 'checkout':
@@ -78,6 +83,13 @@ function AppRoutes() {
         isOpen={showAddSheet}
         onClose={() => setShowAddSheet(false)}
         onAction={handleAddAction}
+        useAbsolute={shouldShowFrame}
+      />
+
+      {/* Feedback sheet */}
+      <FeedbackSheet
+        isOpen={showFeedbackSheet}
+        onClose={() => setShowFeedbackSheet(false)}
         useAbsolute={shouldShowFrame}
       />
 

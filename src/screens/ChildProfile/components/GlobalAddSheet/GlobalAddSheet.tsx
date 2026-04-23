@@ -7,6 +7,7 @@ import {
   SunIcon,
   ThermometerIcon,
   MessageSquareIcon,
+  SmileIcon,
 } from "lucide-react";
 
 interface Action {
@@ -22,6 +23,7 @@ const actions: Action[] = [
   { id: "vacation", icon: SunIcon, label: "Log vacation" },
   { id: "sickness", icon: ThermometerIcon, label: "Log sickness" },
   { id: "message", icon: MessageSquareIcon, label: "Send message to key teacher" },
+  { id: "feedback", icon: SmileIcon, label: "Let us know what you think" },
 ];
 
 interface GlobalAddSheetProps {
