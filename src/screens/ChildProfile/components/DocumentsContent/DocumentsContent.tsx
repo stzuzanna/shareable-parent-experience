@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ChevronRightIcon, ArrowLeftIcon, FileTextIcon } from "lucide-react";
+import { ChevronRightIcon, ArrowLeftIcon, FileTextIcon, CheckCircle2Icon, XCircleIcon, HelpCircleIcon } from "lucide-react";
 
 // ── Shared primitives ─────────────────────────────────────────────────────────
 
@@ -105,26 +105,74 @@ const FormsDetail = () => (
   </div>
 );
 
-const PermissionsDetail = () => (
-  <div className="flex flex-col pt-2 pb-24 gap-0">
-    <DetailItem
-      title="Can use sunscreen"
-      badge={<Badge label="Answer" variant="answer" />}
-    />
-    <DetailItem
-      title="Can be in photos"
-      badge={<Badge label="Yes" variant="yes" />}
-    />
-    <DetailItem
-      title="Can go on field trips"
-      badge={<Badge label="Yes" variant="yes" />}
-    />
-    <DetailItem
-      title="Can use insect repellent"
-      badge={<Badge label="Answer" variant="answer" />}
-    />
-  </div>
-);
+type PermAnswer = "yes" | "no" | null;
+
+interface PermItem {
+  id: string;
+  label: string;
+  answer: PermAnswer;
+}
+
+const AnswerIcon = ({ answer }: { answer: PermAnswer }) => {
+  if (answer === "yes") return <CheckCircle2Icon className="w-5 h-5 text-green-500 flex-shrink-0" />;
+  if (answer === "no") return <XCircleIcon className="w-5 h-5 text-red-500 flex-shrink-0" />;
+  return <HelpCircleIcon className="w-5 h-5 text-mfprimaryp-400 flex-shrink-0" />;
+};
+
+const PermissionsDetail = () => {
+  const [items, setItems] = useState<PermItem[]>([
+    { id: "sunscreen", label: "Can use sunscreen", answer: null },
+    { id: "photos", label: "Can be in photos", answer: "yes" },
+    { id: "trips", label: "Can go on field trips", answer: "yes" },
+    { id: "repellent", label: "Can use insect repellent", answer: null },
+  ]);
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const setAnswer = (id: string, answer: "yes" | "no") => {
+    setItems((prev) => prev.map((it) => (it.id === id ? { ...it, answer } : it)));
+    setEditingId(null);
+  };
+
+  return (
+    <div className="flex flex-col pt-2 pb-24 gap-0 px-2">
+      {items.map((item) => {
+        const isEditing = editingId === item.id || item.answer === null;
+        return (
+          <div
+            key={item.id}
+            className="flex items-center gap-3 px-4 py-3.5 border border-mfprimaryp-100 rounded-xl mb-2 bg-white"
+          >
+            <AnswerIcon answer={item.answer} />
+            <span className="flex-1 text-sm font-medium text-mfneutralsn-500">{item.label}</span>
+            {isEditing ? (
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => setAnswer(item.id, "yes")}
+                  className="px-3 py-1 text-xs font-medium rounded-md border border-gray-200 bg-white text-mfneutralsn-500 active:bg-gray-50"
+                >
+                  Yes
+                </button>
+                <button
+                  onClick={() => setAnswer(item.id, "no")}
+                  className="px-3 py-1 text-xs font-medium rounded-md border border-gray-200 bg-white text-mfneutralsn-500 active:bg-gray-50"
+                >
+                  No
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setEditingId(item.id)}
+                className="px-3 py-1 text-xs font-medium rounded-md border border-gray-200 bg-white text-mfneutralsn-400 active:bg-gray-50"
+              >
+                Edit
+              </button>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 const NotesDetail = () => (
   <div className="flex flex-col pt-2 pb-24 gap-2 px-2">

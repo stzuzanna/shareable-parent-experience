@@ -13,7 +13,7 @@ const tabs = [
 
 export const ChildProfileTabs: React.FC<ChildProfileTabsProps> = ({ activeTab, onTabChange }): JSX.Element => {
   return (
-    <div className="bg-mfneutralsn-50 px-4 pb-6 sticky top-[82px] z-10">
+    <div className="bg-mfneutralsn-50 px-4 pb-6 sticky top-0 z-20">
       <div className="flex items-center h-[44px] bg-mfneutralsn-50 border border-gray-100 rounded-xl p-1 gap-0.5">
         {tabs.map((tab) => (
           <button
