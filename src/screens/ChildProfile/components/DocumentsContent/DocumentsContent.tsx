@@ -3,10 +3,10 @@ import { ChevronRightIcon, ArrowLeftIcon, FileTextIcon, CheckCircle2Icon, XCircl
 
 // ── Shared primitives ─────────────────────────────────────────────────────────
 
-const Divider = () => <div className="h-px bg-gray-100 mx-4" />;
+const Divider = () => <div className="h-px bg-mfneutralsn-75 mx-4" />;
 
 const Card = ({ children }: { children: React.ReactNode }) => (
-  <div className="mx-2 rounded-2xl overflow-hidden border border-gray-100 bg-white">
+  <div className="mx-[8.5px] rounded-2xl overflow-hidden border border-mfneutralsn-75 bg-white">
     {children}
   </div>
 );
@@ -14,12 +14,12 @@ const Card = ({ children }: { children: React.ReactNode }) => (
 const CardHeader = ({ title, count, onPress }: { title: string; count?: number; onPress?: () => void }) => (
   <button
     onClick={onPress}
-    className="w-full flex items-center justify-between px-4 py-3 text-left"
+    className="w-full flex items-center justify-between px-4 pt-3 pb-2 text-left"
   >
-    <span className="text-sm text-mfneutralsn-300">{title}</span>
+    <span className="text-[14px] text-mfneutralsn-300">{title}</span>
     <div className="flex items-center gap-1.5">
-      {count !== undefined && <span className="text-sm text-mfneutralsn-300">{count}</span>}
-      <ChevronRightIcon className="w-4 h-4 text-mfneutralsn-200" />
+      {count !== undefined && <span className="text-[14px] text-mfneutralsn-300">{count}</span>}
+      <ChevronRightIcon className="w-5 h-5 text-mfneutralsn-200" />
     </div>
   </button>
 );
@@ -68,7 +68,7 @@ const DetailItem = ({
       <FileTextIcon className="w-4 h-4 text-mfneutralsn-300 flex-shrink-0" />
       <div className="min-w-0">
         <p className="text-sm font-medium text-mfneutralsn-500 truncate">{title}</p>
-        {subtitle && <p className="text-xs text-mfneutralsn-300 mt-0.5 truncate">{subtitle}</p>}
+        {subtitle && <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight truncate">{subtitle}</p>}
       </div>
     </div>
     <div className="flex items-center gap-2 flex-shrink-0">
@@ -222,8 +222,8 @@ export const DocumentsContent = (): JSX.Element => {
         <CardHeader title="Notes" count={1} onPress={() => setSection("notes")} />
         <Divider />
         <div className="px-4 py-3">
-          <p className="text-sm font-semibold text-mfneutralsn-500">Tobin has been really active lately...</p>
-          <p className="text-xs text-mfneutralsn-300 mt-0.5">Feb 21</p>
+          <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">Tobin has been really active lately...</p>
+          <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">Feb 21</p>
         </div>
       </Card>
 
@@ -233,24 +233,24 @@ export const DocumentsContent = (): JSX.Element => {
         <Divider />
         <div className="px-4 py-3 flex items-center justify-between">
           <div>
-            <p className="text-sm font-semibold text-mfneutralsn-500">About me form</p>
-            <p className="text-xs text-mfneutralsn-300 mt-0.5">Sent by Olivia Wilson · 03/03/2026</p>
+            <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">About me form</p>
+            <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">Sent by Olivia Wilson · 03/03/2026</p>
           </div>
           <Badge label="Sign" variant="sign" />
         </div>
         <Divider />
         <div className="px-4 py-3 flex items-center justify-between">
           <div>
-            <p className="text-sm font-semibold text-mfneutralsn-500">Merchandise</p>
-            <p className="text-xs text-mfneutralsn-300 mt-0.5">Sent by Olivia Wilson · 03/03/2026</p>
+            <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">Merchandise</p>
+            <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">Sent by Olivia Wilson · 03/03/2026</p>
           </div>
           <Badge label="Complete" variant="complete" />
         </div>
         <Divider />
         <div className="px-4 py-3 flex items-center justify-between">
           <div>
-            <p className="text-sm font-semibold text-mfneutralsn-500">Enrollment form</p>
-            <p className="text-xs text-mfneutralsn-300 mt-0.5">Sent by Olivia Wilson · 21/02/2026</p>
+            <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">Enrollment form</p>
+            <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">Sent by Olivia Wilson · 21/02/2026</p>
           </div>
           <Badge label="Complete" variant="complete" />
         </div>
@@ -261,12 +261,12 @@ export const DocumentsContent = (): JSX.Element => {
         <CardHeader title="Permissions" count={6} onPress={() => setSection("permissions")} />
         <Divider />
         <div className="px-4 py-3 flex items-center justify-between">
-          <p className="text-sm font-semibold text-mfneutralsn-500">Can use sunscreen</p>
+          <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">Can use sunscreen</p>
           <Badge label="Answer" variant="answer" />
         </div>
         <Divider />
         <div className="px-4 py-3 flex items-center justify-between">
-          <p className="text-sm font-semibold text-mfneutralsn-500">Can be in photos</p>
+          <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">Can be in photos</p>
           <Badge label="Yes" variant="yes" />
         </div>
       </Card>

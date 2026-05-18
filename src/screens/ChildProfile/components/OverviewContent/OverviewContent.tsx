@@ -5,24 +5,24 @@ import { useProfileVariant } from "../../../../hooks/useProfileVariant";
 // ── Shared primitives ─────────────────────────────────────────────────────────
 
 const Card = ({ children }: { children: React.ReactNode }) => (
-  <div className="mx-2 rounded-2xl overflow-hidden border border-gray-100 bg-white">
+  <div className="mx-[8.5px] rounded-2xl overflow-hidden border border-mfneutralsn-75 bg-white">
     {children}
   </div>
 );
 
 const CardHeader = ({ title, onPress }: { title: string; onPress?: () => void }) => (
-  <button onClick={onPress} className="w-full flex items-center justify-between px-4 py-3 text-left">
-    <span className="text-sm text-mfneutralsn-300">{title}</span>
-    <ChevronRightIcon className="w-4 h-4 text-mfneutralsn-200" />
+  <button onClick={onPress} className="w-full flex items-center justify-between px-4 pt-3 pb-2 text-left">
+    <span className="text-[14px] text-mfneutralsn-300">{title}</span>
+    <ChevronRightIcon className="w-5 h-5 text-mfneutralsn-200" />
   </button>
 );
 
-const Divider = () => <div className="h-px bg-gray-100 mx-4" />;
+const Divider = () => <div className="h-px bg-mfneutralsn-75 mx-4" />;
 
 const InfoRow = ({ label, sublabel }: { label: string; sublabel: string }) => (
   <div className="px-4 py-3">
-    <p className="text-sm font-semibold text-mfneutralsn-500">{label}</p>
-    <p className="text-xs text-mfneutralsn-300 mt-0.5">{sublabel}</p>
+    <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">{label}</p>
+    <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">{sublabel}</p>
   </div>
 );
 
@@ -206,9 +206,9 @@ export const OverviewContent = (): JSX.Element => {
         <Card>
           <CardHeader title="Leave" onPress={() => setSection("leave")} />
           <Divider />
-          <LeaveRow icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />} label="1 - 10 Jul 26" sublabel="Holiday · Opted out of meals" trailing="Upcoming" />
+          <LeaveRow icon={<SunIcon className="w-[18px] h-[18px] text-mfyellowy-400" />} label="1 - 10 Jul 26" sublabel="Holiday · Opted out of meals" trailing="Upcoming" />
           <Divider />
-          <LeaveRow icon={<ThermometerIcon className="w-4 h-4 text-mfredr-400" />} label="4 Mar 26" sublabel="Sick" trailing="Past" />
+          <LeaveRow icon={<ThermometerIcon className="w-[18px] h-[18px] text-mfredr-400" />} label="4 Mar 26" sublabel="Sick" trailing="Past" />
           <div className="px-4 py-3">
             <button className="w-full h-11 rounded-lg border border-mfneutralsn-200 bg-white text-sm font-medium text-mfneutralsn-500 flex items-center justify-center gap-1.5 active:bg-gray-50">
               <PlusIcon className="w-4 h-4" />
@@ -250,12 +250,10 @@ export const OverviewContent = (): JSX.Element => {
           <CardHeader title="Care" onPress={() => setSection("care")} />
           <Divider />
           <div className="px-4 py-3">
-            <p className="text-sm font-semibold text-mfneutralsn-500">Monthly full time</p>
+            <p className="text-sm font-medium text-mfneutralsn-500">Monthly full time</p>
             <p className="text-xs text-mfneutralsn-300 mt-0.5">$1,350/month · Aug 31 –</p>
           </div>
-          <div className="px-4 pt-1 pb-1">
-            <p className="text-xs font-medium text-mfneutralsn-300 uppercase tracking-wide">Upcoming bookings</p>
-          </div>
+          <Divider />
           <BookingRow name="After School Care" date="Mar 7" amount="$50.00" status="pending" />
           <Divider />
           <BookingRow name="After School Care" date="Feb 1" amount="$50.00" status="paid" />
@@ -314,14 +312,14 @@ export const OverviewContent = (): JSX.Element => {
 };
 
 const LeaveRow = ({ icon, label, sublabel, trailing }: { icon: React.ReactNode; label: string; sublabel: string; trailing: string }) => (
-  <div className="px-4 py-3 flex items-center gap-3">
+  <div className="px-4 py-2.5 flex items-center gap-3">
     <div className="w-10 h-10 rounded-full bg-mfneutralsn-50 flex items-center justify-center flex-shrink-0">
       {icon}
     </div>
     <div className="flex-1 min-w-0">
-      <p className="text-sm font-semibold text-mfneutralsn-500">{label}</p>
-      <p className="text-xs text-mfneutralsn-300 mt-0.5">{sublabel}</p>
+      <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">{label}</p>
+      <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight truncate">{sublabel}</p>
     </div>
-    <span className="text-xs text-mfneutralsn-300 flex-shrink-0">{trailing}</span>
+    <span className="text-[12px] text-mfneutralsn-300 flex-shrink-0">{trailing}</span>
   </div>
 );

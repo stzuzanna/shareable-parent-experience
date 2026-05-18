@@ -30,15 +30,15 @@ const filters: { id: FilterKey; label: string }[] = [
   { id: "health", label: "Health" },
 ];
 
-const Badge = ({ label, variant }: { label: string; variant: Item["badge"] extends { variant: infer V } ? V : never }) => {
+const Badge = ({ label, variant }: { label: string; variant: NonNullable<Item["badge"]>["variant"] }) => {
   const styles: Record<string, string> = {
-    sign: "bg-mfyellowy-50 border border-mfyellowy-400 text-mfneutralsn-500",
+    sign: "bg-mfyellowy-100 border border-mfyellowy-400 text-mfneutralsn-500",
     complete: "bg-green-50 border border-green-500 text-green-700",
-    ack: "bg-mfyellowy-50 border border-mfyellowy-400 text-mfneutralsn-500",
+    ack: "bg-mfyellowy-100 border border-mfyellowy-400 text-mfneutralsn-500",
     accident: "bg-orange-50 border border-orange-400 text-orange-600",
   };
   return (
-    <span className={`text-[11px] px-2 py-0.5 rounded-full whitespace-nowrap ${styles[variant]}`}>
+    <span className={`text-[11px] px-2 h-[18px] inline-flex items-center rounded-full whitespace-nowrap leading-none ${styles[variant]}`}>
       {label}
     </span>
   );
@@ -50,39 +50,42 @@ export const PaperworkContent = (): JSX.Element => {
   const visible = items.filter((it) => activeFilter === "all" || it.type === activeFilter);
 
   return (
-    <div className="flex flex-col bg-mfneutralsn-50 pb-24">
+    <div className="flex flex-col bg-white pb-24">
       {/* Filter chips */}
-      <div className="flex items-center gap-2 px-4 pb-3 sticky top-[44px] bg-mfneutralsn-50 z-10">
+      <div className="flex items-center gap-2 px-[8.5px] pb-3 bg-white">
         <div className="flex items-center gap-2 flex-1 overflow-x-auto no-scrollbar">
           {filters.map((f) => (
             <button
               key={f.id}
               onClick={() => setActiveFilter(f.id)}
-              className={`flex-shrink-0 h-9 px-3 rounded-full text-[13px] border transition-colors ${
+              className={`flex-shrink-0 h-9 px-3 rounded-full text-[14px] leading-none border transition-colors ${
                 activeFilter === f.id
-                  ? "bg-mfneutralsn-500 text-white border-mfneutralsn-500"
-                  : "bg-white text-mfneutralsn-500 border-gray-200"
+                  ? "bg-mfprimaryp-100 text-mfprimaryp-400 border-mfprimaryp-400"
+                  : "bg-white text-mfneutralsn-500 border-mfneutralsn-200"
               }`}
             >
               {f.label}
             </button>
           ))}
         </div>
-        <button className="w-9 h-9 rounded-full border border-gray-200 bg-white flex items-center justify-center flex-shrink-0">
+        <button
+          aria-label="More filters"
+          className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0"
+        >
           <FilterIcon className="w-4 h-4 text-mfneutralsn-400" />
         </button>
       </div>
 
       {/* Items */}
-      <div className="flex flex-col px-2 gap-2">
+      <div className="flex flex-col px-[8.5px]">
         {visible.map((it, idx) => (
           <div
             key={`${it.title}-${idx}`}
-            className="flex items-center justify-between gap-3 px-4 py-3 bg-white border border-mfprimaryp-100 rounded-xl"
+            className="flex items-center justify-between gap-3 px-4 py-3 border-t border-mfneutralsn-75 first:border-t-0"
           >
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-mfneutralsn-500 truncate">{it.title}</p>
-              <p className="text-xs text-mfneutralsn-300 mt-0.5 truncate">{it.meta}</p>
+              <p className="text-[14px] font-medium text-mfneutralsn-500 truncate leading-tight">{it.title}</p>
+              <p className="text-[12px] text-mfneutralsn-300 mt-1 truncate leading-tight">{it.meta}</p>
             </div>
             {it.badge && <Badge label={it.badge.label} variant={it.badge.variant} />}
           </div>
