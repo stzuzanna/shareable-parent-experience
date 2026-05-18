@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FilterIcon } from "lucide-react";
+import { ChevronRightIcon, FilterIcon, XIcon } from "lucide-react";
 
 type FilterKey = "all" | "notes" | "forms" | "health";
 
@@ -38,57 +38,91 @@ const Badge = ({ label, variant }: { label: string; variant: NonNullable<Item["b
     accident: "bg-orange-50 border border-orange-400 text-orange-600",
   };
   return (
-    <span className={`text-[11px] px-2 h-[18px] inline-flex items-center rounded-full whitespace-nowrap leading-none ${styles[variant]}`}>
+    <span className={`text-[11px] px-2 h-[20px] inline-flex items-center rounded-full whitespace-nowrap leading-none ${styles[variant]}`}>
       {label}
     </span>
   );
 };
 
+const Pill = ({ label, selected, onClick }: { label: string; selected?: boolean; onClick?: () => void }) => (
+  <button
+    onClick={onClick}
+    className={`flex-shrink-0 h-9 px-3.5 rounded-full text-[14px] leading-none border transition-colors ${
+      selected
+        ? "bg-mfprimaryp-400 text-white border-mfprimaryp-400"
+        : "bg-white text-mfneutralsn-500 border-mfneutralsn-200"
+    }`}
+  >
+    {label}
+  </button>
+);
+
 export const PaperworkContent = (): JSX.Element => {
   const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
+  const isFiltered = activeFilter !== "all";
 
   const visible = items.filter((it) => activeFilter === "all" || it.type === activeFilter);
+  const activeLabel = filters.find((f) => f.id === activeFilter)?.label ?? "All";
 
   return (
     <div className="flex flex-col bg-white pb-24">
-      {/* Filter chips */}
-      <div className="flex items-center gap-2 px-[8.5px] pb-3 bg-white">
-        <div className="flex items-center gap-2 flex-1 overflow-x-auto no-scrollbar">
-          {filters.map((f) => (
+      {/* Filter pills */}
+      <div className="flex items-center gap-2 px-4 pb-3 bg-white">
+        {isFiltered ? (
+          <>
             <button
-              key={f.id}
-              onClick={() => setActiveFilter(f.id)}
-              className={`flex-shrink-0 h-9 px-3 rounded-full text-[14px] leading-none border transition-colors ${
-                activeFilter === f.id
-                  ? "bg-mfprimaryp-100 text-mfprimaryp-400 border-mfprimaryp-400"
-                  : "bg-white text-mfneutralsn-500 border-mfneutralsn-200"
-              }`}
+              onClick={() => setActiveFilter("all")}
+              aria-label="Clear filter"
+              className="flex-shrink-0 w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center"
             >
-              {f.label}
+              <XIcon className="w-4 h-4 text-mfneutralsn-500" />
             </button>
-          ))}
-        </div>
-        <button
-          aria-label="More filters"
-          className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0"
-        >
-          <FilterIcon className="w-4 h-4 text-mfneutralsn-400" />
-        </button>
+            <Pill label={activeLabel} selected />
+            <button
+              aria-label="More filters"
+              className="flex-shrink-0 w-9 h-9 ml-auto rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center"
+            >
+              <FilterIcon className="w-4 h-4 text-mfneutralsn-400" />
+            </button>
+          </>
+        ) : (
+          <>
+            <div className="flex items-center gap-2 flex-1 overflow-x-auto no-scrollbar">
+              {filters.map((f) => (
+                <Pill
+                  key={f.id}
+                  label={f.label}
+                  selected={activeFilter === f.id}
+                  onClick={() => setActiveFilter(f.id)}
+                />
+              ))}
+            </div>
+            <button
+              aria-label="More filters"
+              className="flex-shrink-0 w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center"
+            >
+              <FilterIcon className="w-4 h-4 text-mfneutralsn-400" />
+            </button>
+          </>
+        )}
       </div>
 
       {/* Items */}
-      <div className="flex flex-col px-[8.5px]">
+      <div className="flex flex-col gap-2 px-[8.5px]">
         {visible.map((it, idx) => (
-          <div
+          <button
             key={`${it.title}-${idx}`}
-            className="flex items-center justify-between gap-3 px-4 py-3 border-t border-mfneutralsn-75 first:border-t-0"
+            className="flex items-center justify-between gap-3 px-4 py-3 bg-white border border-mfneutralsn-75 rounded-xl text-left active:bg-gray-50"
           >
             <div className="flex-1 min-w-0">
               <p className="text-[14px] font-medium text-mfneutralsn-500 truncate leading-tight">{it.title}</p>
               <p className="text-[12px] text-mfneutralsn-300 mt-1 truncate leading-tight">{it.meta}</p>
             </div>
-            {it.badge && <Badge label={it.badge.label} variant={it.badge.variant} />}
-          </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {it.badge && <Badge label={it.badge.label} variant={it.badge.variant} />}
+              <ChevronRightIcon className="w-5 h-5 text-mfneutralsn-300" />
+            </div>
+          </button>
         ))}
         {visible.length === 0 && (
           <div className="py-12 px-8 text-center text-sm text-mfneutralsn-300">

@@ -35,9 +35,7 @@ function AppRoutes() {
   const handleAddAction = (actionId: string) => {
     setShowAddSheet(false);
     switch (actionId) {
-      case 'absence':
-      case 'vacation':
-      case 'sickness':
+      case 'add-leave':
         setShowAbsenceOverlay(true);
         break;
       case 'message':
@@ -46,8 +44,10 @@ function AppRoutes() {
       case 'feedback':
         setShowFeedbackSheet(true);
         break;
+      case 'checkin-pin':
+      case 'request-care':
       case 'meals':
-      case 'checkout':
+      case 'check-out':
         showToast('Coming soon', 'info');
         break;
     }
