@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { ChevronRightIcon, ArrowLeftIcon, UserIcon, HomeIcon, PhoneIcon, InfoIcon, CalendarIcon, BookOpenIcon } from "lucide-react";
+import { ChevronRightIcon, ArrowLeftIcon, UserIcon, HomeIcon, PhoneIcon, InfoIcon, CalendarIcon, BookOpenIcon, SunIcon, ThermometerIcon, MessageSquareIcon, PlusIcon } from "lucide-react";
+import { useProfileVariant } from "../../../../hooks/useProfileVariant";
 
 // ── Shared primitives ─────────────────────────────────────────────────────────
 
@@ -151,13 +152,15 @@ const BasicInfoDetail = () => (
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-type Section = "childcare" | "care" | "family" | "basic" | null;
+type Section = "childcare" | "care" | "family" | "basic" | "leave" | "closures" | null;
 
 const sectionTitles: Record<NonNullable<Section>, string> = {
   childcare: "Childcare info",
   care: "Care",
   family: "Family",
   basic: "Basic info",
+  leave: "Leave",
+  closures: "Meadows closure days",
 };
 
 const BookingRow = ({ name, date, amount, status }: { name: string; date: string; amount: string; status: "pending" | "paid" }) => (
@@ -172,6 +175,7 @@ const BookingRow = ({ name, date, amount, status }: { name: string; date: string
 );
 
 export const OverviewContent = (): JSX.Element => {
+  const variant = useProfileVariant();
   const [section, setSection] = useState<Section>(null);
 
   if (section !== null) {
@@ -182,17 +186,56 @@ export const OverviewContent = (): JSX.Element => {
         {section === "care" && <CareDetail />}
         {section === "family" && <FamilyDetail />}
         {section === "basic" && <BasicInfoDetail />}
+        {section === "leave" && (
+          <div className="flex flex-col items-center justify-center py-16 px-8">
+            <p className="text-sm text-mfneutralsn-300 text-center">Detailed leave view coming soon.</p>
+          </div>
+        )}
+        {section === "closures" && (
+          <div className="flex flex-col items-center justify-center py-16 px-8">
+            <p className="text-sm text-mfneutralsn-300 text-center">Detailed closure days view coming soon.</p>
+          </div>
+        )}
       </div>
     );
   }
 
   return (
     <div className="flex flex-col bg-mfneutralsn-50 pb-24 gap-4">
+      {variant === "v2" && (
+        <Card>
+          <CardHeader title="Leave" onPress={() => setSection("leave")} />
+          <Divider />
+          <LeaveRow icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />} label="1 - 10 Jul 26" sublabel="Holiday · Opted out of meals" trailing="Upcoming" />
+          <Divider />
+          <LeaveRow icon={<ThermometerIcon className="w-4 h-4 text-mfredr-400" />} label="4 Mar 26" sublabel="Sick" trailing="Past" />
+          <div className="px-4 py-3">
+            <button className="w-full h-11 rounded-lg border border-mfneutralsn-200 bg-white text-sm font-medium text-mfneutralsn-500 flex items-center justify-center gap-1.5 active:bg-gray-50">
+              <PlusIcon className="w-4 h-4" />
+              Add leave
+            </button>
+          </div>
+        </Card>
+      )}
+
       {/* Childcare info */}
       <Card>
         <CardHeader title="Childcare info" onPress={() => setSection("childcare")} />
         <Divider />
-        <InfoRow label="Sarah Freedman" sublabel="Key person" />
+        <div className="px-4 py-3 flex items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-mfneutralsn-500">Sarah Freedman</p>
+            <p className="text-xs text-mfneutralsn-300 mt-0.5">Key person</p>
+          </div>
+          {variant === "v2" && (
+            <button
+              aria-label="Message key person"
+              className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0 active:bg-gray-50"
+            >
+              <MessageSquareIcon className="w-4 h-4 text-mfneutralsn-400" />
+            </button>
+          )}
+        </div>
         <Divider />
         <InfoRow label="11 NW Street NY" sublabel="Address" />
         <Divider />
@@ -201,21 +244,35 @@ export const OverviewContent = (): JSX.Element => {
         <InfoRow label="Gate code 1243" sublabel="About" />
       </Card>
 
-      {/* Care */}
-      <Card>
-        <CardHeader title="Care" onPress={() => setSection("care")} />
-        <Divider />
-        <div className="px-4 py-3">
-          <p className="text-sm font-semibold text-mfneutralsn-500">Monthly full time</p>
-          <p className="text-xs text-mfneutralsn-300 mt-0.5">$1,350/month · Aug 31 –</p>
-        </div>
-        <div className="px-4 pt-1 pb-1">
-          <p className="text-xs font-medium text-mfneutralsn-300 uppercase tracking-wide">Upcoming bookings</p>
-        </div>
-        <BookingRow name="After School Care" date="Mar 7" amount="$50.00" status="pending" />
-        <Divider />
-        <BookingRow name="After School Care" date="Feb 1" amount="$50.00" status="paid" />
-      </Card>
+      {/* Care — V1 only (V2 puts bookings in its own tab) */}
+      {variant === "v1" && (
+        <Card>
+          <CardHeader title="Care" onPress={() => setSection("care")} />
+          <Divider />
+          <div className="px-4 py-3">
+            <p className="text-sm font-semibold text-mfneutralsn-500">Monthly full time</p>
+            <p className="text-xs text-mfneutralsn-300 mt-0.5">$1,350/month · Aug 31 –</p>
+          </div>
+          <div className="px-4 pt-1 pb-1">
+            <p className="text-xs font-medium text-mfneutralsn-300 uppercase tracking-wide">Upcoming bookings</p>
+          </div>
+          <BookingRow name="After School Care" date="Mar 7" amount="$50.00" status="pending" />
+          <Divider />
+          <BookingRow name="After School Care" date="Feb 1" amount="$50.00" status="paid" />
+        </Card>
+      )}
+
+      {variant === "v2" && (
+        <Card>
+          <CardHeader title="Meadows closure days" onPress={() => setSection("closures")} />
+          <Divider />
+          <InfoRow label="14 May 26" sublabel="Ascension Day" />
+          <Divider />
+          <InfoRow label="14 Jun - 14 Jul" sublabel="Summer holidays" />
+          <Divider />
+          <InfoRow label="14 Jul" sublabel="Independence Day" />
+        </Card>
+      )}
 
       {/* Family */}
       <Card>
@@ -243,7 +300,28 @@ export const OverviewContent = (): JSX.Element => {
         <CardHeader title="Basic info" onPress={() => setSection("basic")} />
         <Divider />
         <InfoRow label="1 Feb 2025" sublabel="Date of birth" />
+        {variant === "v2" && (
+          <>
+            <Divider />
+            <InfoRow label="4 Mar 2026" sublabel="Upcoming room move" />
+            <Divider />
+            <InfoRow label="English, Spanish" sublabel="Language" />
+          </>
+        )}
       </Card>
     </div>
   );
 };
+
+const LeaveRow = ({ icon, label, sublabel, trailing }: { icon: React.ReactNode; label: string; sublabel: string; trailing: string }) => (
+  <div className="px-4 py-3 flex items-center gap-3">
+    <div className="w-10 h-10 rounded-full bg-mfneutralsn-50 flex items-center justify-center flex-shrink-0">
+      {icon}
+    </div>
+    <div className="flex-1 min-w-0">
+      <p className="text-sm font-semibold text-mfneutralsn-500">{label}</p>
+      <p className="text-xs text-mfneutralsn-300 mt-0.5">{sublabel}</p>
+    </div>
+    <span className="text-xs text-mfneutralsn-300 flex-shrink-0">{trailing}</span>
+  </div>
+);

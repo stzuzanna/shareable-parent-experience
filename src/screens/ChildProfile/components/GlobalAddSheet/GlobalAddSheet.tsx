@@ -9,6 +9,7 @@ import {
   MessageSquareIcon,
   SmileIcon,
 } from "lucide-react";
+import { useProfileVariant, setProfileVariant, type ProfileVariant } from "../../../../hooks/useProfileVariant";
 
 interface Action {
   id: string;
@@ -102,10 +103,42 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
                   <span className="text-xs text-mfprimaryp-300 mt-0.5">Your feedback helps us improve</span>
                 </div>
               </button>
+
+              {/* Variant switcher dots */}
+              <VariantDots />
             </div>
           </motion.div>
         </>
       )}
     </AnimatePresence>
+  );
+};
+
+const VariantDots: React.FC = () => {
+  const variant = useProfileVariant();
+  const variants: { id: ProfileVariant; label: string }[] = [
+    { id: "v1", label: "About / Health and safety / Documents" },
+    { id: "v2", label: "About / Bookings / Paperwork" },
+  ];
+  return (
+    <div className="flex flex-col items-center gap-2 pt-3">
+      <div className="flex items-center gap-2">
+        {variants.map((v) => (
+          <button
+            key={v.id}
+            aria-label={`Switch to ${v.label}`}
+            onClick={() => setProfileVariant(v.id)}
+            className={`rounded-full transition-all ${
+              variant === v.id
+                ? "w-2.5 h-2.5 bg-mfprimaryp-400"
+                : "w-2 h-2 bg-mfneutralsn-200 hover:bg-mfneutralsn-300"
+            }`}
+          />
+        ))}
+      </div>
+      <span className="text-[11px] text-mfneutralsn-300">
+        {variants.find((v) => v.id === variant)?.label}
+      </span>
+    </div>
   );
 };
