@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ChevronRightIcon, ArrowLeftIcon, UserIcon, ShieldAlertIcon, PillIcon, SyringeIcon } from "lucide-react";
 
 // ── Shared primitives ─────────────────────────────────────────────────────────
@@ -133,10 +133,16 @@ const immunizations = [
 
 export const HealthAndSafetyContent = (): JSX.Element => {
   const [section, setSection] = useState<Section>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const scrollable = rootRef.current?.closest(".overflow-y-auto") as HTMLElement | null;
+    scrollable?.scrollTo({ top: 0, behavior: "smooth" });
+  }, [section]);
 
   if (section !== null) {
     return (
-      <div className="flex flex-col bg-mfneutralsn-50 min-h-full">
+      <div ref={rootRef} className="flex flex-col bg-mfneutralsn-50 min-h-full">
         <SectionHeader title={sectionTitles[section]} onBack={() => setSection(null)} />
         {section === "health" && <HealthInfoDetail />}
         {section === "accidents" && <AccidentsDetail />}
@@ -147,7 +153,7 @@ export const HealthAndSafetyContent = (): JSX.Element => {
   }
 
   return (
-    <div className="flex flex-col bg-mfneutralsn-50 pb-24 gap-4">
+    <div ref={rootRef} className="flex flex-col bg-mfneutralsn-50 pb-24 gap-4">
       {/* Health info */}
       <Card>
         <CardHeader title="Health info" onPress={() => setSection("health")} />

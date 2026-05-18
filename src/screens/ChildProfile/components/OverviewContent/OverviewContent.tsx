@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ChevronRightIcon, ArrowLeftIcon, UserIcon, HomeIcon, PhoneIcon, InfoIcon, CalendarIcon, BookOpenIcon, SunIcon, ThermometerIcon, MessageSquareIcon, PlusIcon } from "lucide-react";
 import { useProfileVariant } from "../../../../hooks/useProfileVariant";
 
@@ -177,10 +177,18 @@ const BookingRow = ({ name, date, amount, status }: { name: string; date: string
 export const OverviewContent = (): JSX.Element => {
   const variant = useProfileVariant();
   const [section, setSection] = useState<Section>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  // When entering/leaving a detail section, scroll the surrounding
+  // overflow container back to the top so the child profile header stays visible.
+  useEffect(() => {
+    const scrollable = rootRef.current?.closest(".overflow-y-auto") as HTMLElement | null;
+    scrollable?.scrollTo({ top: 0, behavior: "smooth" });
+  }, [section]);
 
   if (section !== null) {
     return (
-      <div className="flex flex-col bg-mfneutralsn-50 min-h-full">
+      <div ref={rootRef} className="flex flex-col bg-mfneutralsn-50 min-h-full">
         <SectionHeader title={sectionTitles[section]} onBack={() => setSection(null)} />
         {section === "childcare" && <ChildcareDetail />}
         {section === "care" && <CareDetail />}
@@ -201,22 +209,21 @@ export const OverviewContent = (): JSX.Element => {
   }
 
   return (
-    <div className="flex flex-col bg-mfneutralsn-50 pb-24 gap-4">
-      {variant === "v2" && (
-        <Card>
-          <CardHeader title="Leave" onPress={() => setSection("leave")} />
-          <Divider />
-          <LeaveRow icon={<SunIcon className="w-[18px] h-[18px] text-mfyellowy-400" />} label="1 - 10 Jul 26" sublabel="Holiday · Opted out of meals" trailing="Upcoming" />
-          <Divider />
-          <LeaveRow icon={<ThermometerIcon className="w-[18px] h-[18px] text-mfredr-400" />} label="4 Mar 26" sublabel="Sick" trailing="Past" />
-          <div className="px-4 py-3">
-            <button className="w-full h-11 rounded-lg border border-mfneutralsn-200 bg-white text-sm font-medium text-mfneutralsn-500 flex items-center justify-center gap-1.5 active:bg-gray-50">
-              <PlusIcon className="w-4 h-4" />
-              Add leave
-            </button>
-          </div>
-        </Card>
-      )}
+    <div ref={rootRef} className="flex flex-col bg-mfneutralsn-50 pb-24 gap-4">
+      {/* Leave — both variants */}
+      <Card>
+        <CardHeader title="Leave" onPress={() => setSection("leave")} />
+        <Divider />
+        <LeaveRow icon={<SunIcon className="w-[18px] h-[18px] text-mfyellowy-400" />} label="1 - 10 Jul 26" sublabel="Holiday · Opted out of meals" trailing="Upcoming" />
+        <Divider />
+        <LeaveRow icon={<ThermometerIcon className="w-[18px] h-[18px] text-mfredr-400" />} label="4 Mar 26" sublabel="Sick" trailing="Past" />
+        <div className="px-4 py-3">
+          <button className="w-full h-11 rounded-lg border border-mfneutralsn-200 bg-white text-sm font-medium text-mfneutralsn-500 flex items-center justify-center gap-1.5 active:bg-gray-50">
+            <PlusIcon className="w-4 h-4" />
+            Add leave
+          </button>
+        </div>
+      </Card>
 
       {/* Childcare info */}
       <Card>
@@ -227,14 +234,12 @@ export const OverviewContent = (): JSX.Element => {
             <p className="text-sm font-semibold text-mfneutralsn-500">Sarah Freedman</p>
             <p className="text-xs text-mfneutralsn-300 mt-0.5">Key person</p>
           </div>
-          {variant === "v2" && (
-            <button
-              aria-label="Message key person"
-              className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0 active:bg-gray-50"
-            >
-              <MessageSquareIcon className="w-4 h-4 text-mfneutralsn-400" />
-            </button>
-          )}
+          <button
+            aria-label="Message key person"
+            className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0 active:bg-gray-50"
+          >
+            <MessageSquareIcon className="w-4 h-4 text-mfneutralsn-400" />
+          </button>
         </div>
         <Divider />
         <InfoRow label="11 NW Street NY" sublabel="Address" />
@@ -244,7 +249,7 @@ export const OverviewContent = (): JSX.Element => {
         <InfoRow label="Gate code 1243" sublabel="About" />
       </Card>
 
-      {/* Care — V1 only (V2 puts bookings in its own tab) */}
+      {/* Care — V1 only (V2 has bookings in its own tab) */}
       {variant === "v1" && (
         <Card>
           <CardHeader title="Care" onPress={() => setSection("care")} />
@@ -260,17 +265,16 @@ export const OverviewContent = (): JSX.Element => {
         </Card>
       )}
 
-      {variant === "v2" && (
-        <Card>
-          <CardHeader title="Meadows closure days" onPress={() => setSection("closures")} />
-          <Divider />
-          <InfoRow label="14 May 26" sublabel="Ascension Day" />
-          <Divider />
-          <InfoRow label="14 Jun - 14 Jul" sublabel="Summer holidays" />
-          <Divider />
-          <InfoRow label="14 Jul" sublabel="Independence Day" />
-        </Card>
-      )}
+      {/* Meadows closure days — both variants */}
+      <Card>
+        <CardHeader title="Meadows closure days" onPress={() => setSection("closures")} />
+        <Divider />
+        <InfoRow label="14 May 26" sublabel="Ascension Day" />
+        <Divider />
+        <InfoRow label="14 Jun - 14 Jul" sublabel="Summer holidays" />
+        <Divider />
+        <InfoRow label="14 Jul" sublabel="Independence Day" />
+      </Card>
 
       {/* Family */}
       <Card>
@@ -298,14 +302,10 @@ export const OverviewContent = (): JSX.Element => {
         <CardHeader title="Basic info" onPress={() => setSection("basic")} />
         <Divider />
         <InfoRow label="1 Feb 2025" sublabel="Date of birth" />
-        {variant === "v2" && (
-          <>
-            <Divider />
-            <InfoRow label="4 Mar 2026" sublabel="Upcoming room move" />
-            <Divider />
-            <InfoRow label="English, Spanish" sublabel="Language" />
-          </>
-        )}
+        <Divider />
+        <InfoRow label="4 Mar 2026" sublabel="Upcoming room move" />
+        <Divider />
+        <InfoRow label="English, Spanish" sublabel="Language" />
       </Card>
     </div>
   );

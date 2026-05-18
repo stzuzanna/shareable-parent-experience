@@ -1,5 +1,4 @@
 import React from "react";
-import { SettingsIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
 import { BASE_PATH } from "../../../../constants";
 
@@ -33,13 +32,6 @@ export const ChildProfileInfo = (): JSX.Element => {
           </span>
         </div>
       </div>
-
-      <button
-        aria-label="Profile settings"
-        className="w-12 h-12 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0 active:bg-gray-50"
-      >
-        <SettingsIcon className="w-5 h-5 text-mfneutralsn-400" />
-      </button>
     </div>
   );
 };
