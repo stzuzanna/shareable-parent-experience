@@ -1,17 +1,17 @@
 import React from "react";
 
+export interface TabConfig {
+  id: string;
+  label: string;
+}
+
 interface ChildProfileTabsProps {
   activeTab: string;
   onTabChange: (tabId: string) => void;
+  tabs: TabConfig[];
 }
 
-const tabs = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'health', label: 'Health and safety' },
-  { id: 'documents', label: 'Paperwork' },
-];
-
-export const ChildProfileTabs: React.FC<ChildProfileTabsProps> = ({ activeTab, onTabChange }): JSX.Element => {
+export const ChildProfileTabs: React.FC<ChildProfileTabsProps> = ({ activeTab, onTabChange, tabs }): JSX.Element => {
   return (
     <div className="bg-mfneutralsn-50 px-4 pb-6 sticky top-0 z-20">
       <div className="flex items-center h-[44px] bg-mfneutralsn-50 border border-gray-100 rounded-xl p-1 gap-0.5">

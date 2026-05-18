@@ -9,6 +9,7 @@ import {
   HelpCircleIcon,
   ScaleIcon,
 } from "lucide-react";
+import { BASE_PATH } from "../../constants";
 import { useDeviceDetection } from "../../hooks/useDeviceDetection";
 import { useToast } from "../../hooks/useToast";
 import { Toast } from "../Toast/Toast";
@@ -40,6 +41,11 @@ export const AccountSettings: React.FC<AccountSettingsProps> = ({ onClose }): JS
 
       {/* Header */}
       <header className={`flex flex-col w-full bg-white ${!shouldShowFrame ? "sticky top-0 z-50" : ""}`}>
+        {/* Fake status bar — only inside the device frame so it clears the Dynamic Island */}
+        <div className={`flex items-center justify-between px-5 pt-2 pb-1 ${!shouldShowFrame ? "hidden" : ""}`}>
+          <span className="font-semibold text-mfneutralsn-500 text-[15px] tracking-[-0.3px]">9:41</span>
+          <img className="h-4" alt="Status icons" src={`${BASE_PATH}right-side.svg`} />
+        </div>
         <div className="flex items-center justify-between px-4 py-3">
           <button
             onClick={onClose}
