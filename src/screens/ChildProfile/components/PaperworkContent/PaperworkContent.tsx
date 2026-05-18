@@ -11,16 +11,27 @@ interface Item {
 }
 
 const items: Item[] = [
+  // Awaiting action — yellow pills, shown first
   { title: "Zyrtec", meta: "21 Feb 2026 · Medication form", badge: { label: "Acknowledge", variant: "ack" }, type: "health" },
   { title: "About me", meta: "21 Feb 2026 · Form", badge: { label: "Sign", variant: "sign" }, type: "forms" },
-  { title: "Tobin has been really active lately. We expect...", meta: "21 Feb 2026 · Note", type: "notes" },
-  { title: "Curriculum for new year", meta: "21 Feb 2026 · Document", type: "forms" },
+  { title: "Field trip consent", meta: "18 Feb 2026 · Form", badge: { label: "Sign", variant: "sign" }, type: "forms" },
+  { title: "Photo release", meta: "12 Feb 2026 · Form", badge: { label: "Acknowledge", variant: "ack" }, type: "forms" },
+
+  // Done / informational — green pills or no pill
   { title: "Enrollment form", meta: "21 Feb 2026 · Form", badge: { label: "Signed", variant: "complete" }, type: "forms" },
   { title: "Emergency contact form", meta: "10 Mar 2026 · Form", badge: { label: "Completed", variant: "complete" }, type: "forms" },
   { title: "Medical history form", meta: "15 Mar 2026 · Form", badge: { label: "Completed", variant: "complete" }, type: "health" },
   { title: "Permission slip", meta: "18 Mar 2026 · Form", badge: { label: "Signed", variant: "complete" }, type: "forms" },
-  { title: "Accident report", meta: "21 Feb 2026 · Accident report", badge: { label: "Accident report", variant: "accident" }, type: "health" },
-  { title: "Accident report", meta: "21 Feb 2026 · Accident report", badge: { label: "Accident report", variant: "accident" }, type: "health" },
+  { title: "Allergy plan", meta: "4 Feb 2026 · Form", badge: { label: "Completed", variant: "complete" }, type: "health" },
+  { title: "Updated care contract", meta: "21 Feb 2026 · Form", badge: { label: "Signed", variant: "complete" }, type: "forms" },
+
+  // No pill
+  { title: "Tobin has been really active lately. We expect...", meta: "21 Feb 2026 · Note", type: "notes" },
+  { title: "Settling in observations", meta: "8 Feb 2026 · Note", type: "notes" },
+  { title: "Curriculum for new year", meta: "21 Feb 2026 · Document", type: "forms" },
+  { title: "Summer programme overview", meta: "1 Feb 2026 · Document", type: "forms" },
+  { title: "Accident report", meta: "21 Feb 2026 · Accident report", type: "health" },
+  { title: "Accident report", meta: "9 Jan 2026 · Accident report", type: "health" },
 ];
 
 const filters: { id: FilterKey; label: string }[] = [
@@ -65,9 +76,9 @@ export const PaperworkContent = (): JSX.Element => {
   const activeLabel = filters.find((f) => f.id === activeFilter)?.label ?? "All";
 
   return (
-    <div className="flex flex-col bg-white pb-24">
+    <div className="flex flex-col bg-white pb-24 pt-3">
       {/* Filter pills */}
-      <div className="flex items-center gap-2 px-4 pb-3 bg-white">
+      <div className="flex items-center gap-2 px-4 pb-6 bg-white">
         {isFiltered ? (
           <>
             <button

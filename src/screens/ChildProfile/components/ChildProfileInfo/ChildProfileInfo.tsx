@@ -16,16 +16,16 @@ export const ChildProfileInfo = (): JSX.Element => {
 
       <div className="flex flex-col gap-1.5 flex-1 min-w-0">
         <div>
-          <h2 className="text-[16px] font-medium text-mfneutralsn-500 leading-snug">
+          <h2 className="text-[20px] font-medium text-mfneutralsn-500 leading-tight">
             Tobin Freedman
           </h2>
-          <p className="text-[12px] text-mfneutralsn-300 leading-tight">
+          <p className="text-[14px] text-mfneutralsn-300 leading-snug mt-0.5">
             Bunnies room, 1 year 4 months
           </p>
         </div>
         <div className="flex items-center">
           <span
-            className="inline-flex items-center px-2 h-[18px] rounded-full text-[11px] leading-none border"
+            className="inline-flex items-center px-2 h-[20px] rounded-full text-[12px] leading-none border"
             style={{ backgroundColor: "#fffcf5", borderColor: "#fac12e", color: "#2d2d39" }}
           >
             Lactose
