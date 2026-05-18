@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ChevronRightIcon, ArrowLeftIcon, FileTextIcon, CheckCircle2Icon, XCircleIcon, HelpCircleIcon } from "lucide-react";
 
 // ── Shared primitives ─────────────────────────────────────────────────────────
@@ -202,10 +202,16 @@ const sectionTitles: Record<NonNullable<Section>, string> = {
 
 export const DocumentsContent = (): JSX.Element => {
   const [section, setSection] = useState<Section>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const scrollable = rootRef.current?.closest(".overflow-y-auto") as HTMLElement | null;
+    scrollable?.scrollTo({ top: 0, behavior: "smooth" });
+  }, [section]);
 
   if (section !== null) {
     return (
-      <div className="flex flex-col bg-mfneutralsn-50 min-h-full">
+      <div ref={rootRef} className="flex flex-col bg-mfneutralsn-50 min-h-full">
         <SectionHeader title={sectionTitles[section]} onBack={() => setSection(null)} />
         {section === "forms" && <FormsDetail />}
         {section === "permissions" && <PermissionsDetail />}
@@ -216,7 +222,7 @@ export const DocumentsContent = (): JSX.Element => {
   }
 
   return (
-    <div className="flex flex-col bg-mfneutralsn-50 pb-24 gap-4">
+    <div ref={rootRef} className="flex flex-col bg-mfneutralsn-50 pb-24 gap-4">
       {/* Notes */}
       <Card>
         <CardHeader title="Notes" count={1} onPress={() => setSection("notes")} />
