@@ -4,22 +4,22 @@ import { ChevronRightIcon, ArrowLeftIcon, UserIcon, ShieldAlertIcon, PillIcon, S
 // ── Shared primitives ─────────────────────────────────────────────────────────
 
 const Card = ({ children }: { children: React.ReactNode }) => (
-  <div className="mx-2 rounded-2xl overflow-hidden border border-gray-100 bg-white">
+  <div className="mx-[8.5px] rounded-2xl overflow-hidden border border-mfneutralsn-75 bg-white">
     {children}
   </div>
 );
 
 const CardHeader = ({ title, count, onPress }: { title: string; count?: number; onPress?: () => void }) => (
-  <button onClick={onPress} className="w-full flex items-center justify-between px-4 py-3 text-left">
-    <span className="text-sm text-mfneutralsn-300">{title}</span>
+  <button onClick={onPress} className="w-full flex items-center justify-between px-4 pt-3 pb-2 text-left">
+    <span className="text-[14px] text-mfneutralsn-300">{title}</span>
     <div className="flex items-center gap-1.5">
-      {count !== undefined && <span className="text-sm text-mfneutralsn-300">{count}</span>}
-      <ChevronRightIcon className="w-4 h-4 text-mfneutralsn-200" />
+      {count !== undefined && <span className="text-[14px] text-mfneutralsn-300">{count}</span>}
+      <ChevronRightIcon className="w-5 h-5 text-mfneutralsn-200" />
     </div>
   </button>
 );
 
-const Divider = () => <div className="h-px bg-gray-100 mx-4" />;
+const Divider = () => <div className="h-px bg-mfneutralsn-75 mx-4" />;
 
 const SectionHeader = ({ title, onBack }: { title: string; onBack: () => void }) => (
   <div className="flex items-center gap-3 px-4 py-3">
@@ -53,7 +53,7 @@ const DetailRow = ({
       </div>
       <div className="min-w-0">
         <p className="text-sm font-medium text-mfneutralsn-500">{label}</p>
-        {sublabel && <p className="text-xs text-mfneutralsn-300 mt-0.5">{sublabel}</p>}
+        {sublabel && <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">{sublabel}</p>}
       </div>
     </div>
     {badge && <div className="flex-shrink-0 ml-2">{badge}</div>}
@@ -154,15 +154,15 @@ export const HealthAndSafetyContent = (): JSX.Element => {
         <Divider />
         <div className="px-4 py-3 flex flex-col gap-4">
           <div>
-            <p className="text-sm font-semibold text-mfneutralsn-500">Phil Cawlins</p>
-            <p className="text-xs text-mfneutralsn-300 mt-0.5">+1 (555) 123-4567 · Doctor</p>
+            <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">Phil Cawlins</p>
+            <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">+1 (555) 123-4567 · Doctor</p>
           </div>
           <div>
-            <p className="text-sm font-semibold text-mfneutralsn-500">Lactose, Peanuts</p>
-            <p className="text-xs text-mfneutralsn-300 mt-0.5">Allergies</p>
+            <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">Lactose, Peanuts</p>
+            <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">Allergies</p>
           </div>
           <div>
-            <p className="text-sm font-semibold text-mfneutralsn-500">Tolerates penicillin</p>
+            <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">Tolerates penicillin</p>
           </div>
         </div>
       </Card>
@@ -180,8 +180,8 @@ export const HealthAndSafetyContent = (): JSX.Element => {
             <Divider />
             <div className="px-4 py-3 flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-mfneutralsn-500">{med.name}</p>
-                <p className="text-xs text-mfneutralsn-300 mt-0.5">{med.detail}</p>
+                <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">{med.name}</p>
+                <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">{med.detail}</p>
               </div>
               <span className={`text-xs px-2.5 py-0.5 rounded-full ${med.badgeStyle}`}>{med.badge}</span>
             </div>
@@ -197,8 +197,8 @@ export const HealthAndSafetyContent = (): JSX.Element => {
             <Divider />
             <div className="px-4 py-3 flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-mfneutralsn-500">{imm.name}</p>
-                <p className="text-xs text-mfneutralsn-300 mt-0.5">{imm.date}</p>
+                <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">{imm.name}</p>
+                <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">{imm.date}</p>
               </div>
               <ChevronRightIcon className="w-4 h-4 text-mfneutralsn-200" />
             </div>
