@@ -107,53 +107,53 @@ export const Menu = (): JSX.Element => {
             )}
           </div>
 
-          {/* PIN code */}
-          <button
-            onClick={comingSoon}
-            className="w-full flex items-center justify-center gap-2 h-12 bg-white border border-mfneutralsn-75 rounded-2xl hover:bg-gray-50"
-          >
-            <GripIcon className="w-5 h-5 text-mfneutralsn-400" />
-            <span className="text-[14px] text-mfneutralsn-500">Check in PIN code</span>
-          </button>
+          {/* Navigation tiles — 2x2 grid */}
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={comingSoon}
+              className="flex flex-col items-start justify-between h-[76px] bg-white border border-mfneutralsn-75 rounded-2xl p-3 hover:bg-gray-50"
+            >
+              <CalendarIcon className="w-6 h-6 text-mfprimaryp-400" />
+              <div className="flex items-center gap-1 w-full">
+                <span className="text-[14px] text-mfneutralsn-500 flex-1 text-left">Calendar</span>
+                <ChevronRightIcon className="w-3.5 h-3.5 text-mfneutralsn-300" />
+              </div>
+            </button>
 
-          {/* Navigation tiles */}
-          <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={comingSoon}
-                className="flex flex-col items-start justify-between h-[76px] bg-white border border-mfneutralsn-75 rounded-2xl p-3 hover:bg-gray-50"
-              >
-                <CalendarIcon className="w-6 h-6 text-mfprimaryp-400" />
-                <div className="flex items-center gap-1 w-full">
-                  <span className="text-[14px] text-mfneutralsn-500 flex-1 text-left">Calendar</span>
-                  <ChevronRightIcon className="w-3.5 h-3.5 text-mfneutralsn-300" />
-                </div>
-              </button>
-
-              <button
-                onClick={() => navigate("/activity-plans")}
-                className="flex flex-col items-start justify-between h-[76px] bg-white border border-mfneutralsn-75 rounded-2xl p-3 hover:bg-gray-50"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-mfyellowy-400">
-                  <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
-                  <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
-                  <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
-                  <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
-                </svg>
-                <div className="flex items-center gap-1 w-full">
-                  <span className="text-[14px] text-mfneutralsn-500 flex-1 text-left">Learning plans</span>
-                  <ChevronRightIcon className="w-3.5 h-3.5 text-mfneutralsn-300" />
-                </div>
-              </button>
-            </div>
+            <button
+              onClick={() => navigate("/activity-plans")}
+              className="flex flex-col items-start justify-between h-[76px] bg-white border border-mfneutralsn-75 rounded-2xl p-3 hover:bg-gray-50"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-mfyellowy-400">
+                <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+                <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+                <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+                <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+              </svg>
+              <div className="flex items-center gap-1 w-full">
+                <span className="text-[14px] text-mfneutralsn-500 flex-1 text-left">Learning plans</span>
+                <ChevronRightIcon className="w-3.5 h-3.5 text-mfneutralsn-300" />
+              </div>
+            </button>
 
             <button
               onClick={comingSoon}
-              className="w-full flex flex-col items-start justify-between h-[76px] bg-white border border-mfneutralsn-75 rounded-2xl p-3 hover:bg-gray-50"
+              className="flex flex-col items-start justify-between h-[76px] bg-white border border-mfneutralsn-75 rounded-2xl p-3 hover:bg-gray-50"
             >
               <VideoIcon className="w-6 h-6 text-brandblueb-400" />
               <div className="flex items-center gap-1 w-full">
                 <span className="text-[14px] text-mfneutralsn-500 flex-1 text-left">WatchMeGrow</span>
+                <ChevronRightIcon className="w-3.5 h-3.5 text-mfneutralsn-300" />
+              </div>
+            </button>
+
+            <button
+              onClick={comingSoon}
+              className="flex flex-col items-start justify-between h-[76px] bg-white border border-mfneutralsn-75 rounded-2xl p-3 hover:bg-gray-50"
+            >
+              <GripIcon className="w-6 h-6 text-mfneutralsn-400" />
+              <div className="flex items-center gap-1 w-full">
+                <span className="text-[14px] text-mfneutralsn-500 flex-1 text-left">Check in PIN</span>
                 <ChevronRightIcon className="w-3.5 h-3.5 text-mfneutralsn-300" />
               </div>
             </button>

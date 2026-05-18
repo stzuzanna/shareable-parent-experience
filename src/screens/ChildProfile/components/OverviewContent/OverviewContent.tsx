@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ChevronRightIcon, ArrowLeftIcon, UserIcon, HomeIcon, PhoneIcon, InfoIcon, CalendarIcon, BookOpenIcon, SunIcon, ThermometerIcon, MessageSquareIcon, PlusIcon } from "lucide-react";
+import { ChevronRightIcon, ArrowLeftIcon, UserIcon, HomeIcon, PhoneIcon, InfoIcon, CalendarIcon, BookOpenIcon, SunIcon, ThermometerIcon, MessageSquareIcon } from "lucide-react";
 import { useProfileVariant } from "../../../../hooks/useProfileVariant";
 
 // ── Shared primitives ─────────────────────────────────────────────────────────
@@ -217,12 +217,6 @@ export const OverviewContent = (): JSX.Element => {
         <LeaveRow icon={<SunIcon className="w-[18px] h-[18px] text-mfyellowy-400" />} label="1 - 10 Jul 26" sublabel="Holiday · Opted out of meals" trailing="Upcoming" />
         <Divider />
         <LeaveRow icon={<ThermometerIcon className="w-[18px] h-[18px] text-mfredr-400" />} label="4 Mar 26" sublabel="Sick" trailing="Past" />
-        <div className="px-4 py-3">
-          <button className="w-full h-11 rounded-lg border border-mfneutralsn-200 bg-white text-sm font-medium text-mfneutralsn-500 flex items-center justify-center gap-1.5 active:bg-gray-50">
-            <PlusIcon className="w-4 h-4" />
-            Add leave
-          </button>
-        </div>
       </Card>
 
       {/* Childcare info */}
