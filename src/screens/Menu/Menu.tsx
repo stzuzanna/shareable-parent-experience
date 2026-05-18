@@ -1,157 +1,179 @@
-import { BASE_PATH } from '../../constants';
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  ChevronRightIcon,
+  SettingsIcon,
+  CalendarIcon,
+  VideoIcon,
+  LogOutIcon,
+  FileTextIcon,
+  GripIcon,
+} from "lucide-react";
+import { BASE_PATH } from "../../constants";
 import { useDeviceDetection } from "../../hooks/useDeviceDetection";
+import { useToast } from "../../hooks/useToast";
+import { usePaymentState } from "../../hooks/usePaymentState";
 import { AccountSettings } from "../../components/AccountSettings/AccountSettings";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
 import { Button } from "../../components/ui/button";
 import { AppHeader } from "../../components/AppHeader/AppHeader";
 import { BottomNav } from "../../components/BottomNav/BottomNav";
-import { 
-  CreditCardIcon,
-  UsersIcon,
-  HelpCircleIcon,
-  FileTextIcon,
-  LogOutIcon,
-} from "lucide-react";
+import { Toast } from "../../components/Toast/Toast";
+
+const OUTSTANDING_AMOUNT = "1024.88";
 
 export const Menu = (): JSX.Element => {
   const { shouldShowFrame } = useDeviceDetection();
   const navigate = useNavigate();
-  const [showAccountSettings, setShowAccountSettings] = useState(false);
+  const isPaid = usePaymentState();
+  const { toasts, showToast, removeToast } = useToast();
+  const [showSettings, setShowSettings] = useState(false);
 
-  if (showAccountSettings) {
-    return <AccountSettings onClose={() => setShowAccountSettings(false)} />;
+  if (showSettings) {
+    return <AccountSettings onClose={() => setShowSettings(false)} />;
   }
 
-  const menuItems = [
-    {
-      icon: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-mforangeo-400">
-          <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
-          <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
-          <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
-          <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
-        </svg>
-      ),
-      title: "Activity plans",
-      onClick: () => navigate('/activity-plans'),
-    },
-    {
-      icon: <CreditCardIcon className="w-6 h-6 text-gray-600" />,
-      title: "Balance - $1,050.00",
-      onClick: () => navigate('/balance'),
-    },
-  ];
+  const comingSoon = () => showToast("Coming soon", "info");
 
-  const settingsItems = [
-    {
-      icon: <UsersIcon className="w-5 h-5 text-gray-600" />,
-      title: "Account preferences",
-      onClick: () => setShowAccountSettings(true),
-    },
-    {
-      icon: <HelpCircleIcon className="w-5 h-5 text-gray-600" />,
-      title: "Help and support",
-      onClick: () => {},
-    },
-    {
-      icon: <FileTextIcon className="w-5 h-5 text-gray-600" />,
-      title: "Terms and policies",
-      onClick: () => {},
-    },
-  ];
+  return (
+    <div className={`flex flex-col bg-white ${shouldShowFrame ? "h-full" : "min-h-screen"} ${!shouldShowFrame ? "touch:h-screen" : ""}`}>
+      {toasts.map((toast) => (
+        <Toast key={toast.id} message={toast.message} type={toast.type} onClose={() => removeToast(toast.id)} />
+      ))}
 
-  const appContent = (
-    <div className={`flex flex-col bg-mfneutralsn-50 ${shouldShowFrame ? 'h-full' : 'min-h-screen'} ${!shouldShowFrame ? 'touch:h-screen' : ''}`}>
-      <AppHeader title="Menu" showSearch={false} />
+      <AppHeader title="Your profile" />
 
-      {/* Content */}
-      <div className={`flex-1 overflow-y-auto bg-white ${!shouldShowFrame ? 'touch:pb-20' : ''}`}>
-        {/* User Profile Section */}
-        <div className="px-6 py-6 border-b border-gray-100">
-          <Button
-            variant="ghost"
-            className="flex items-center gap-4 h-auto p-0 text-left rounded-none hover:bg-transparent w-full"
-          >
-            <Avatar className="w-16 h-16">
-              <AvatarImage src={`${BASE_PATH}avatar-2.png`} alt="Katie Smith" />
-              <AvatarFallback>KS</AvatarFallback>
+      <div className={`flex-1 overflow-y-auto bg-white ${!shouldShowFrame ? "touch:pb-20" : ""}`}>
+        <div className="px-4 pb-6 space-y-6">
+          {/* Profile row */}
+          <div className="flex items-center gap-3">
+            <Avatar className="w-[71px] h-[71px] flex-shrink-0">
+              <AvatarImage src={`${BASE_PATH}avatar-2.png`} alt="Matt Freedman" />
+              <AvatarFallback>MF</AvatarFallback>
             </Avatar>
-
-            <div className="flex flex-col items-start flex-1">
-              <div className="font-MF-headings-h6-emphasis font-[number:var(--MF-headings-h6-emphasis-font-weight)] text-mfneutralsn-500 text-[length:var(--MF-headings-h6-emphasis-font-size)] tracking-[var(--MF-headings-h6-emphasis-letter-spacing)] leading-[var(--MF-headings-h6-emphasis-line-height)] [font-style:var(--MF-headings-h6-emphasis-font-style)]">
-                Katie Smith
-              </div>
-              <div className="font-modern-famly-body-text-body font-[number:var(--modern-famly-body-text-body-font-weight)] text-mfneutralsn-300 text-[length:var(--modern-famly-body-text-body-font-size)] tracking-[var(--modern-famly-body-text-body-letter-spacing)] leading-[var(--modern-famly-body-text-body-line-height)] [font-style:var(--modern-famly-body-text-body-font-style)]">
-                katie.smith@email.com
-              </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-[16px] font-medium text-mfneutralsn-500 leading-tight">Matt Freedman</div>
+              <div className="text-[14px] text-mfneutralsn-300 leading-snug truncate">matt.freedman@email.com</div>
+              <div className="text-[14px] text-mfneutralsn-300 leading-snug">+44 2324932948239</div>
             </div>
-          </Button>
-        </div>
-
-        {/* Menu Section */}
-        <div className="px-6 py-6">
-          {/* Removed secondary "Menu" heading above items */}
-
-          <div className="grid grid-cols-1 gap-4 mb-8">
-            {menuItems.map((item, index) => (
-              <Button
-                key={index}
-                variant="ghost"
-                onClick={item.onClick}
-                className="flex flex-col items-center gap-3 h-auto p-6 bg-white hover:bg-gray-50 rounded-lg border border-gray-100"
-              >
-                {item.icon}
-                <span className="font-modern-famly-body-text-body font-[number:var(--modern-famly-body-text-body-font-weight)] text-mfneutralsn-400 text-[length:var(--modern-famly-body-text-body-font-size)] tracking-[var(--modern-famly-body-text-body-letter-spacing)] leading-[var(--modern-famly-body-text-body-line-height)] [font-style:var(--modern-famly-body-text-body-font-style)]">
-                  {item.title}
-                </span>
-              </Button>
-            ))}
+            <button
+              onClick={() => setShowSettings(true)}
+              aria-label="Settings"
+              className="w-12 h-12 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0 hover:bg-gray-50"
+            >
+              <SettingsIcon className="w-5 h-5 text-mfneutralsn-400" />
+            </button>
           </div>
 
-          {/* Settings Section */}
-          <h3 className="font-MF-body-text-body-emphasis font-[number:var(--MF-body-text-body-emphasis-font-weight)] text-mfneutralsn-300 text-[length:var(--MF-body-text-body-emphasis-font-size)] tracking-[var(--MF-body-text-body-emphasis-letter-spacing)] leading-[var(--MF-body-text-body-emphasis-line-height)] [font-style:var(--MF-body-text-body-emphasis-font-style)] mb-4">
-            Settings and preferences
-          </h3>
+          {/* Payments card */}
+          <div className="bg-white border border-mfneutralsn-75 rounded-2xl p-4">
+            <button
+              onClick={() => navigate("/balance")}
+              className="w-full text-left"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[14px] text-mfneutralsn-500">Payments</span>
+                <ChevronRightIcon className="w-5 h-5 text-mfneutralsn-400" />
+              </div>
+              <div className={`text-[28px] leading-none font-normal mb-1 ${isPaid ? "text-mfneutralsn-500" : "text-mfredr-400"}`}>
+                {isPaid ? "$0" : `$ -${OUTSTANDING_AMOUNT}`}
+              </div>
+              <div className="text-[14px] text-mfneutralsn-300">
+                {isPaid ? "Everything's settled. You don't owe anything." : "You owe money to the centre."}
+              </div>
+            </button>
 
-          <div className="flex flex-col gap-2 mb-8">
-            {settingsItems.map((item, index) => (
-              <Button
-                key={index}
-                variant="ghost"
-                onClick={item.onClick}
-                className={`flex items-center gap-3 h-12 px-0 py-3 text-left rounded-none justify-start hover:bg-transparent ${
-                  item.title === 'Help and support' || item.title === 'Terms and policies' ? 'cursor-default' : ''
-                }`}
-              >
-                {item.icon}
-                <span className="font-modern-famly-body-text-body font-[number:var(--modern-famly-body-text-body-font-weight)] text-mfneutralsn-400 text-[length:var(--modern-famly-body-text-body-font-size)] tracking-[var(--modern-famly-body-text-body-letter-spacing)] leading-[var(--modern-famly-body-text-body-line-height)] [font-style:var(--modern-famly-body-text-body-font-style)]">
-                  {item.title}
-                </span>
-              </Button>
-            ))}
+            {!isPaid && (
+              <>
+                <div className="flex items-center gap-2 bg-mfneutralsn-50 rounded-lg px-3 py-2 mt-3">
+                  <div className="w-9 h-9 rounded-md bg-white border border-mfneutralsn-75 flex items-center justify-center flex-shrink-0">
+                    <FileTextIcon className="w-4 h-4 text-mfneutralsn-400" />
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-[11px] text-mfneutralsn-300 leading-tight">
+                      Latest invoice • Charged on Nov 24
+                    </span>
+                    <span className="text-[14px] text-mfneutralsn-500 leading-tight">Invoice for $1024.00</span>
+                  </div>
+                </div>
+
+                <Button
+                  onClick={() => navigate("/balance")}
+                  className="w-full h-12 bg-mfprimaryp-400 hover:bg-mfprimaryp-400/90 text-white rounded-lg font-medium mt-3"
+                >
+                  Pay now
+                </Button>
+              </>
+            )}
           </div>
 
-          {/* Log Out Button */}
+          {/* PIN code */}
+          <button
+            onClick={comingSoon}
+            className="w-full flex items-center justify-center gap-2 h-12 bg-white border border-mfneutralsn-75 rounded-2xl hover:bg-gray-50"
+          >
+            <GripIcon className="w-5 h-5 text-mfneutralsn-400" />
+            <span className="text-[14px] text-mfneutralsn-500">Check in PIN code</span>
+          </button>
+
+          {/* Navigation tiles */}
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={comingSoon}
+                className="flex flex-col items-start justify-between h-[76px] bg-white border border-mfneutralsn-75 rounded-2xl p-3 hover:bg-gray-50"
+              >
+                <CalendarIcon className="w-6 h-6 text-mfprimaryp-400" />
+                <div className="flex items-center gap-1 w-full">
+                  <span className="text-[14px] text-mfneutralsn-500 flex-1 text-left">Calendar</span>
+                  <ChevronRightIcon className="w-3.5 h-3.5 text-mfneutralsn-300" />
+                </div>
+              </button>
+
+              <button
+                onClick={() => navigate("/activity-plans")}
+                className="flex flex-col items-start justify-between h-[76px] bg-white border border-mfneutralsn-75 rounded-2xl p-3 hover:bg-gray-50"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-mfyellowy-400">
+                  <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+                  <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+                  <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+                  <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+                </svg>
+                <div className="flex items-center gap-1 w-full">
+                  <span className="text-[14px] text-mfneutralsn-500 flex-1 text-left">Learning plans</span>
+                  <ChevronRightIcon className="w-3.5 h-3.5 text-mfneutralsn-300" />
+                </div>
+              </button>
+            </div>
+
+            <button
+              onClick={comingSoon}
+              className="w-full flex flex-col items-start justify-between h-[76px] bg-white border border-mfneutralsn-75 rounded-2xl p-3 hover:bg-gray-50"
+            >
+              <VideoIcon className="w-6 h-6 text-brandblueb-400" />
+              <div className="flex items-center gap-1 w-full">
+                <span className="text-[14px] text-mfneutralsn-500 flex-1 text-left">WatchMeGrow</span>
+                <ChevronRightIcon className="w-3.5 h-3.5 text-mfneutralsn-300" />
+              </div>
+            </button>
+          </div>
+
+          {/* Log out */}
           <Button
             variant="outline"
-            className="w-full h-12 bg-white border-gray-200 text-mfneutralsn-400 hover:bg-gray-50 rounded-lg"
+            onClick={comingSoon}
+            className="w-full h-12 bg-white border-mfneutralsn-75 text-mfneutralsn-500 hover:bg-gray-50 rounded-lg"
           >
             <LogOutIcon className="w-5 h-5 mr-2" />
-            <span className="font-modern-famly-body-text-body font-[number:var(--modern-famly-body-text-body-font-weight)] text-[length:var(--modern-famly-body-text-body-font-size)] tracking-[var(--modern-famly-body-text-body-letter-spacing)] leading-[var(--modern-famly-body-text-body-line-height)] [font-style:var(--modern-famly-body-text-body-font-style)]">
-              Log out
-            </span>
+            <span className="text-[14px]">Log out</span>
           </Button>
         </div>
       </div>
 
-      <div className={!shouldShowFrame ? 'sticky bottom-0 z-50' : ''}>
+      <div className={!shouldShowFrame ? "sticky bottom-0 z-50" : ""}>
         <BottomNav />
       </div>
     </div>
   );
-
-  return appContent;
 };
