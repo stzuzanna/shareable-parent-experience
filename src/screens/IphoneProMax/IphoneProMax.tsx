@@ -19,6 +19,7 @@ import { RSVPPage } from "../../components/RSVPPage/RSVPPage";
 import { PhotoPostSection } from "./sections/PhotoPostSection/PhotoPostSection";
 import { WelcomePostSection } from "./sections/WelcomePostSection/WelcomePostSection";
 import { ActivitySection } from "./sections/ActivitySection/ActivitySection";
+import { LearningPostCard, LEARNING_POSTS } from "./sections/LearningPostSection/LearningPostSection";
 
 const kindergartenPhotos = [
   { id: 1, url: "https://images.pexels.com/photos/8613089/pexels-photo-8613089.jpeg?auto=compress&cs=tinysrgb&w=800" },
@@ -34,7 +35,7 @@ export const IphoneProMax = (): JSX.Element => {
   const { toggleLike, addReaction, removeReaction, addComment, addPollVote, isLiked, getReaction, getComments, getPollVotes } = useInteractivity();
   const [isPaid, setIsPaid] = useState(false);
   const [showRSVP, setShowRSVP] = useState(false);
-  const [activeTab, setActiveTab] = useState<'home' | 'activity' | 'photos' | 'saved'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'activity' | 'photos' | 'learning' | 'saved'>('home');
   const [activityTypeFilter, setActivityTypeFilter] = useState('all');
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [rsvpState, setRsvpState] = useState({
@@ -119,6 +120,28 @@ export const IphoneProMax = (): JSX.Element => {
                   className="w-full h-full object-cover"
                 />
               </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    if (activeTab === 'learning') {
+      return (
+        <div className="flex-1 overflow-y-auto">
+          <div className="flex flex-col gap-4 p-4">
+            {LEARNING_POSTS.map((post) => (
+              <LearningPostCard
+                key={post.id}
+                post={post}
+                isLiked={isLiked(post.id)}
+                selectedReaction={getReaction(post.id)}
+                onToggleLike={() => toggleLike(post.id)}
+                onReaction={(emoji) => addReaction(post.id, emoji)}
+                onRemoveReaction={() => removeReaction(post.id)}
+                onAddComment={(comment) => addComment(post.id, comment)}
+                comments={getComments(post.id)}
+              />
             ))}
           </div>
         </div>

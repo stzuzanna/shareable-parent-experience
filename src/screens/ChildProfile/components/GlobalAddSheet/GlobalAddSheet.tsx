@@ -116,8 +116,8 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
                 </div>
               </button>
 
-              {/* Variant switcher dots */}
-              <VariantDots />
+              {/* Variant switcher dots — hidden for now, keep code for future use */}
+              {/* <VariantDots /> */}
             </div>
           </motion.div>
         </>

@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ChevronRightIcon, ArrowLeftIcon, UserIcon, HomeIcon, PhoneIcon, InfoIcon, CalendarIcon, BookOpenIcon, SunIcon, ThermometerIcon, MessageSquareIcon } from "lucide-react";
+import { ChevronRightIcon, ArrowLeftIcon, HomeIcon, PhoneIcon, InfoIcon, CalendarIcon, BookOpenIcon, SunIcon, ThermometerIcon, MessageSquareIcon } from "lucide-react";
 import { useProfileVariant } from "../../../../hooks/useProfileVariant";
+import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
+
+const KEY_PERSON_AVATAR = "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=400";
+const MOTHER_AVATAR = "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=400";
+const FATHER_AVATAR = "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=400";
 
 // ── Shared primitives ─────────────────────────────────────────────────────────
 
@@ -76,7 +81,16 @@ const DetailRow = ({ icon, label, sublabel }: { icon: React.ReactNode; label: st
 
 const ChildcareDetail = () => (
   <div className="flex flex-col pt-2 pb-24">
-    <DetailRow icon={<UserIcon className="w-4 h-4" />} label="Sarah Freedman" sublabel="Key person" />
+    <div className="flex items-center gap-3 px-4 py-3 border border-mfprimaryp-100 rounded-xl mx-2 mb-2 bg-white">
+      <Avatar className="w-8 h-8 flex-shrink-0">
+        <AvatarImage src={KEY_PERSON_AVATAR} alt="Sarah Freedman" />
+        <AvatarFallback>SF</AvatarFallback>
+      </Avatar>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-mfneutralsn-500">Sarah Freedman</p>
+        <p className="text-xs text-mfneutralsn-300 mt-0.5">Key person</p>
+      </div>
+    </div>
     <DetailRow icon={<HomeIcon className="w-4 h-4" />} label="11 NW Street NY" sublabel="Address" />
     <DetailRow icon={<PhoneIcon className="w-4 h-4" />} label="+12454646464" sublabel="Phone number" />
     <DetailRow icon={<InfoIcon className="w-4 h-4" />} label="Gate code 1243" sublabel="About" />
@@ -117,9 +131,10 @@ const FamilyDetail = () => (
   <div className="flex flex-col pt-2 pb-24">
     <div className="flex items-center justify-between px-4 py-3 border border-mfprimaryp-100 rounded-xl mx-2 mb-2 bg-white">
       <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-full bg-mfprimaryp-100 flex items-center justify-center text-mfprimaryp-400 flex-shrink-0">
-          <UserIcon className="w-4 h-4" />
-        </div>
+        <Avatar className="w-8 h-8 flex-shrink-0">
+          <AvatarImage src={MOTHER_AVATAR} alt="Sarah Freedman" />
+          <AvatarFallback>SF</AvatarFallback>
+        </Avatar>
         <div>
           <p className="text-sm font-medium text-mfneutralsn-500">Sarah Freedman</p>
           <p className="text-xs text-mfneutralsn-300 mt-0.5">+1 (555) 123-4567 · Mother</p>
@@ -129,9 +144,10 @@ const FamilyDetail = () => (
     </div>
     <div className="flex items-center justify-between px-4 py-3 border border-mfprimaryp-100 rounded-xl mx-2 mb-2 bg-white">
       <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-full bg-mfprimaryp-100 flex items-center justify-center text-mfprimaryp-400 flex-shrink-0">
-          <UserIcon className="w-4 h-4" />
-        </div>
+        <Avatar className="w-8 h-8 flex-shrink-0">
+          <AvatarImage src={FATHER_AVATAR} alt="Michael Freedman" />
+          <AvatarFallback>MF</AvatarFallback>
+        </Avatar>
         <div>
           <p className="text-sm font-medium text-mfneutralsn-500">Michael Freedman</p>
           <p className="text-xs text-mfneutralsn-300 mt-0.5">+1 (555) 123-4567 · Father</p>
@@ -224,9 +240,15 @@ export const OverviewContent = (): JSX.Element => {
         <CardHeader title="Childcare info" onPress={() => setSection("childcare")} />
         <Divider />
         <div className="px-4 py-3 flex items-center justify-between gap-3">
-          <div>
-            <p className="text-sm font-semibold text-mfneutralsn-500">Sarah Freedman</p>
-            <p className="text-xs text-mfneutralsn-300 mt-0.5">Key person</p>
+          <div className="flex items-center gap-3 min-w-0">
+            <Avatar className="w-9 h-9 flex-shrink-0">
+              <AvatarImage src={KEY_PERSON_AVATAR} alt="Sarah Freedman" />
+              <AvatarFallback>SF</AvatarFallback>
+            </Avatar>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-mfneutralsn-500 truncate">Sarah Freedman</p>
+              <p className="text-xs text-mfneutralsn-300 mt-0.5">Key person</p>
+            </div>
           </div>
           <button
             aria-label="Message key person"
@@ -274,18 +296,30 @@ export const OverviewContent = (): JSX.Element => {
       <Card>
         <CardHeader title="Family" onPress={() => setSection("family")} />
         <Divider />
-        <div className="px-4 py-3 flex items-center justify-between">
-          <div>
-            <p className="text-sm font-semibold text-mfneutralsn-500">Sarah Freedman</p>
-            <p className="text-xs text-mfneutralsn-300 mt-0.5">+1 (555) 123-4567 · Mother</p>
+        <div className="px-4 py-3 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <Avatar className="w-9 h-9 flex-shrink-0">
+              <AvatarImage src={MOTHER_AVATAR} alt="Sarah Freedman" />
+              <AvatarFallback>SF</AvatarFallback>
+            </Avatar>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-mfneutralsn-500 truncate">Sarah Freedman</p>
+              <p className="text-xs text-mfneutralsn-300 mt-0.5">+1 (555) 123-4567 · Mother</p>
+            </div>
           </div>
           <span className="text-xs px-2.5 py-0.5 rounded-full border border-mfprimaryp-400 text-mfprimaryp-400 flex-shrink-0">Primary</span>
         </div>
         <Divider />
-        <div className="px-4 py-3 flex items-center justify-between">
-          <div>
-            <p className="text-sm font-semibold text-mfneutralsn-500">Michael Freedman</p>
-            <p className="text-xs text-mfneutralsn-300 mt-0.5">+1 (555) 123-4567 · Father</p>
+        <div className="px-4 py-3 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <Avatar className="w-9 h-9 flex-shrink-0">
+              <AvatarImage src={FATHER_AVATAR} alt="Michael Freedman" />
+              <AvatarFallback>MF</AvatarFallback>
+            </Avatar>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-mfneutralsn-500 truncate">Michael Freedman</p>
+              <p className="text-xs text-mfneutralsn-300 mt-0.5">+1 (555) 123-4567 · Father</p>
+            </div>
           </div>
           <span className="text-xs px-2.5 py-0.5 rounded-full border border-mfneutralsn-200 text-mfneutralsn-400 flex-shrink-0">Secondary</span>
         </div>
