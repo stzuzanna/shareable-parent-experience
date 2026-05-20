@@ -130,7 +130,7 @@ export const PostFeedSection = ({
   };
 
   return (
-    <header className={`flex flex-col w-full bg-mfneutralsn-50 overflow-visible ${!shouldShowFrame ? 'sticky top-0 z-50' : ''}`}>
+    <header className={`flex flex-col w-full ${activeTab === 'home' ? 'bg-white' : 'bg-mfneutralsn-50'} overflow-visible ${!shouldShowFrame ? 'sticky top-0 z-50' : ''}`}>
       {/* Status bar */}
       <div className={`flex items-center justify-between px-5 pt-2 pb-1 ${!shouldShowFrame ? 'hidden' : ''}`}>
         <span className="[font-family:'Inter',Helvetica] font-semibold text-mfneutralsn-500 text-[15px] tracking-[-0.3px]">

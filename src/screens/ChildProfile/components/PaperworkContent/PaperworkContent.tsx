@@ -26,7 +26,7 @@ const items: Item[] = [
   { title: "Updated care contract", meta: "21 Feb 2026 · Form", badge: { label: "Signed", variant: "complete" }, type: "forms" },
 
   // No pill
-  { title: "Tobin has been really active lately. We expect...", meta: "21 Feb 2026 · Note", type: "notes" },
+  { title: "Abby has been really active lately. We expect...", meta: "21 Feb 2026 · Note", type: "notes" },
   { title: "Settling in observations", meta: "8 Feb 2026 · Note", type: "notes" },
   { title: "Curriculum for new year", meta: "21 Feb 2026 · Document", type: "forms" },
   { title: "Summer programme overview", meta: "1 Feb 2026 · Document", type: "forms" },

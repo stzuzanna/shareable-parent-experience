@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ChevronRightIcon, ArrowLeftIcon, HomeIcon, PhoneIcon, InfoIcon, CalendarIcon, BookOpenIcon, SunIcon, ThermometerIcon, MessageSquareIcon, PencilIcon, KeyRoundIcon, UserIcon, StethoscopeIcon, ShieldAlertIcon, StickyNoteIcon, IdCardIcon } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { ChevronRightIcon, ArrowLeftIcon, HomeIcon, PhoneIcon, InfoIcon, CalendarIcon, BookOpenIcon, SunIcon, ThermometerIcon, MessageSquareIcon, PencilIcon, KeyRoundIcon, UserIcon, StethoscopeIcon, ShieldAlertIcon, StickyNoteIcon, IdCardIcon, CheckCircle2Icon, XCircleIcon, HelpCircleIcon } from "lucide-react";
 import { useProfileVariant } from "../../../../hooks/useProfileVariant";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
 
@@ -32,6 +32,51 @@ const InfoRow = ({ label, sublabel }: { label: string; sublabel: string }) => (
   <div className="px-4 py-3">
     <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">{label}</p>
     <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">{sublabel}</p>
+  </div>
+);
+
+const SummaryRow = ({
+  icon,
+  label,
+  trailing,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  trailing?: React.ReactNode;
+}) => (
+  <div className="flex h-12 items-center justify-between gap-3 px-4 w-full">
+    <div className="flex items-center gap-3 min-w-0">
+      <div className="w-6 h-6 rounded-md bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0 text-mfneutralsn-400">
+        {icon}
+      </div>
+      <p className="text-[14px] text-mfneutralsn-400 truncate">{label}</p>
+    </div>
+    {trailing && <div className="flex-shrink-0">{trailing}</div>}
+  </div>
+);
+
+const SummaryPersonRow = ({
+  avatarSrc,
+  avatarAlt,
+  fallback,
+  label,
+  trailing,
+}: {
+  avatarSrc: string;
+  avatarAlt: string;
+  fallback: string;
+  label: string;
+  trailing?: React.ReactNode;
+}) => (
+  <div className="flex h-12 items-center justify-between gap-3 px-4 w-full">
+    <div className="flex items-center gap-3 min-w-0">
+      <Avatar className="w-6 h-6 flex-shrink-0">
+        <AvatarImage src={avatarSrc} alt={avatarAlt} />
+        <AvatarFallback className="text-[10px]">{fallback}</AvatarFallback>
+      </Avatar>
+      <p className="text-[14px] text-mfneutralsn-400 truncate">{label}</p>
+    </div>
+    {trailing && <div className="flex-shrink-0">{trailing}</div>}
   </div>
 );
 
@@ -99,7 +144,6 @@ const SubpageRow = ({
       </div>
       <p className="text-[14px] text-mfneutralsn-400 truncate">{label}</p>
     </div>
-    <ChevronRightIcon className="w-[18px] h-[18px] text-mfneutralsn-400 opacity-80 flex-shrink-0" />
   </button>
 );
 
@@ -129,10 +173,7 @@ const SubpagePersonRow = ({
       </Avatar>
       <p className="text-[14px] text-mfneutralsn-400 truncate">{label}</p>
     </div>
-    <div className="flex items-center gap-2 flex-shrink-0">
-      {badge}
-      <ChevronRightIcon className="w-[18px] h-[18px] text-mfneutralsn-400 opacity-80" />
-    </div>
+    {badge && <div className="flex-shrink-0">{badge}</div>}
   </button>
 );
 
@@ -142,7 +183,6 @@ const SubsectionTitle = ({ children }: { children: React.ReactNode }) => (
 
 const ChildcareDetail = () => (
   <div className="flex flex-col pb-24">
-    <SubsectionTitle>Centre</SubsectionTitle>
     <SubpagePersonRow
       avatarSrc={KEY_PERSON_AVATAR}
       avatarAlt={KEY_PERSON_NAME}
@@ -230,7 +270,7 @@ const BasicInfoDetail = () => (
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-type Section = "childcare" | "care" | "family" | "basic" | "leave" | "closures" | null;
+type Section = "childcare" | "care" | "family" | "basic" | "leave" | "closures" | "permissions" | null;
 
 const sectionTitles: Record<NonNullable<Section>, string> = {
   childcare: "Childcare info",
@@ -239,6 +279,7 @@ const sectionTitles: Record<NonNullable<Section>, string> = {
   basic: "Basic info",
   leave: "Leave",
   closures: "Meadows closure days",
+  permissions: "Permissions",
 };
 
 const BookingRow = ({ name, date, amount, status }: { name: string; date: string; amount: string; status: "pending" | "paid" }) => (
@@ -252,11 +293,210 @@ const BookingRow = ({ name, date, amount, status }: { name: string; date: string
   </div>
 );
 
+const SubpageRowDual = ({
+  icon,
+  label,
+  sublabel,
+  trailing,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  sublabel?: string;
+  trailing?: React.ReactNode;
+}) => (
+  <div className="flex items-center justify-between gap-3 px-4 py-3 w-full border-b border-mfneutralsn-75">
+    <div className="flex items-center gap-3 min-w-0">
+      <div className="w-6 h-6 rounded-md bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0 text-mfneutralsn-400">
+        {icon}
+      </div>
+      <div className="min-w-0">
+        <p className="text-[14px] text-mfneutralsn-400 truncate">{label}</p>
+        {sublabel && <p className="text-[12px] text-mfneutralsn-300 mt-0.5 truncate">{sublabel}</p>}
+      </div>
+    </div>
+    {trailing && <div className="flex-shrink-0">{trailing}</div>}
+  </div>
+);
+
+const LeaveDetail = () => (
+  <div className="flex flex-col pb-24">
+    <SubsectionTitle>Upcoming</SubsectionTitle>
+    <SubpageRowDual
+      icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />}
+      label="1 - 10 Jul 2026"
+    />
+    <SubpageRowDual
+      icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />}
+      label="22 - 24 Dec 2026"
+    />
+
+    <SubsectionTitle>Past</SubsectionTitle>
+    <SubpageRowDual
+      icon={<ThermometerIcon className="w-4 h-4 text-mfredr-400" />}
+      label="4 Mar 2026"
+    />
+    <SubpageRowDual
+      icon={<ThermometerIcon className="w-4 h-4 text-mfredr-400" />}
+      label="18 - 19 Feb 2026"
+    />
+    <SubpageRowDual
+      icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />}
+      label="23 Dec 2025 - 2 Jan 2026"
+    />
+  </div>
+);
+
+const ClosuresDetail = () => (
+  <div className="flex flex-col pb-24">
+    <SubsectionTitle>Upcoming closures</SubsectionTitle>
+    <SubpageRowDual
+      icon={<CalendarIcon className="w-4 h-4" />}
+      label="14 May 2026"
+      sublabel="Ascension Day"
+    />
+    <SubpageRowDual
+      icon={<CalendarIcon className="w-4 h-4" />}
+      label="25 May 2026"
+      sublabel="Memorial Day"
+    />
+    <SubpageRowDual
+      icon={<CalendarIcon className="w-4 h-4" />}
+      label="14 Jun - 14 Jul 2026"
+      sublabel="Summer holidays"
+    />
+    <SubpageRowDual
+      icon={<CalendarIcon className="w-4 h-4" />}
+      label="4 Jul 2026"
+      sublabel="Independence Day"
+    />
+    <SubpageRowDual
+      icon={<CalendarIcon className="w-4 h-4" />}
+      label="7 Sep 2026"
+      sublabel="Labor Day"
+    />
+
+    <SubsectionTitle>Past closures</SubsectionTitle>
+    <SubpageRowDual
+      icon={<CalendarIcon className="w-4 h-4" />}
+      label="25 Dec 2025 - 1 Jan 2026"
+      sublabel="Winter holidays"
+    />
+    <SubpageRowDual
+      icon={<CalendarIcon className="w-4 h-4" />}
+      label="27 Nov 2025"
+      sublabel="Thanksgiving"
+    />
+  </div>
+);
+
+type PermissionStatus = "yes" | "no" | "pending";
+
+const LATEST_PERMISSIONS: { id: string; label: string; status: PermissionStatus; lastChanged?: string }[] = [
+  { id: "photos", label: "Can your child be photographed?", status: "pending" },
+  { id: "field-trip", label: "Can go on a field trip", status: "yes", lastChanged: "01/02/2025" },
+  { id: "animals", label: "Can play with animals", status: "yes", lastChanged: "06/10/2024" },
+];
+
+const PermissionStatusIcon = ({ status }: { status: PermissionStatus }) => {
+  if (status === "yes") return <CheckCircle2Icon className="w-5 h-5 text-green-500" />;
+  if (status === "no") return <XCircleIcon className="w-5 h-5 text-mfredr-400" />;
+  return <HelpCircleIcon className="w-5 h-5 text-mfprimaryp-400" />;
+};
+
+const PermissionRow = ({ item }: { item: { label: string; status: PermissionStatus; lastChanged?: string } }) => (
+  <div className="px-4 py-3 flex items-start gap-3">
+    <div className="pt-0.5 flex-shrink-0">
+      <PermissionStatusIcon status={item.status} />
+    </div>
+    <div className="flex-1 min-w-0">
+      <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">{item.label}</p>
+      {item.lastChanged ? (
+        <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">Last changed {item.lastChanged}</p>
+      ) : (
+        <p className="text-[12px] text-mfprimaryp-400 mt-1 leading-tight">Needs your response</p>
+      )}
+    </div>
+  </div>
+);
+
+type PermAnswer = "yes" | "no" | null;
+
+interface PermItem {
+  id: string;
+  label: string;
+  answer: PermAnswer;
+  lastChanged?: string;
+}
+
+const PermissionsDetail = () => {
+  const [items, setItems] = useState<PermItem[]>([
+    { id: "photos", label: "Can your child be photographed?", answer: null },
+    { id: "field-trip", label: "Can go on a field trip", answer: "yes", lastChanged: "01/02/2025" },
+    { id: "animals", label: "Can play with animals", answer: "yes", lastChanged: "06/10/2024" },
+    { id: "sunscreen", label: "Sunscreen", answer: "yes", lastChanged: "05/06/2024" },
+  ]);
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const setAnswer = (id: string, answer: "yes" | "no") => {
+    setItems((prev) => prev.map((it) => (it.id === id ? { ...it, answer } : it)));
+    setEditingId(null);
+  };
+
+  return (
+    <div className="flex flex-col pt-2 pb-24 gap-0 px-2">
+      {items.map((item) => {
+        const isEditing = editingId === item.id || item.answer === null;
+        return (
+          <div
+            key={item.id}
+            className="flex items-center gap-3 px-4 py-3.5 border border-mfprimaryp-100 rounded-xl mb-2 bg-white"
+          >
+            <PermissionStatusIcon status={item.answer ?? "pending"} />
+            <span className="flex-1 text-sm font-medium text-mfneutralsn-500">{item.label}</span>
+            {isEditing ? (
+              <div className="flex items-center gap-1.5 flex-shrink-0">
+                <button
+                  onClick={() => setAnswer(item.id, "yes")}
+                  className="px-3 py-1 text-xs font-medium rounded-md border border-gray-200 bg-white text-mfneutralsn-500 active:bg-gray-50"
+                >
+                  Yes
+                </button>
+                <button
+                  onClick={() => setAnswer(item.id, "no")}
+                  className="px-3 py-1 text-xs font-medium rounded-md border border-gray-200 bg-white text-mfneutralsn-500 active:bg-gray-50"
+                >
+                  No
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setEditingId(item.id)}
+                className="px-3 py-1 text-xs font-medium rounded-md border border-gray-200 bg-white text-mfneutralsn-400 active:bg-gray-50 flex-shrink-0"
+              >
+                Edit
+              </button>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 export const OverviewContent = (): JSX.Element => {
   const variant = useProfileVariant();
   const navigate = useNavigate();
+  const location = useLocation();
   const [section, setSection] = useState<Section>(null);
   const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const aboutSection = (location.state as { aboutSection?: Section } | null)?.aboutSection;
+    if (aboutSection) {
+      setSection(aboutSection);
+      navigate("/child-profile", { replace: true, state: {} });
+    }
+  }, [location.state, navigate]);
 
   // When entering/leaving a detail section, scroll the surrounding
   // overflow container back to the top so the child profile header stays visible.
@@ -278,16 +518,9 @@ export const OverviewContent = (): JSX.Element => {
         {section === "care" && <CareDetail />}
         {section === "family" && <FamilyDetail />}
         {section === "basic" && <BasicInfoDetail />}
-        {section === "leave" && (
-          <div className="flex flex-col items-center justify-center py-16 px-8">
-            <p className="text-sm text-mfneutralsn-300 text-center">Detailed leave view coming soon.</p>
-          </div>
-        )}
-        {section === "closures" && (
-          <div className="flex flex-col items-center justify-center py-16 px-8">
-            <p className="text-sm text-mfneutralsn-300 text-center">Detailed closure days view coming soon.</p>
-          </div>
-        )}
+        {section === "leave" && <LeaveDetail />}
+        {section === "closures" && <ClosuresDetail />}
+        {section === "permissions" && <PermissionsDetail />}
       </div>
     );
   }
@@ -307,31 +540,38 @@ export const OverviewContent = (): JSX.Element => {
       <Card>
         <CardHeader title="Childcare info" onPress={() => setSection("childcare")} />
         <Divider />
-        <div className="px-4 py-3 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <Avatar className="w-9 h-9 flex-shrink-0">
-              <AvatarImage src={KEY_PERSON_AVATAR} alt={KEY_PERSON_NAME} />
-              <AvatarFallback>{KEY_PERSON_INITIALS}</AvatarFallback>
-            </Avatar>
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-mfneutralsn-500 truncate">{KEY_PERSON_NAME}</p>
-              <p className="text-xs text-mfneutralsn-300 mt-0.5">Key person</p>
-            </div>
-          </div>
-          <button
-            aria-label={`Message ${KEY_PERSON_NAME}`}
-            onClick={() => navigate(`/messages/chat/${KEY_PERSON_CHAT_ID}`)}
-            className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0 active:bg-gray-50"
-          >
-            <MessageSquareIcon className="w-4 h-4 text-mfneutralsn-400" />
-          </button>
-        </div>
+        <SummaryPersonRow
+          avatarSrc={KEY_PERSON_AVATAR}
+          avatarAlt={KEY_PERSON_NAME}
+          fallback={KEY_PERSON_INITIALS}
+          label={`Key person: ${KEY_PERSON_NAME}`}
+          trailing={
+            <button
+              aria-label={`Message ${KEY_PERSON_NAME}`}
+              onClick={() => navigate(`/messages/chat/${KEY_PERSON_CHAT_ID}`)}
+              className="w-8 h-8 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center active:bg-gray-50"
+            >
+              <MessageSquareIcon className="w-4 h-4 text-mfneutralsn-400" />
+            </button>
+          }
+        />
         <Divider />
-        <InfoRow label="11 NW Street NY" sublabel="Address" />
+        <SummaryRow icon={<HomeIcon className="w-4 h-4" />} label="11 NW Street NY" />
         <Divider />
-        <InfoRow label="+12454646464" sublabel="Phone number" />
+        <SummaryRow icon={<PhoneIcon className="w-4 h-4" />} label="+1 (245) 464-6464" />
         <Divider />
-        <InfoRow label="Gate code 1243" sublabel="About" />
+        <SummaryRow icon={<InfoIcon className="w-4 h-4" />} label="Gate code: 1243" />
+      </Card>
+
+      {/* Permissions */}
+      <Card>
+        <CardHeader title="Permissions" onPress={() => setSection("permissions")} />
+        {LATEST_PERMISSIONS.map((p, i) => (
+          <React.Fragment key={p.id}>
+            <Divider />
+            <PermissionRow item={p} />
+          </React.Fragment>
+        ))}
       </Card>
 
       {/* Care — V1 only (V2 has bookings in its own tab) */}
@@ -398,11 +638,11 @@ export const OverviewContent = (): JSX.Element => {
       <Card>
         <CardHeader title="Basic info" onPress={() => setSection("basic")} />
         <Divider />
-        <InfoRow label="1 Feb 2025" sublabel="Date of birth" />
+        <SummaryRow icon={<IdCardIcon className="w-4 h-4" />} label="Amanda Freedman" />
         <Divider />
-        <InfoRow label="4 Mar 2026" sublabel="Upcoming room move" />
+        <SummaryRow icon={<CalendarIcon className="w-4 h-4" />} label="1 Feb 2025 (1 year 4 months)" />
         <Divider />
-        <InfoRow label="English, Spanish" sublabel="Language" />
+        <SummaryRow icon={<BookOpenIcon className="w-4 h-4" />} label="Bunnies room" />
       </Card>
     </div>
   );

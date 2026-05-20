@@ -63,23 +63,23 @@ interface Activity {
 }
 
 const todayActivities: Activity[] = [
-  { id: "t1", type: "sign-out", title: "Tobin was signed out", time: "3:20 PM", by: "Anna Müller" },
+  { id: "t1", type: "sign-out", title: "Abby was signed out", time: "3:20 PM", by: "Anna Müller" },
   { id: "t2", type: "nappy", title: "Nappy change", detail: "Wet", time: "3:20 PM", by: "Anna Müller" },
   { id: "t3", type: "food", title: "Snack", detail: "Salad", time: "2:23 PM", by: "Anna Müller" },
   { id: "t4", type: "sleep", title: "Sleep", detail: "45 min", time: "2:25 PM", by: "Anna Müller" },
   { id: "t5", type: "medication", title: "Insulin", detail: "14 mg was administered", time: "1:26 PM", by: "Laura Becker" },
   { id: "t6", type: "nappy", title: "Nappy change", detail: "Dry", time: "9:02 AM", by: "Anna Müller" },
   { id: "t7", type: "food", title: "Breakfast", detail: "Porridge", time: "8:28 AM", by: "Anna Müller" },
-  { id: "t8", type: "sign-in", title: "Tobin was signed in", time: "7:45 AM", by: "Anna Müller" },
+  { id: "t8", type: "sign-in", title: "Abby was signed in", time: "7:45 AM", by: "Anna Müller" },
 ];
 
 const yesterdayActivities: Activity[] = [
-  { id: "y1", type: "sign-out", title: "Tobin was signed out", time: "3:20 PM", by: "Anna Müller" },
+  { id: "y1", type: "sign-out", title: "Abby was signed out", time: "3:20 PM", by: "Anna Müller" },
   { id: "y2", type: "nappy", title: "Nappy change", detail: "Wet", time: "3:20 PM", by: "Anna Müller" },
   { id: "y3", type: "food", title: "Lunch", detail: "Pasta with vegetables", time: "12:30 PM", by: "Anna Müller" },
   { id: "y4", type: "sleep", title: "Sleep", detail: "30 min", time: "11:15 AM", by: "John Doe" },
   { id: "y5", type: "nappy", title: "Nappy change", detail: "Dry", time: "9:45 AM", by: "Anna Müller" },
-  { id: "y6", type: "sign-in", title: "Tobin was signed in", time: "8:10 AM", by: "Anna Müller" },
+  { id: "y6", type: "sign-in", title: "Abby was signed in", time: "8:10 AM", by: "Anna Müller" },
 ];
 
 const sleepHistory = [

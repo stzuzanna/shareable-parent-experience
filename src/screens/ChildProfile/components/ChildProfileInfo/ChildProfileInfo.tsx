@@ -8,16 +8,16 @@ export const ChildProfileInfo = (): JSX.Element => {
       <Avatar className="w-[88px] h-[88px] flex-shrink-0">
         <AvatarImage
           src={`${BASE_PATH}pexels-daisy-anderson-5581091-1.png`}
-          alt="Tobin Freedman"
+          alt="Abby Freedman"
           className="object-cover"
         />
-        <AvatarFallback className="text-lg">TF</AvatarFallback>
+        <AvatarFallback className="text-lg">AF</AvatarFallback>
       </Avatar>
 
       <div className="flex flex-col gap-1.5 flex-1 min-w-0">
         <div>
           <h2 className="text-[20px] font-medium text-mfneutralsn-500 leading-tight">
-            Tobin Freedman
+            Abby Freedman
           </h2>
           <p className="text-[14px] text-mfneutralsn-300 leading-snug mt-0.5">
             Bunnies room, 1 year 4 months

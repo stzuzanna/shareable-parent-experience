@@ -21,7 +21,7 @@ export const ChildProfileTabs: React.FC<ChildProfileTabsProps> = ({ activeTab, o
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`flex h-12 items-center justify-center pr-4 first:pl-0 pl-4 -mb-px border-b-2 text-[16px] leading-tight whitespace-nowrap transition-colors ${
+              className={`flex h-12 items-center justify-center px-4 -mb-px border-b-2 text-[16px] leading-tight whitespace-nowrap transition-colors ${
                 isActive
                   ? "border-mfprimaryp-400 text-mfprimaryp-400 font-medium"
                   : "border-transparent text-mfneutralsn-400 opacity-80 font-normal"
