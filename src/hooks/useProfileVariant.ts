@@ -5,8 +5,8 @@ export type ProfileVariant = "v1" | "v2";
 const STORAGE_KEY = "profileVariant";
 
 const readInitial = (): ProfileVariant => {
-  if (typeof window === "undefined") return "v1";
-  return (sessionStorage.getItem(STORAGE_KEY) as ProfileVariant) || "v1";
+  if (typeof window === "undefined") return "v2";
+  return (sessionStorage.getItem(STORAGE_KEY) as ProfileVariant) || "v2";
 };
 
 let variantValue: ProfileVariant = readInitial();

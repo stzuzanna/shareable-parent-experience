@@ -7,7 +7,6 @@ import {
   VideoIcon,
   LogOutIcon,
   FileTextIcon,
-  GripIcon,
 } from "lucide-react";
 import { BASE_PATH } from "../../constants";
 import { useDeviceDetection } from "../../hooks/useDeviceDetection";
@@ -107,7 +106,7 @@ export const Menu = (): JSX.Element => {
             )}
           </div>
 
-          {/* Navigation tiles — 2x2 grid */}
+          {/* Navigation tiles */}
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={comingSoon}
@@ -143,17 +142,6 @@ export const Menu = (): JSX.Element => {
               <VideoIcon className="w-6 h-6 text-brandblueb-400" />
               <div className="flex items-center gap-1 w-full">
                 <span className="text-[14px] text-mfneutralsn-500 flex-1 text-left">WatchMeGrow</span>
-                <ChevronRightIcon className="w-3.5 h-3.5 text-mfneutralsn-300" />
-              </div>
-            </button>
-
-            <button
-              onClick={comingSoon}
-              className="flex flex-col items-start justify-between h-[76px] bg-white border border-mfneutralsn-75 rounded-2xl p-3 hover:bg-gray-50"
-            >
-              <GripIcon className="w-6 h-6 text-mfneutralsn-400" />
-              <div className="flex items-center gap-1 w-full">
-                <span className="text-[14px] text-mfneutralsn-500 flex-1 text-left">Check in PIN</span>
                 <ChevronRightIcon className="w-3.5 h-3.5 text-mfneutralsn-300" />
               </div>
             </button>

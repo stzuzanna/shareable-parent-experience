@@ -22,6 +22,7 @@ interface PostFeedSectionProps {
 const tabs = [
   { id: 'activity', label: 'Activity' },
   { id: 'photos', label: 'Photos' },
+  { id: 'learning', label: 'Learning' },
   { id: 'saved', label: 'Saved' },
 ];
 
