@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronRightIcon, ArrowLeftIcon, HomeIcon, PhoneIcon, InfoIcon, CalendarIcon, BookOpenIcon, SunIcon, ThermometerIcon, MessageSquareIcon, PencilIcon, KeyRoundIcon, UserIcon, StethoscopeIcon, ShieldAlertIcon, StickyNoteIcon, IdCardIcon } from "lucide-react";
+import { ChevronRightIcon, ArrowLeftIcon, HomeIcon, PhoneIcon, InfoIcon, CalendarIcon, BookOpenIcon, SunIcon, ThermometerIcon, MessageSquareIcon, PencilIcon, KeyRoundIcon, UserIcon, StethoscopeIcon, ShieldAlertIcon, StickyNoteIcon, IdCardIcon, CheckCircle2Icon, XCircleIcon, HelpCircleIcon } from "lucide-react";
 import { useProfileVariant } from "../../../../hooks/useProfileVariant";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
 
@@ -252,6 +252,36 @@ const BookingRow = ({ name, date, amount, status }: { name: string; date: string
   </div>
 );
 
+type PermissionStatus = "yes" | "no" | "pending";
+
+const LATEST_PERMISSIONS: { id: string; label: string; status: PermissionStatus; lastChanged?: string }[] = [
+  { id: "photos", label: "Can your child be photographed?", status: "pending" },
+  { id: "field-trip", label: "Can go on a field trip", status: "yes", lastChanged: "01/02/2025" },
+  { id: "animals", label: "Can play with animals", status: "yes", lastChanged: "06/10/2024" },
+];
+
+const PermissionStatusIcon = ({ status }: { status: PermissionStatus }) => {
+  if (status === "yes") return <CheckCircle2Icon className="w-5 h-5 text-green-500" />;
+  if (status === "no") return <XCircleIcon className="w-5 h-5 text-mfredr-400" />;
+  return <HelpCircleIcon className="w-5 h-5 text-mfprimaryp-400" />;
+};
+
+const PermissionRow = ({ item }: { item: { label: string; status: PermissionStatus; lastChanged?: string } }) => (
+  <div className="px-4 py-3 flex items-start gap-3">
+    <div className="pt-0.5 flex-shrink-0">
+      <PermissionStatusIcon status={item.status} />
+    </div>
+    <div className="flex-1 min-w-0">
+      <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">{item.label}</p>
+      {item.lastChanged ? (
+        <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">Last changed {item.lastChanged}</p>
+      ) : (
+        <p className="text-[12px] text-mfprimaryp-400 mt-1 leading-tight">Needs your response</p>
+      )}
+    </div>
+  </div>
+);
+
 export const OverviewContent = (): JSX.Element => {
   const variant = useProfileVariant();
   const navigate = useNavigate();
@@ -332,6 +362,17 @@ export const OverviewContent = (): JSX.Element => {
         <InfoRow label="+12454646464" sublabel="Phone number" />
         <Divider />
         <InfoRow label="Gate code 1243" sublabel="About" />
+      </Card>
+
+      {/* Permissions */}
+      <Card>
+        <CardHeader title="Permissions" onPress={() => navigate("/child-profile/about/permissions")} />
+        {LATEST_PERMISSIONS.map((p, i) => (
+          <React.Fragment key={p.id}>
+            <Divider />
+            <PermissionRow item={p} />
+          </React.Fragment>
+        ))}
       </Card>
 
       {/* Care — V1 only (V2 has bookings in its own tab) */}
