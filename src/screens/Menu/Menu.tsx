@@ -12,6 +12,7 @@ import { BASE_PATH } from "../../constants";
 import { useDeviceDetection } from "../../hooks/useDeviceDetection";
 import { useToast } from "../../hooks/useToast";
 import { usePaymentState, setPaid } from "../../hooks/usePaymentState";
+import { useAutopayState } from "../../hooks/useAutopayState";
 import { AccountSettings } from "../../components/AccountSettings/AccountSettings";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
 import { Button } from "../../components/ui/button";
@@ -26,6 +27,7 @@ export const Menu = (): JSX.Element => {
   const { shouldShowFrame } = useDeviceDetection();
   const navigate = useNavigate();
   const isPaid = usePaymentState();
+  const autopay = useAutopayState();
   const { toasts, showToast, removeToast } = useToast();
   const [showSettings, setShowSettings] = useState(false);
   const [showInvoice, setShowInvoice] = useState(false);
@@ -83,6 +85,13 @@ export const Menu = (): JSX.Element => {
                 {isPaid ? "Everything's settled. You don't owe anything." : "You owe money to the centre."}
               </div>
             </button>
+
+            {isPaid && autopay && (
+              <div className="inline-flex items-center gap-2 px-3 h-7 mt-3 rounded-full bg-blue-50 border border-blue-500">
+                <span className="w-2 h-2 rounded-full bg-blue-500" />
+                <span className="text-[13px] text-blue-700">You're set to pay invoices automatically</span>
+              </div>
+            )}
 
             {!isPaid && (
               <>
