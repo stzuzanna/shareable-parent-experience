@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { XIcon, ChevronDownIcon } from "lucide-react";
+import { setAutopay } from "../../hooks/useAutopayState";
 
 interface PaymentModalProps {
   onClose: () => void;
@@ -13,11 +14,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ onClose, onPaymentSu
 
   const handlePayment = async () => {
     setIsProcessing(true);
-    
+
     // Simulate payment processing
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
+
     setIsProcessing(false);
+    if (autopayEnabled) setAutopay(true);
     onPaymentSuccess();
     onClose();
   };

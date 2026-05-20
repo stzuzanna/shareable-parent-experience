@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronRightIcon, ArrowLeftIcon, HomeIcon, PhoneIcon, InfoIcon, CalendarIcon, BookOpenIcon, SunIcon, ThermometerIcon, MessageSquareIcon } from "lucide-react";
+import { ChevronRightIcon, ArrowLeftIcon, HomeIcon, PhoneIcon, InfoIcon, CalendarIcon, BookOpenIcon, SunIcon, ThermometerIcon, MessageSquareIcon, PencilIcon } from "lucide-react";
 import { useProfileVariant } from "../../../../hooks/useProfileVariant";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
 
@@ -35,7 +35,7 @@ const InfoRow = ({ label, sublabel }: { label: string; sublabel: string }) => (
   </div>
 );
 
-const SectionHeader = ({ title, onBack }: { title: string; onBack: () => void }) => (
+const SectionHeader = ({ title, onBack, onEdit }: { title: string; onBack: () => void; onEdit?: () => void }) => (
   <div className="flex items-center gap-3 px-4 py-3">
     <button
       onClick={onBack}
@@ -43,7 +43,16 @@ const SectionHeader = ({ title, onBack }: { title: string; onBack: () => void })
     >
       <ArrowLeftIcon className="w-4 h-4 text-mfneutralsn-500" />
     </button>
-    <span className="text-base font-semibold text-mfneutralsn-500">{title}</span>
+    <span className="text-base font-semibold text-mfneutralsn-500 flex-1">{title}</span>
+    {onEdit && (
+      <button
+        onClick={onEdit}
+        aria-label={`Edit ${title}`}
+        className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0 active:bg-gray-50"
+      >
+        <PencilIcon className="w-4 h-4 text-mfneutralsn-500" />
+      </button>
+    )}
   </div>
 );
 
@@ -72,7 +81,7 @@ const BookingStatusIcon = ({ status }: { status: "pending" | "paid" }) => {
 // ── Detail views ──────────────────────────────────────────────────────────────
 
 const DetailRow = ({ icon, label, sublabel }: { icon: React.ReactNode; label: string; sublabel?: string }) => (
-  <div className="flex items-center gap-3 px-4 py-3 border border-mfprimaryp-100 rounded-xl mx-2 mb-2 bg-white">
+  <div className="flex items-center gap-3 px-4 py-4">
     <div className="w-8 h-8 rounded-full bg-mfprimaryp-100 flex items-center justify-center flex-shrink-0 text-mfprimaryp-400">
       {icon}
     </div>
@@ -83,9 +92,13 @@ const DetailRow = ({ icon, label, sublabel }: { icon: React.ReactNode; label: st
   </div>
 );
 
+const SubsectionTitle = ({ children }: { children: React.ReactNode }) => (
+  <p className="px-4 pt-5 pb-2 text-[14px] text-mfneutralsn-300">{children}</p>
+);
+
 const ChildcareDetail = () => (
-  <div className="flex flex-col pt-2 pb-24">
-    <div className="flex items-center gap-3 px-4 py-3 border border-mfprimaryp-100 rounded-xl mx-2 mb-2 bg-white">
+  <div className="flex flex-col pb-24 divide-y divide-mfneutralsn-75 border-t border-mfneutralsn-75">
+    <div className="flex items-center gap-3 px-4 py-4">
       <Avatar className="w-8 h-8 flex-shrink-0">
         <AvatarImage src={KEY_PERSON_AVATAR} alt={KEY_PERSON_NAME} />
         <AvatarFallback>{KEY_PERSON_INITIALS}</AvatarFallback>
@@ -132,28 +145,28 @@ const CareDetail = () => (
 );
 
 const FamilyDetail = () => (
-  <div className="flex flex-col pt-2 pb-24">
-    <div className="flex items-center justify-between px-4 py-3 border border-mfprimaryp-100 rounded-xl mx-2 mb-2 bg-white">
-      <div className="flex items-center gap-3">
-        <Avatar className="w-8 h-8 flex-shrink-0">
+  <div className="flex flex-col pb-24 divide-y divide-mfneutralsn-75 border-t border-mfneutralsn-75">
+    <div className="flex items-center justify-between px-4 py-4 gap-3">
+      <div className="flex items-center gap-3 min-w-0">
+        <Avatar className="w-9 h-9 flex-shrink-0">
           <AvatarImage src={MOTHER_AVATAR} alt="Sarah Freedman" />
           <AvatarFallback>SF</AvatarFallback>
         </Avatar>
-        <div>
-          <p className="text-sm font-medium text-mfneutralsn-500">Sarah Freedman</p>
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-mfneutralsn-500 truncate">Sarah Freedman</p>
           <p className="text-xs text-mfneutralsn-300 mt-0.5">+1 (555) 123-4567 · Mother</p>
         </div>
       </div>
       <span className="text-xs px-2.5 py-0.5 rounded-full border border-mfprimaryp-400 text-mfprimaryp-400 flex-shrink-0">Primary</span>
     </div>
-    <div className="flex items-center justify-between px-4 py-3 border border-mfprimaryp-100 rounded-xl mx-2 mb-2 bg-white">
-      <div className="flex items-center gap-3">
-        <Avatar className="w-8 h-8 flex-shrink-0">
+    <div className="flex items-center justify-between px-4 py-4 gap-3">
+      <div className="flex items-center gap-3 min-w-0">
+        <Avatar className="w-9 h-9 flex-shrink-0">
           <AvatarImage src={FATHER_AVATAR} alt="Michael Freedman" />
           <AvatarFallback>MF</AvatarFallback>
         </Avatar>
-        <div>
-          <p className="text-sm font-medium text-mfneutralsn-500">Michael Freedman</p>
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-mfneutralsn-500 truncate">Michael Freedman</p>
           <p className="text-xs text-mfneutralsn-300 mt-0.5">+1 (555) 123-4567 · Father</p>
         </div>
       </div>
@@ -163,10 +176,58 @@ const FamilyDetail = () => (
 );
 
 const BasicInfoDetail = () => (
-  <div className="flex flex-col pt-2 pb-24">
-    <DetailRow icon={<CalendarIcon className="w-4 h-4" />} label="1 Feb 2025" sublabel="Date of birth" />
-    <DetailRow icon={<BookOpenIcon className="w-4 h-4" />} label="Bunnies room" sublabel="Room" />
-    <DetailRow icon={<InfoIcon className="w-4 h-4" />} label="1 year 4 months" sublabel="Age" />
+  <div className="flex flex-col pb-24">
+    <div className="divide-y divide-mfneutralsn-75 border-t border-mfneutralsn-75">
+      <DetailRow icon={<CalendarIcon className="w-4 h-4" />} label="1 Feb 2025" sublabel="Date of birth" />
+      <DetailRow icon={<BookOpenIcon className="w-4 h-4" />} label="Bunnies room" sublabel="Room" />
+      <DetailRow icon={<InfoIcon className="w-4 h-4" />} label="1 year 4 months" sublabel="Age" />
+    </div>
+
+    <SubsectionTitle>Health &amp; sensitive info</SubsectionTitle>
+    <div className="divide-y divide-mfneutralsn-75 border-t border-mfneutralsn-75">
+      <div className="px-4 py-4">
+        <p className="text-sm font-medium text-mfneutralsn-500">Phil Cawlins</p>
+        <p className="text-xs text-mfneutralsn-300 mt-0.5">+1 (555) 123-4567 · Doctor</p>
+      </div>
+      <div className="px-4 py-4">
+        <p className="text-sm font-medium text-mfneutralsn-500">Lactose, Peanuts</p>
+        <p className="text-xs text-mfneutralsn-300 mt-0.5">Allergies</p>
+      </div>
+      <div className="px-4 py-4">
+        <p className="text-sm font-medium text-mfneutralsn-500">Tolerates penicillin</p>
+        <p className="text-xs text-mfneutralsn-300 mt-0.5">Additional notes</p>
+      </div>
+    </div>
+
+    <SubsectionTitle>Medication</SubsectionTitle>
+    <div className="divide-y divide-mfneutralsn-75 border-t border-mfneutralsn-75">
+      <div className="px-4 py-4 flex items-center justify-between gap-2">
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-mfneutralsn-500">Panodil</p>
+          <p className="text-xs text-mfneutralsn-300 mt-0.5">Flu · Daily</p>
+        </div>
+        <span className="text-xs px-2.5 py-0.5 rounded-full border border-orange-400 text-orange-600 flex-shrink-0">Sign</span>
+      </div>
+      <div className="px-4 py-4 flex items-center justify-between gap-2">
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-mfneutralsn-500">Zyrtec</p>
+          <p className="text-xs text-mfneutralsn-300 mt-0.5">Pollen allergy · Daily</p>
+        </div>
+        <span className="text-xs px-2.5 py-0.5 rounded-full border border-green-500 text-green-700 flex-shrink-0">Active</span>
+      </div>
+    </div>
+
+    <SubsectionTitle>Immunization records</SubsectionTitle>
+    <div className="divide-y divide-mfneutralsn-75 border-t border-mfneutralsn-75">
+      <div className="px-4 py-4">
+        <p className="text-sm font-medium text-mfneutralsn-500">DTaP</p>
+        <p className="text-xs text-mfneutralsn-300 mt-0.5">Mar 2, 2026</p>
+      </div>
+      <div className="px-4 py-4">
+        <p className="text-sm font-medium text-mfneutralsn-500">Hepatitis B</p>
+        <p className="text-xs text-mfneutralsn-300 mt-0.5">Mar 2, 2026</p>
+      </div>
+    </div>
   </div>
 );
 
@@ -208,9 +269,14 @@ export const OverviewContent = (): JSX.Element => {
   }, [section]);
 
   if (section !== null) {
+    const editable = section === "basic" || section === "family";
     return (
-      <div ref={rootRef} className="flex flex-col bg-mfneutralsn-50 min-h-full">
-        <SectionHeader title={sectionTitles[section]} onBack={() => setSection(null)} />
+      <div ref={rootRef} className="flex flex-col bg-white min-h-full">
+        <SectionHeader
+          title={sectionTitles[section]}
+          onBack={() => setSection(null)}
+          onEdit={editable ? () => {} : undefined}
+        />
         {section === "childcare" && <ChildcareDetail />}
         {section === "care" && <CareDetail />}
         {section === "family" && <FamilyDetail />}
@@ -230,7 +296,7 @@ export const OverviewContent = (): JSX.Element => {
   }
 
   return (
-    <div ref={rootRef} className="flex flex-col bg-mfneutralsn-50 pt-6 pb-24 gap-4">
+    <div ref={rootRef} className="flex flex-col bg-white pt-4 pb-24 gap-4">
       {/* Leave — both variants */}
       <Card>
         <CardHeader title="Leave" onPress={() => setSection("leave")} />

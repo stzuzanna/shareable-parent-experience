@@ -49,7 +49,7 @@ const Section = ({ title, children }: { title: string; children: React.ReactNode
 
 export const BookingsContent = (): JSX.Element => {
   return (
-    <div className="flex flex-col bg-white pb-24 gap-3 pt-1">
+    <div className="flex flex-col bg-white pb-24 gap-3 pt-4">
       <Section title="Care pattern">
         <div className="px-4 pb-3">
           <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">Monthly full time</p>
