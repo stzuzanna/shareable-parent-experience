@@ -252,6 +252,132 @@ const BookingRow = ({ name, date, amount, status }: { name: string; date: string
   </div>
 );
 
+const SubpageRowDual = ({
+  icon,
+  label,
+  sublabel,
+  trailing,
+  onPress,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  sublabel?: string;
+  trailing?: React.ReactNode;
+  onPress?: () => void;
+}) => (
+  <button
+    onClick={onPress}
+    className="flex items-center justify-between gap-3 px-4 py-3 w-full border-b border-mfneutralsn-75 text-left active:bg-gray-50"
+  >
+    <div className="flex items-center gap-3 min-w-0">
+      <div className="w-6 h-6 rounded-md bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0 text-mfneutralsn-400">
+        {icon}
+      </div>
+      <div className="min-w-0">
+        <p className="text-[14px] text-mfneutralsn-400 truncate">{label}</p>
+        {sublabel && <p className="text-[12px] text-mfneutralsn-300 mt-0.5 truncate">{sublabel}</p>}
+      </div>
+    </div>
+    <div className="flex items-center gap-2 flex-shrink-0">
+      {trailing}
+      <ChevronRightIcon className="w-[18px] h-[18px] text-mfneutralsn-400 opacity-80" />
+    </div>
+  </button>
+);
+
+const StatusPill = ({ label, tone }: { label: string; tone: "upcoming" | "past" }) => (
+  <span
+    className={`text-[11px] px-2 py-0.5 rounded-full border ${
+      tone === "upcoming"
+        ? "border-mfprimaryp-400 text-mfprimaryp-400"
+        : "border-mfneutralsn-200 text-mfneutralsn-300"
+    }`}
+  >
+    {label}
+  </span>
+);
+
+const LeaveDetail = () => (
+  <div className="flex flex-col pb-24">
+    <SubsectionTitle>Upcoming</SubsectionTitle>
+    <SubpageRowDual
+      icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />}
+      label="1 - 10 Jul 2026"
+      sublabel="Holiday · Opted out of meals"
+      trailing={<StatusPill label="Upcoming" tone="upcoming" />}
+    />
+    <SubpageRowDual
+      icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />}
+      label="22 - 24 Dec 2026"
+      sublabel="Holiday · Family trip"
+      trailing={<StatusPill label="Upcoming" tone="upcoming" />}
+    />
+
+    <SubsectionTitle>Past</SubsectionTitle>
+    <SubpageRowDual
+      icon={<ThermometerIcon className="w-4 h-4 text-mfredr-400" />}
+      label="4 Mar 2026"
+      sublabel="Sick"
+      trailing={<StatusPill label="Past" tone="past" />}
+    />
+    <SubpageRowDual
+      icon={<ThermometerIcon className="w-4 h-4 text-mfredr-400" />}
+      label="18 - 19 Feb 2026"
+      sublabel="Sick · Stomach bug"
+      trailing={<StatusPill label="Past" tone="past" />}
+    />
+    <SubpageRowDual
+      icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />}
+      label="23 Dec 2025 - 2 Jan 2026"
+      sublabel="Holiday · Winter break"
+      trailing={<StatusPill label="Past" tone="past" />}
+    />
+  </div>
+);
+
+const ClosuresDetail = () => (
+  <div className="flex flex-col pb-24">
+    <SubsectionTitle>Upcoming closures</SubsectionTitle>
+    <SubpageRowDual
+      icon={<CalendarIcon className="w-4 h-4" />}
+      label="14 May 2026"
+      sublabel="Ascension Day"
+    />
+    <SubpageRowDual
+      icon={<CalendarIcon className="w-4 h-4" />}
+      label="25 May 2026"
+      sublabel="Memorial Day"
+    />
+    <SubpageRowDual
+      icon={<CalendarIcon className="w-4 h-4" />}
+      label="14 Jun - 14 Jul 2026"
+      sublabel="Summer holidays"
+    />
+    <SubpageRowDual
+      icon={<CalendarIcon className="w-4 h-4" />}
+      label="4 Jul 2026"
+      sublabel="Independence Day"
+    />
+    <SubpageRowDual
+      icon={<CalendarIcon className="w-4 h-4" />}
+      label="7 Sep 2026"
+      sublabel="Labor Day"
+    />
+
+    <SubsectionTitle>Past closures</SubsectionTitle>
+    <SubpageRowDual
+      icon={<CalendarIcon className="w-4 h-4" />}
+      label="25 Dec 2025 - 1 Jan 2026"
+      sublabel="Winter holidays"
+    />
+    <SubpageRowDual
+      icon={<CalendarIcon className="w-4 h-4" />}
+      label="27 Nov 2025"
+      sublabel="Thanksgiving"
+    />
+  </div>
+);
+
 type PermissionStatus = "yes" | "no" | "pending";
 
 const LATEST_PERMISSIONS: { id: string; label: string; status: PermissionStatus; lastChanged?: string }[] = [
@@ -308,16 +434,8 @@ export const OverviewContent = (): JSX.Element => {
         {section === "care" && <CareDetail />}
         {section === "family" && <FamilyDetail />}
         {section === "basic" && <BasicInfoDetail />}
-        {section === "leave" && (
-          <div className="flex flex-col items-center justify-center py-16 px-8">
-            <p className="text-sm text-mfneutralsn-300 text-center">Detailed leave view coming soon.</p>
-          </div>
-        )}
-        {section === "closures" && (
-          <div className="flex flex-col items-center justify-center py-16 px-8">
-            <p className="text-sm text-mfneutralsn-300 text-center">Detailed closure days view coming soon.</p>
-          </div>
-        )}
+        {section === "leave" && <LeaveDetail />}
+        {section === "closures" && <ClosuresDetail />}
       </div>
     );
   }
