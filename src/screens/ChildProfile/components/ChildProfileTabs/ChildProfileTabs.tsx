@@ -13,21 +13,24 @@ interface ChildProfileTabsProps {
 
 export const ChildProfileTabs: React.FC<ChildProfileTabsProps> = ({ activeTab, onTabChange, tabs }): JSX.Element => {
   return (
-    <div className="bg-white px-[8.5px] pt-2 pb-3 sticky top-0 z-20">
-      <div className="flex items-center h-11 bg-mfneutralsn-50 rounded-xl p-1 gap-1">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => onTabChange(tab.id)}
-            className={`flex-1 h-9 px-2 rounded-lg text-[14px] leading-none transition-colors text-center whitespace-nowrap ${
-              activeTab === tab.id
-                ? "bg-white shadow-sm font-medium text-mfneutralsn-500"
-                : "font-normal text-mfneutralsn-300"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+    <div className="bg-white px-4 sticky top-0 z-20 border-b border-[#e2e2e9]">
+      <div className="flex items-center justify-center">
+        {tabs.map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => onTabChange(tab.id)}
+              className={`flex h-12 items-center justify-center px-3.5 -mb-px border-b-2 text-[14px] leading-tight whitespace-nowrap transition-colors ${
+                isActive
+                  ? "border-mfprimaryp-400 text-mfprimaryp-400 font-medium"
+                  : "border-transparent text-mfneutralsn-400 opacity-80 font-normal"
+              }`}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
