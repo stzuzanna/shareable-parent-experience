@@ -11,13 +11,14 @@ import {
 import { BASE_PATH } from "../../constants";
 import { useDeviceDetection } from "../../hooks/useDeviceDetection";
 import { useToast } from "../../hooks/useToast";
-import { usePaymentState } from "../../hooks/usePaymentState";
+import { usePaymentState, setPaid } from "../../hooks/usePaymentState";
 import { AccountSettings } from "../../components/AccountSettings/AccountSettings";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
 import { Button } from "../../components/ui/button";
 import { AppHeader } from "../../components/AppHeader/AppHeader";
 import { BottomNav } from "../../components/BottomNav/BottomNav";
 import { Toast } from "../../components/Toast/Toast";
+import { Invoice } from "../../components/Invoice/Invoice";
 
 const OUTSTANDING_AMOUNT = "1024.88";
 
@@ -27,6 +28,7 @@ export const Menu = (): JSX.Element => {
   const isPaid = usePaymentState();
   const { toasts, showToast, removeToast } = useToast();
   const [showSettings, setShowSettings] = useState(false);
+  const [showInvoice, setShowInvoice] = useState(false);
 
   if (showSettings) {
     return <AccountSettings onClose={() => setShowSettings(false)} />;
@@ -97,7 +99,7 @@ export const Menu = (): JSX.Element => {
                 </div>
 
                 <Button
-                  onClick={() => navigate("/balance")}
+                  onClick={() => setShowInvoice(true)}
                   className="w-full h-12 bg-mfprimaryp-400 hover:bg-mfprimaryp-400/90 text-white rounded-lg font-medium mt-3"
                 >
                   Pay now
@@ -162,6 +164,14 @@ export const Menu = (): JSX.Element => {
       <div className={!shouldShowFrame ? "sticky bottom-0 z-50" : ""}>
         <BottomNav />
       </div>
+
+      {showInvoice && (
+        <Invoice
+          onClose={() => setShowInvoice(false)}
+          isPaid={isPaid}
+          onPaymentSuccess={() => setPaid(true)}
+        />
+      )}
     </div>
   );
 };

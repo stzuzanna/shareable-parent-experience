@@ -15,7 +15,7 @@ import { useDeviceDetection } from "../../hooks/useDeviceDetection";
 import { useToast } from "../../hooks/useToast";
 import { usePaymentState, setPaid } from "../../hooks/usePaymentState";
 import { Button } from "../../components/ui/button";
-import { PaymentModal } from "../../components/PaymentModal/PaymentModal";
+import { Invoice } from "../../components/Invoice/Invoice";
 import { Toast } from "../../components/Toast/Toast";
 import { BottomNav } from "../../components/BottomNav/BottomNav";
 
@@ -41,12 +41,11 @@ export const Balance = (): JSX.Element => {
   const { shouldShowFrame } = useDeviceDetection();
   const navigate = useNavigate();
   const isPaid = usePaymentState();
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showInvoice, setShowInvoice] = useState(false);
   const { toasts, showToast, removeToast } = useToast();
 
   const handlePaymentSuccess = () => {
     setPaid(true);
-    showToast("Payment successful! Your balance has been updated.", "success");
   };
 
   const comingSoon = () => showToast("Coming soon", "info");
@@ -111,7 +110,7 @@ export const Balance = (): JSX.Element => {
                 </div>
               </div>
               <Button
-                onClick={() => setShowPaymentModal(true)}
+                onClick={() => setShowInvoice(true)}
                 className="w-full h-12 bg-mfprimaryp-400 hover:bg-mfprimaryp-400/90 text-white rounded-lg font-medium"
               >
                 Pay now
@@ -182,9 +181,10 @@ export const Balance = (): JSX.Element => {
         <BottomNav />
       </div>
 
-      {showPaymentModal && (
-        <PaymentModal
-          onClose={() => setShowPaymentModal(false)}
+      {showInvoice && (
+        <Invoice
+          onClose={() => setShowInvoice(false)}
+          isPaid={isPaid}
           onPaymentSuccess={handlePaymentSuccess}
         />
       )}
