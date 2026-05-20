@@ -1,9 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ChevronRightIcon, ArrowLeftIcon, HomeIcon, PhoneIcon, InfoIcon, CalendarIcon, BookOpenIcon, SunIcon, ThermometerIcon, MessageSquareIcon } from "lucide-react";
 import { useProfileVariant } from "../../../../hooks/useProfileVariant";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
 
-const KEY_PERSON_AVATAR = "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=400";
+const KEY_PERSON_NAME = "Olivia Wilson";
+const KEY_PERSON_INITIALS = "OW";
+const KEY_PERSON_CHAT_ID = 1;
+const KEY_PERSON_AVATAR = "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=400";
 const MOTHER_AVATAR = "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=400";
 const FATHER_AVATAR = "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=400";
 
@@ -83,11 +87,11 @@ const ChildcareDetail = () => (
   <div className="flex flex-col pt-2 pb-24">
     <div className="flex items-center gap-3 px-4 py-3 border border-mfprimaryp-100 rounded-xl mx-2 mb-2 bg-white">
       <Avatar className="w-8 h-8 flex-shrink-0">
-        <AvatarImage src={KEY_PERSON_AVATAR} alt="Sarah Freedman" />
-        <AvatarFallback>SF</AvatarFallback>
+        <AvatarImage src={KEY_PERSON_AVATAR} alt={KEY_PERSON_NAME} />
+        <AvatarFallback>{KEY_PERSON_INITIALS}</AvatarFallback>
       </Avatar>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-mfneutralsn-500">Sarah Freedman</p>
+        <p className="text-sm font-medium text-mfneutralsn-500">{KEY_PERSON_NAME}</p>
         <p className="text-xs text-mfneutralsn-300 mt-0.5">Key person</p>
       </div>
     </div>
@@ -192,6 +196,7 @@ const BookingRow = ({ name, date, amount, status }: { name: string; date: string
 
 export const OverviewContent = (): JSX.Element => {
   const variant = useProfileVariant();
+  const navigate = useNavigate();
   const [section, setSection] = useState<Section>(null);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -225,7 +230,7 @@ export const OverviewContent = (): JSX.Element => {
   }
 
   return (
-    <div ref={rootRef} className="flex flex-col bg-mfneutralsn-50 pb-24 gap-4">
+    <div ref={rootRef} className="flex flex-col bg-mfneutralsn-50 pt-6 pb-24 gap-4">
       {/* Leave — both variants */}
       <Card>
         <CardHeader title="Leave" onPress={() => setSection("leave")} />
@@ -242,16 +247,17 @@ export const OverviewContent = (): JSX.Element => {
         <div className="px-4 py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <Avatar className="w-9 h-9 flex-shrink-0">
-              <AvatarImage src={KEY_PERSON_AVATAR} alt="Sarah Freedman" />
-              <AvatarFallback>SF</AvatarFallback>
+              <AvatarImage src={KEY_PERSON_AVATAR} alt={KEY_PERSON_NAME} />
+              <AvatarFallback>{KEY_PERSON_INITIALS}</AvatarFallback>
             </Avatar>
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-mfneutralsn-500 truncate">Sarah Freedman</p>
+              <p className="text-sm font-semibold text-mfneutralsn-500 truncate">{KEY_PERSON_NAME}</p>
               <p className="text-xs text-mfneutralsn-300 mt-0.5">Key person</p>
             </div>
           </div>
           <button
-            aria-label="Message key person"
+            aria-label={`Message ${KEY_PERSON_NAME}`}
+            onClick={() => navigate(`/messages/chat/${KEY_PERSON_CHAT_ID}`)}
             className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0 active:bg-gray-50"
           >
             <MessageSquareIcon className="w-4 h-4 text-mfneutralsn-400" />
