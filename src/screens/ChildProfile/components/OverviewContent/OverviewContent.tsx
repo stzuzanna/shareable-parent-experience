@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronRightIcon, ArrowLeftIcon, HomeIcon, PhoneIcon, InfoIcon, CalendarIcon, BookOpenIcon, SunIcon, ThermometerIcon, MessageSquareIcon, PencilIcon } from "lucide-react";
+import { ChevronRightIcon, ArrowLeftIcon, HomeIcon, PhoneIcon, InfoIcon, CalendarIcon, BookOpenIcon, SunIcon, ThermometerIcon, MessageSquareIcon, PencilIcon, KeyRoundIcon, UserIcon, StethoscopeIcon, ShieldAlertIcon, StickyNoteIcon, IdCardIcon } from "lucide-react";
 import { useProfileVariant } from "../../../../hooks/useProfileVariant";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
 
@@ -80,37 +80,78 @@ const BookingStatusIcon = ({ status }: { status: "pending" | "paid" }) => {
 
 // ── Detail views ──────────────────────────────────────────────────────────────
 
-const DetailRow = ({ icon, label, sublabel }: { icon: React.ReactNode; label: string; sublabel?: string }) => (
-  <div className="flex items-center gap-3 px-4 py-4">
-    <div className="w-8 h-8 rounded-full bg-mfprimaryp-100 flex items-center justify-center flex-shrink-0 text-mfprimaryp-400">
-      {icon}
+const SubpageRow = ({
+  icon,
+  label,
+  onPress,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  onPress?: () => void;
+}) => (
+  <button
+    onClick={onPress}
+    className="flex h-12 items-center justify-between gap-3 px-4 w-full border-b border-mfneutralsn-75 text-left active:bg-gray-50"
+  >
+    <div className="flex items-center gap-3 min-w-0">
+      <div className="w-6 h-6 rounded-md bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0 text-mfneutralsn-400">
+        {icon}
+      </div>
+      <p className="text-[14px] text-mfneutralsn-400 truncate">{label}</p>
     </div>
-    <div className="flex-1 min-w-0">
-      <p className="text-sm font-medium text-mfneutralsn-500">{label}</p>
-      {sublabel && <p className="text-xs text-mfneutralsn-300 mt-0.5">{sublabel}</p>}
+    <ChevronRightIcon className="w-[18px] h-[18px] text-mfneutralsn-400 opacity-80 flex-shrink-0" />
+  </button>
+);
+
+const SubpagePersonRow = ({
+  avatarSrc,
+  avatarAlt,
+  fallback,
+  label,
+  badge,
+  onPress,
+}: {
+  avatarSrc: string;
+  avatarAlt: string;
+  fallback: string;
+  label: string;
+  badge?: React.ReactNode;
+  onPress?: () => void;
+}) => (
+  <button
+    onClick={onPress}
+    className="flex h-12 items-center justify-between gap-3 px-4 w-full border-b border-mfneutralsn-75 text-left active:bg-gray-50"
+  >
+    <div className="flex items-center gap-3 min-w-0">
+      <Avatar className="w-6 h-6 flex-shrink-0">
+        <AvatarImage src={avatarSrc} alt={avatarAlt} />
+        <AvatarFallback className="text-[10px]">{fallback}</AvatarFallback>
+      </Avatar>
+      <p className="text-[14px] text-mfneutralsn-400 truncate">{label}</p>
     </div>
-  </div>
+    <div className="flex items-center gap-2 flex-shrink-0">
+      {badge}
+      <ChevronRightIcon className="w-[18px] h-[18px] text-mfneutralsn-400 opacity-80" />
+    </div>
+  </button>
 );
 
 const SubsectionTitle = ({ children }: { children: React.ReactNode }) => (
-  <p className="px-4 pt-5 pb-2 text-[14px] text-mfneutralsn-300">{children}</p>
+  <p className="px-4 pt-5 pb-3 text-[16px] font-medium text-mfneutralsn-400">{children}</p>
 );
 
 const ChildcareDetail = () => (
-  <div className="flex flex-col pb-24 divide-y divide-mfneutralsn-75 border-t border-mfneutralsn-75">
-    <div className="flex items-center gap-3 px-4 py-4">
-      <Avatar className="w-8 h-8 flex-shrink-0">
-        <AvatarImage src={KEY_PERSON_AVATAR} alt={KEY_PERSON_NAME} />
-        <AvatarFallback>{KEY_PERSON_INITIALS}</AvatarFallback>
-      </Avatar>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-mfneutralsn-500">{KEY_PERSON_NAME}</p>
-        <p className="text-xs text-mfneutralsn-300 mt-0.5">Key person</p>
-      </div>
-    </div>
-    <DetailRow icon={<HomeIcon className="w-4 h-4" />} label="11 NW Street NY" sublabel="Address" />
-    <DetailRow icon={<PhoneIcon className="w-4 h-4" />} label="+12454646464" sublabel="Phone number" />
-    <DetailRow icon={<InfoIcon className="w-4 h-4" />} label="Gate code 1243" sublabel="About" />
+  <div className="flex flex-col pb-24">
+    <SubsectionTitle>Centre</SubsectionTitle>
+    <SubpagePersonRow
+      avatarSrc={KEY_PERSON_AVATAR}
+      avatarAlt={KEY_PERSON_NAME}
+      fallback={KEY_PERSON_INITIALS}
+      label={`Key person: ${KEY_PERSON_NAME}`}
+    />
+    <SubpageRow icon={<HomeIcon className="w-4 h-4" />} label="11 NW Street NY" />
+    <SubpageRow icon={<PhoneIcon className="w-4 h-4" />} label="+1 (245) 464-6464" />
+    <SubpageRow icon={<InfoIcon className="w-4 h-4" />} label="Gate code: 1243" />
   </div>
 );
 
@@ -144,61 +185,46 @@ const CareDetail = () => (
   </div>
 );
 
+const PrimaryBadge = () => (
+  <span className="text-[11px] px-2 py-0.5 rounded-full border border-mfprimaryp-400 text-mfprimaryp-400">Primary</span>
+);
+
+const SecondaryBadge = () => (
+  <span className="text-[11px] px-2 py-0.5 rounded-full border border-mfneutralsn-200 text-mfneutralsn-400">Secondary</span>
+);
+
 const FamilyDetail = () => (
-  <div className="flex flex-col pb-24 divide-y divide-mfneutralsn-75 border-t border-mfneutralsn-75">
-    <div className="flex items-center justify-between px-4 py-4 gap-3">
-      <div className="flex items-center gap-3 min-w-0">
-        <Avatar className="w-9 h-9 flex-shrink-0">
-          <AvatarImage src={MOTHER_AVATAR} alt="Sarah Freedman" />
-          <AvatarFallback>SF</AvatarFallback>
-        </Avatar>
-        <div className="min-w-0">
-          <p className="text-sm font-medium text-mfneutralsn-500 truncate">Sarah Freedman</p>
-          <p className="text-xs text-mfneutralsn-300 mt-0.5">+1 (555) 123-4567 · Mother</p>
-        </div>
-      </div>
-      <span className="text-xs px-2.5 py-0.5 rounded-full border border-mfprimaryp-400 text-mfprimaryp-400 flex-shrink-0">Primary</span>
-    </div>
-    <div className="flex items-center justify-between px-4 py-4 gap-3">
-      <div className="flex items-center gap-3 min-w-0">
-        <Avatar className="w-9 h-9 flex-shrink-0">
-          <AvatarImage src={FATHER_AVATAR} alt="Michael Freedman" />
-          <AvatarFallback>MF</AvatarFallback>
-        </Avatar>
-        <div className="min-w-0">
-          <p className="text-sm font-medium text-mfneutralsn-500 truncate">Michael Freedman</p>
-          <p className="text-xs text-mfneutralsn-300 mt-0.5">+1 (555) 123-4567 · Father</p>
-        </div>
-      </div>
-      <span className="text-xs px-2.5 py-0.5 rounded-full border border-mfneutralsn-200 text-mfneutralsn-400 flex-shrink-0">Secondary</span>
-    </div>
+  <div className="flex flex-col pb-24">
+    <SubsectionTitle>Parents</SubsectionTitle>
+    <SubpagePersonRow
+      avatarSrc={MOTHER_AVATAR}
+      avatarAlt="Sarah Freedman"
+      fallback="SF"
+      label="Sarah Freedman · Mother"
+      badge={<PrimaryBadge />}
+    />
+    <SubpagePersonRow
+      avatarSrc={FATHER_AVATAR}
+      avatarAlt="Michael Freedman"
+      fallback="MF"
+      label="Michael Freedman · Father"
+      badge={<SecondaryBadge />}
+    />
   </div>
 );
 
 const BasicInfoDetail = () => (
   <div className="flex flex-col pb-24">
-    <div className="divide-y divide-mfneutralsn-75 border-t border-mfneutralsn-75">
-      <DetailRow icon={<CalendarIcon className="w-4 h-4" />} label="1 Feb 2025" sublabel="Date of birth" />
-      <DetailRow icon={<BookOpenIcon className="w-4 h-4" />} label="Bunnies room" sublabel="Room" />
-      <DetailRow icon={<InfoIcon className="w-4 h-4" />} label="1 year 4 months" sublabel="Age" />
-    </div>
+    <SubsectionTitle>Basics</SubsectionTitle>
+    <SubpageRow icon={<IdCardIcon className="w-4 h-4" />} label="Amanda Freedman" />
+    <SubpageRow icon={<CalendarIcon className="w-4 h-4" />} label="1 Feb 2025 (1 year 4 months)" />
+    <SubpageRow icon={<BookOpenIcon className="w-4 h-4" />} label="Bunnies room" />
+    <SubpageRow icon={<KeyRoundIcon className="w-4 h-4" />} label={`Key person: ${KEY_PERSON_NAME}`} />
 
     <SubsectionTitle>Health &amp; sensitive info</SubsectionTitle>
-    <div className="divide-y divide-mfneutralsn-75 border-t border-mfneutralsn-75">
-      <div className="px-4 py-4">
-        <p className="text-sm font-medium text-mfneutralsn-500">Phil Cawlins</p>
-        <p className="text-xs text-mfneutralsn-300 mt-0.5">+1 (555) 123-4567 · Doctor</p>
-      </div>
-      <div className="px-4 py-4">
-        <p className="text-sm font-medium text-mfneutralsn-500">Lactose, Peanuts</p>
-        <p className="text-xs text-mfneutralsn-300 mt-0.5">Allergies</p>
-      </div>
-      <div className="px-4 py-4">
-        <p className="text-sm font-medium text-mfneutralsn-500">Tolerates penicillin</p>
-        <p className="text-xs text-mfneutralsn-300 mt-0.5">Additional notes</p>
-      </div>
-    </div>
-
+    <SubpageRow icon={<StethoscopeIcon className="w-4 h-4" />} label="Doctor: Phil Cawlins" />
+    <SubpageRow icon={<ShieldAlertIcon className="w-4 h-4" />} label="Allergies: Lactose, Peanuts" />
+    <SubpageRow icon={<StickyNoteIcon className="w-4 h-4" />} label="Tolerates penicillin" />
   </div>
 );
 
