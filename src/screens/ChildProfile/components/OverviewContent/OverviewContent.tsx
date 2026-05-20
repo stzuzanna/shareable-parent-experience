@@ -199,35 +199,6 @@ const BasicInfoDetail = () => (
       </div>
     </div>
 
-    <SubsectionTitle>Medication</SubsectionTitle>
-    <div className="divide-y divide-mfneutralsn-75 border-t border-mfneutralsn-75">
-      <div className="px-4 py-4 flex items-center justify-between gap-2">
-        <div className="min-w-0">
-          <p className="text-sm font-medium text-mfneutralsn-500">Panodil</p>
-          <p className="text-xs text-mfneutralsn-300 mt-0.5">Flu · Daily</p>
-        </div>
-        <span className="text-xs px-2.5 py-0.5 rounded-full border border-orange-400 text-orange-600 flex-shrink-0">Sign</span>
-      </div>
-      <div className="px-4 py-4 flex items-center justify-between gap-2">
-        <div className="min-w-0">
-          <p className="text-sm font-medium text-mfneutralsn-500">Zyrtec</p>
-          <p className="text-xs text-mfneutralsn-300 mt-0.5">Pollen allergy · Daily</p>
-        </div>
-        <span className="text-xs px-2.5 py-0.5 rounded-full border border-green-500 text-green-700 flex-shrink-0">Active</span>
-      </div>
-    </div>
-
-    <SubsectionTitle>Immunization records</SubsectionTitle>
-    <div className="divide-y divide-mfneutralsn-75 border-t border-mfneutralsn-75">
-      <div className="px-4 py-4">
-        <p className="text-sm font-medium text-mfneutralsn-500">DTaP</p>
-        <p className="text-xs text-mfneutralsn-300 mt-0.5">Mar 2, 2026</p>
-      </div>
-      <div className="px-4 py-4">
-        <p className="text-sm font-medium text-mfneutralsn-500">Hepatitis B</p>
-        <p className="text-xs text-mfneutralsn-300 mt-0.5">Mar 2, 2026</p>
-      </div>
-    </div>
   </div>
 );
 
