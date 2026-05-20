@@ -75,7 +75,7 @@ export const Notifications = (): JSX.Element => {
           // Parent teacher conference notification
           setShowRSVP(true);
         } else {
-          navigate('/child-profile/about/permissions');
+          navigate('/child-profile', { state: { aboutSection: 'permissions' } });
         }
         break;
       case 'invoice':

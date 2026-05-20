@@ -206,7 +206,7 @@ export const IphoneProMax = (): JSX.Element => {
   };
 
   const appContent = (
-    <div className={`flex flex-col bg-mfneutralsn-50 ${shouldShowFrame ? 'h-full' : 'min-h-screen'} ${!shouldShowFrame ? 'touch:h-screen' : ''}`}>
+    <div className={`flex flex-col ${activeTab === 'home' ? 'bg-white' : 'bg-mfneutralsn-50'} ${shouldShowFrame ? 'h-full' : 'min-h-screen'} ${!shouldShowFrame ? 'touch:h-screen' : ''}`}>
       <PostFeedSection
         activeTab={activeTab}
         onTabChange={(tab) => setActiveTab(tab as any)}

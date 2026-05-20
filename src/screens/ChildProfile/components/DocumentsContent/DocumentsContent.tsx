@@ -177,7 +177,7 @@ const PermissionsDetail = () => {
 const NotesDetail = () => (
   <div className="flex flex-col pt-2 pb-24 gap-2 px-2">
     <div className="bg-white border border-gray-100 rounded-xl p-4">
-      <p className="text-sm font-medium text-mfneutralsn-500">Tobin has been really active lately...</p>
+      <p className="text-sm font-medium text-mfneutralsn-500">Abby has been really active lately...</p>
       <p className="text-xs text-mfneutralsn-300 mt-1">Added by Anna Müller · Feb 21</p>
     </div>
   </div>
@@ -228,7 +228,7 @@ export const DocumentsContent = (): JSX.Element => {
         <CardHeader title="Notes" count={1} onPress={() => setSection("notes")} />
         <Divider />
         <div className="px-4 py-3">
-          <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">Tobin has been really active lately...</p>
+          <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">Abby has been really active lately...</p>
           <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">Feb 21</p>
         </div>
       </Card>
