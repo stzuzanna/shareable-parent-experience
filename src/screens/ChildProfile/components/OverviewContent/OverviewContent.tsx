@@ -209,7 +209,7 @@ export const OverviewContent = (): JSX.Element => {
 
   if (section !== null) {
     return (
-      <div ref={rootRef} className="flex flex-col bg-mfneutralsn-50 min-h-full">
+      <div ref={rootRef} className="flex flex-col bg-white min-h-full">
         <SectionHeader title={sectionTitles[section]} onBack={() => setSection(null)} />
         {section === "childcare" && <ChildcareDetail />}
         {section === "care" && <CareDetail />}
@@ -230,7 +230,7 @@ export const OverviewContent = (): JSX.Element => {
   }
 
   return (
-    <div ref={rootRef} className="flex flex-col bg-mfneutralsn-50 pt-6 pb-24 gap-4">
+    <div ref={rootRef} className="flex flex-col bg-white pt-4 pb-24 gap-4">
       {/* Leave — both variants */}
       <Card>
         <CardHeader title="Leave" onPress={() => setSection("leave")} />

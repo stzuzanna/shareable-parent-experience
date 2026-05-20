@@ -76,7 +76,7 @@ export const PaperworkContent = (): JSX.Element => {
   const activeLabel = filters.find((f) => f.id === activeFilter)?.label ?? "All";
 
   return (
-    <div className="flex flex-col bg-white pb-24 pt-3">
+    <div className="flex flex-col bg-white pb-24 pt-4">
       {/* Filter pills */}
       <div className="flex items-center gap-2 px-4 pb-6 bg-white">
         {isFiltered ? (
