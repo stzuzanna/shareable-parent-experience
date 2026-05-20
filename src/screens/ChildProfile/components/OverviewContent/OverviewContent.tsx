@@ -230,7 +230,7 @@ export const OverviewContent = (): JSX.Element => {
   }
 
   return (
-    <div ref={rootRef} className="flex flex-col bg-mfneutralsn-50 pb-24 gap-4">
+    <div ref={rootRef} className="flex flex-col bg-mfneutralsn-50 pt-6 pb-24 gap-4">
       {/* Leave — both variants */}
       <Card>
         <CardHeader title="Leave" onPress={() => setSection("leave")} />
