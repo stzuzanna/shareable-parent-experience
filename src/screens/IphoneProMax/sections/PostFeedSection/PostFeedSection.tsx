@@ -112,6 +112,22 @@ const SavedControls = () => (
   </button>
 );
 
+const LearningControls = ({ onOpenFilters }: { onOpenFilters: () => void }) => (
+  <>
+    <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border border-mfneutralsn-200 text-mfneutralsn-400 bg-transparent flex-shrink-0">
+      All areas
+      <ChevronDownIcon className="w-3.5 h-3.5" />
+    </button>
+    <button
+      onClick={onOpenFilters}
+      aria-label="Filters"
+      className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-mfneutralsn-200"
+    >
+      <SlidersHorizontalIcon className="w-4 h-4 text-mfneutralsn-400" />
+    </button>
+  </>
+);
+
 export const PostFeedSection = ({
   activeTab,
   onTabChange,
@@ -156,6 +172,7 @@ export const PostFeedSection = ({
     }
     if (activeTab === 'photos') return <PhotosControls />;
     if (activeTab === 'saved') return <SavedControls />;
+    if (activeTab === 'learning') return <LearningControls onOpenFilters={() => setShowFilterSheet(true)} />;
     return null;
   };
 
