@@ -1,5 +1,5 @@
 import React from "react";
-import { HomeIcon, MessageSquareIcon, BellIcon, AlignJustifyIcon } from "lucide-react";
+import { HomeIcon, MessageSquareIcon, BellIcon } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { BASE_PATH } from "../../constants";
@@ -59,10 +59,10 @@ export const BottomNav = (): JSX.Element => {
         <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
       </button>
 
-      {/* Account — avatar with menu badge */}
+      {/* Account — user avatar */}
       <button
         onClick={() => navigate("/menu")}
-        className={`${baseBtn} ${isActive("/menu") ? activeBtn : ""} relative`}
+        className={`${baseBtn} ${isActive("/menu") ? activeBtn : ""}`}
       >
         <Avatar className="w-8 h-8">
           <AvatarImage
@@ -72,9 +72,6 @@ export const BottomNav = (): JSX.Element => {
           />
           <AvatarFallback>AP</AvatarFallback>
         </Avatar>
-        <div className="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 bg-white rounded-full flex items-center justify-center border border-gray-200">
-          <AlignJustifyIcon className="w-2 h-2 text-mfneutralsn-500" />
-        </div>
       </button>
     </div>
   );

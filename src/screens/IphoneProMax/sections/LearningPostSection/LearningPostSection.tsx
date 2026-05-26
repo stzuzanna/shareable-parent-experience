@@ -5,7 +5,7 @@ import { Button } from "../../../../components/ui/button";
 import { Card, CardContent } from "../../../../components/ui/card";
 import { Input } from "../../../../components/ui/input";
 import { EmojiReactionPicker } from "../../../../components/EmojiReactionPicker/EmojiReactionPicker";
-import { MessageCircleIcon } from "lucide-react";
+import { MessageCircleIcon, LanguagesIcon } from "lucide-react";
 
 export interface LearningPost {
   id: string;
@@ -147,6 +147,13 @@ export const LearningPostCard: React.FC<LearningPostCardProps> = ({
               <MessageCircleIcon className="w-[18px] h-[18px]" />
               <span className="font-MF-body-text-body-small font-[number:var(--MF-body-text-body-small-font-weight)] text-mfneutralsn-400 text-[length:var(--MF-body-text-body-small-font-size)] tracking-[var(--MF-body-text-body-small-letter-spacing)] leading-[var(--MF-body-text-body-small-line-height)] [font-style:var(--MF-body-text-body-small-font-style)]">
                 Comment
+              </span>
+            </Button>
+
+            <Button variant="ghost" className="h-9 gap-1 pl-2 pr-[9px] py-2 rounded-lg h-auto">
+              <LanguagesIcon className="w-[18px] h-[18px]" />
+              <span className="font-MF-body-text-body-small font-[number:var(--MF-body-text-body-small-font-weight)] text-mfneutralsn-400 text-[length:var(--MF-body-text-body-small-font-size)] tracking-[var(--MF-body-text-body-small-letter-spacing)] leading-[var(--MF-body-text-body-small-line-height)] [font-style:var(--MF-body-text-body-small-font-style)]">
+                Translate
               </span>
             </Button>
           </div>
