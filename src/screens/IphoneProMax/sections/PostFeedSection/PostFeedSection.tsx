@@ -1,6 +1,6 @@
 import { BASE_PATH } from '../../../../constants';
 import React, { useState, useRef, useEffect } from "react";
-import { SearchIcon, SlidersHorizontalIcon, XIcon, ChevronDownIcon } from "lucide-react";
+import { SearchIcon, SlidersHorizontalIcon, XIcon, ChevronDownIcon, BookmarkIcon } from "lucide-react";
 import { useDeviceDetection } from "../../../../hooks/useDeviceDetection";
 
 const allActivityTypes = [
@@ -23,7 +23,6 @@ const tabs = [
   { id: 'activity', label: 'Activity' },
   { id: 'photos', label: 'Photos' },
   { id: 'learning', label: 'Learning' },
-  { id: 'saved', label: 'Saved' },
 ];
 
 const ActivityControls = ({
@@ -113,7 +112,7 @@ export const PostFeedSection = ({
 }: PostFeedSectionProps): JSX.Element => {
   const { shouldShowFrame } = useDeviceDetection();
   const isFiltered = activeTab !== 'home';
-  const activeTabLabel = tabs.find(t => t.id === activeTab)?.label;
+  const activeTabLabel = tabs.find(t => t.id === activeTab)?.label ?? (activeTab === 'saved' ? 'Saved' : undefined);
 
   const renderActiveControls = () => {
     if (activeTab === 'activity') {
@@ -140,7 +139,7 @@ export const PostFeedSection = ({
       </div>
 
       {/* Title row */}
-      <div className="flex items-center justify-between px-5 pt-3 pb-6">
+      <div className="flex items-center justify-between px-5 pt-3 pb-4">
         <h1 className="text-[20px] font-bold text-mfneutralsn-500 tracking-tight leading-tight">
           Home
         </h1>
@@ -149,17 +148,29 @@ export const PostFeedSection = ({
 
       {/* Default pill row */}
       {!isFiltered && (
-        <div className="flex items-center gap-2 px-4 pb-3 w-full overflow-x-auto">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => onTabChange(tab.id)}
-              className="flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border border-mfneutralsn-200 text-mfneutralsn-400 bg-transparent transition-all duration-150"
-            >
-              {tab.label}
-            </button>
-          ))}
-          <button className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-mfneutralsn-200 ml-auto">
+        <div className="flex items-center gap-2 px-4 pb-3 w-full">
+          <div className="flex items-center gap-2 flex-1 overflow-x-auto">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => onTabChange(tab.id)}
+                className="flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border border-mfneutralsn-200 text-mfneutralsn-400 bg-transparent transition-all duration-150"
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={() => onTabChange('saved')}
+            aria-label="Saved"
+            className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-mfneutralsn-200"
+          >
+            <BookmarkIcon className="w-4 h-4 text-mfneutralsn-400" />
+          </button>
+          <button
+            aria-label="Filters"
+            className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-mfneutralsn-200"
+          >
             <SlidersHorizontalIcon className="w-4 h-4 text-mfneutralsn-400" />
           </button>
         </div>

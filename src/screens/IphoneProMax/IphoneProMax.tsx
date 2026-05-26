@@ -169,6 +169,7 @@ export const IphoneProMax = (): JSX.Element => {
           <div ref={invoiceRef}>
             <TodosWidget isPaid={isPaid} onPaymentSuccess={() => setIsPaid(true)} />
           </div>
+          <h2 className="text-[16px] font-semibold text-mfneutralsn-500 mt-2">Newsfeed</h2>
           <div ref={photoRef}>
             <PhotoPostSection
               isLiked={isLiked('photo-post')}

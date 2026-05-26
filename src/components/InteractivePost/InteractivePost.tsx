@@ -1,4 +1,4 @@
-import { HeartIcon, MessageCircleIcon } from "lucide-react";
+import { HeartIcon, MessageCircleIcon, LanguagesIcon } from "lucide-react";
 import React, { useState } from "react";
 import { EmojiReactionPicker } from "../EmojiReactionPicker/EmojiReactionPicker";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -132,6 +132,13 @@ export const InteractivePost: React.FC<InteractivePostProps> = ({
               <MessageCircleIcon className="w-[18px] h-[18px]" />
               <span className="font-MF-body-text-body-small font-[number:var(--MF-body-text-body-small-font-weight)] text-mfneutralsn-400 text-[length:var(--MF-body-text-body-small-font-size)] tracking-[var(--MF-body-text-body-small-letter-spacing)] leading-[var(--MF-body-text-body-small-line-height)] [font-style:var(--MF-body-text-body-small-font-style)]">
                 Comment
+              </span>
+            </Button>
+
+            <Button variant="ghost" className="h-9 gap-1 pl-2 pr-[9px] py-2 rounded-lg h-auto">
+              <LanguagesIcon className="w-[18px] h-[18px]" />
+              <span className="font-MF-body-text-body-small font-[number:var(--MF-body-text-body-small-font-weight)] text-mfneutralsn-400 text-[length:var(--MF-body-text-body-small-font-size)] tracking-[var(--MF-body-text-body-small-letter-spacing)] leading-[var(--MF-body-text-body-small-line-height)] [font-style:var(--MF-body-text-body-small-font-style)]">
+                Translate
               </span>
             </Button>
           </div>

@@ -80,7 +80,17 @@ const SummaryPersonRow = ({
   </div>
 );
 
-const SectionHeader = ({ title, onBack, onEdit }: { title: string; onBack: () => void; onEdit?: () => void }) => (
+const SectionHeader = ({
+  title,
+  onBack,
+  onEdit,
+  editActive,
+}: {
+  title: string;
+  onBack: () => void;
+  onEdit?: () => void;
+  editActive?: boolean;
+}) => (
   <div className="flex items-center gap-3 px-4 py-3">
     <button
       onClick={onBack}
@@ -92,10 +102,14 @@ const SectionHeader = ({ title, onBack, onEdit }: { title: string; onBack: () =>
     {onEdit && (
       <button
         onClick={onEdit}
-        aria-label={`Edit ${title}`}
-        className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0 active:bg-gray-50"
+        aria-label={editActive ? `Done editing ${title}` : `Edit ${title}`}
+        className={`px-3 h-9 rounded-full border flex-shrink-0 text-[13px] font-medium ${
+          editActive
+            ? "bg-mfprimaryp-400 border-mfprimaryp-400 text-white"
+            : "bg-white border-mfneutralsn-200 text-mfneutralsn-500 active:bg-gray-50"
+        }`}
       >
-        <PencilIcon className="w-4 h-4 text-mfneutralsn-500" />
+        {editActive ? "Done" : "Edit"}
       </button>
     )}
   </div>
@@ -253,30 +267,118 @@ const FamilyDetail = () => (
   </div>
 );
 
-const BasicInfoDetail = () => (
-  <div className="flex flex-col pb-24">
-    <SubsectionTitle>Basics</SubsectionTitle>
-    <SubpageRow icon={<IdCardIcon className="w-4 h-4" />} label="Amanda Freedman" />
-    <SubpageRow icon={<CalendarIcon className="w-4 h-4" />} label="1 Feb 2025 (1 year 4 months)" />
-    <SubpageRow icon={<BookOpenIcon className="w-4 h-4" />} label="Bunnies room" />
-    <SubpageRow icon={<KeyRoundIcon className="w-4 h-4" />} label={`Key person: ${KEY_PERSON_NAME}`} />
-
-    <SubsectionTitle>Health &amp; sensitive info</SubsectionTitle>
-    <SubpageRow icon={<StethoscopeIcon className="w-4 h-4" />} label="Doctor: Phil Cawlins" />
-    <SubpageRow icon={<ShieldAlertIcon className="w-4 h-4" />} label="Allergies: Lactose, Peanuts" />
-    <SubpageRow icon={<StickyNoteIcon className="w-4 h-4" />} label="Tolerates penicillin" />
+const LabelValueRow = ({ label, value }: { label: string; value: string }) => (
+  <div className="px-4 py-3 border-b border-mfneutralsn-75">
+    <p className="text-[12px] text-mfneutralsn-300 leading-tight">{label}</p>
+    <p className="text-[14px] text-mfneutralsn-500 leading-tight mt-1">{value}</p>
   </div>
 );
 
+const AddFieldRow = ({ label, onPress }: { label: string; onPress?: () => void }) => (
+  <button
+    onClick={onPress}
+    className="w-full px-4 py-3 flex items-center gap-2 border-b border-mfneutralsn-75 text-left active:bg-gray-50"
+  >
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-mfneutralsn-300 flex-shrink-0">
+      <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+    <span className="text-[14px] text-mfneutralsn-300">{label}</span>
+  </button>
+);
+
+const EditFieldRow = ({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+}) => (
+  <div className="px-4 py-3 border-b border-mfneutralsn-75">
+    <p className="text-[12px] text-mfneutralsn-300 leading-tight">{label}</p>
+    <input
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="w-full mt-1 text-[14px] text-mfneutralsn-500 leading-tight bg-transparent border-0 p-0 focus:outline-none focus:ring-0"
+    />
+  </div>
+);
+
+const BasicInfoDetail = ({ editing }: { editing: boolean }) => {
+  const [fields, setFields] = useState({
+    dateOfBirth: "1 Feb 2025",
+    languages: "English, Spanish",
+    gender: "Boy",
+  });
+
+  if (editing) {
+    return (
+      <div className="flex flex-col pb-24">
+        <EditFieldRow label="Date of birth" value={fields.dateOfBirth} onChange={(v) => setFields({ ...fields, dateOfBirth: v })} />
+        <EditFieldRow label="Languages" value={fields.languages} onChange={(v) => setFields({ ...fields, languages: v })} />
+        <EditFieldRow label="Gender" value={fields.gender} onChange={(v) => setFields({ ...fields, gender: v })} />
+        <AddFieldRow label="Add nationality" />
+        <AddFieldRow label="Add birthplace" />
+        <AddFieldRow label="Add special notes" />
+        <AddFieldRow label="Add sensitive info" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col pb-24">
+      <LabelValueRow label="Date of birth" value={fields.dateOfBirth} />
+      <LabelValueRow label="Languages" value={fields.languages} />
+      <LabelValueRow label="Gender" value={fields.gender} />
+      <AddFieldRow label="Add nationality" />
+      <AddFieldRow label="Add birthplace" />
+      <AddFieldRow label="Add special notes" />
+      <AddFieldRow label="Add sensitive info" />
+    </div>
+  );
+};
+
+const HealthDetailsDetail = ({ editing }: { editing: boolean }) => {
+  const [fields, setFields] = useState({
+    doctor: "Phil Cawlins · +1 (555) 123-4567",
+    allergies: "Lactose, Peanuts",
+    notes: "Tolerates penicillin",
+  });
+
+  if (editing) {
+    return (
+      <div className="flex flex-col pb-24">
+        <EditFieldRow label="Doctor" value={fields.doctor} onChange={(v) => setFields({ ...fields, doctor: v })} />
+        <EditFieldRow label="Allergies" value={fields.allergies} onChange={(v) => setFields({ ...fields, allergies: v })} />
+        <EditFieldRow label="Additional notes" value={fields.notes} onChange={(v) => setFields({ ...fields, notes: v })} />
+        <AddFieldRow label="Add medication" />
+        <AddFieldRow label="Add immunization record" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col pb-24">
+      <LabelValueRow label="Doctor" value={fields.doctor} />
+      <LabelValueRow label="Allergies" value={fields.allergies} />
+      <LabelValueRow label="Additional notes" value={fields.notes} />
+      <AddFieldRow label="Add medication" />
+      <AddFieldRow label="Add immunization record" />
+    </div>
+  );
+};
+
 // ── Main component ────────────────────────────────────────────────────────────
 
-type Section = "childcare" | "care" | "family" | "basic" | "leave" | "closures" | "permissions" | null;
+type Section = "childcare" | "care" | "family" | "basic" | "health" | "leave" | "closures" | "permissions" | null;
 
 const sectionTitles: Record<NonNullable<Section>, string> = {
   childcare: "Childcare info",
   care: "Care",
   family: "Family",
   basic: "Basic info",
+  health: "Health details",
   leave: "Leave",
   closures: "Meadows closure days",
   permissions: "Permissions",
@@ -488,6 +590,7 @@ export const OverviewContent = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
   const [section, setSection] = useState<Section>(null);
+  const [editing, setEditing] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -503,21 +606,27 @@ export const OverviewContent = (): JSX.Element => {
   useEffect(() => {
     const scrollable = rootRef.current?.closest(".overflow-y-auto") as HTMLElement | null;
     scrollable?.scrollTo({ top: 0, behavior: "smooth" });
+    setEditing(false);
   }, [section]);
 
   if (section !== null) {
-    const editable = section === "basic" || section === "family";
+    const editable = section === "basic" || section === "family" || section === "health";
     return (
       <div ref={rootRef} className="flex flex-col bg-white min-h-full">
         <SectionHeader
           title={sectionTitles[section]}
-          onBack={() => setSection(null)}
-          onEdit={editable ? () => {} : undefined}
+          onBack={() => {
+            setEditing(false);
+            setSection(null);
+          }}
+          onEdit={editable ? () => setEditing((e) => !e) : undefined}
+          editActive={editing}
         />
         {section === "childcare" && <ChildcareDetail />}
         {section === "care" && <CareDetail />}
         {section === "family" && <FamilyDetail />}
-        {section === "basic" && <BasicInfoDetail />}
+        {section === "basic" && <BasicInfoDetail editing={editing} />}
+        {section === "health" && <HealthDetailsDetail editing={editing} />}
         {section === "leave" && <LeaveDetail />}
         {section === "closures" && <ClosuresDetail />}
         {section === "permissions" && <PermissionsDetail />}
@@ -638,11 +747,20 @@ export const OverviewContent = (): JSX.Element => {
       <Card>
         <CardHeader title="Basic info" onPress={() => setSection("basic")} />
         <Divider />
-        <SummaryRow icon={<IdCardIcon className="w-4 h-4" />} label="Amanda Freedman" />
-        <Divider />
-        <SummaryRow icon={<CalendarIcon className="w-4 h-4" />} label="1 Feb 2025 (1 year 4 months)" />
+        <SummaryRow icon={<CalendarIcon className="w-4 h-4" />} label="1 Feb 2025" />
         <Divider />
         <SummaryRow icon={<BookOpenIcon className="w-4 h-4" />} label="Bunnies room" />
+      </Card>
+
+      {/* Health details */}
+      <Card>
+        <CardHeader title="Health details" onPress={() => setSection("health")} />
+        <Divider />
+        <SummaryRow icon={<StethoscopeIcon className="w-4 h-4" />} label="Doctor: Phil Cawlins" />
+        <Divider />
+        <SummaryRow icon={<ShieldAlertIcon className="w-4 h-4" />} label="Allergies: Lactose, Peanuts" />
+        <Divider />
+        <SummaryRow icon={<StickyNoteIcon className="w-4 h-4" />} label="Tolerates penicillin" />
       </Card>
     </div>
   );

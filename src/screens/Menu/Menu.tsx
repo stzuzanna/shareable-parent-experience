@@ -2,18 +2,21 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ChevronRightIcon,
-  SettingsIcon,
   CalendarIcon,
   VideoIcon,
   LogOutIcon,
   FileTextIcon,
+  PencilIcon,
+  LockIcon,
+  GlobeIcon,
+  HelpCircleIcon,
+  ScaleIcon,
 } from "lucide-react";
 import { BASE_PATH } from "../../constants";
 import { useDeviceDetection } from "../../hooks/useDeviceDetection";
 import { useToast } from "../../hooks/useToast";
 import { usePaymentState, setPaid } from "../../hooks/usePaymentState";
 import { useAutopayState } from "../../hooks/useAutopayState";
-import { AccountSettings } from "../../components/AccountSettings/AccountSettings";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
 import { Button } from "../../components/ui/button";
 import { AppHeader } from "../../components/AppHeader/AppHeader";
@@ -23,18 +26,21 @@ import { Invoice } from "../../components/Invoice/Invoice";
 
 const OUTSTANDING_AMOUNT = "1024.88";
 
+const settingsItems = [
+  { id: "contact-info", label: "Contact information", Icon: PencilIcon },
+  { id: "password", label: "Password and sign in", Icon: LockIcon },
+  { id: "language-notifications", label: "Language and notifications", Icon: GlobeIcon },
+  { id: "help", label: "Help and support", Icon: HelpCircleIcon },
+  { id: "terms", label: "Terms and policies", Icon: ScaleIcon },
+] as const;
+
 export const Menu = (): JSX.Element => {
   const { shouldShowFrame } = useDeviceDetection();
   const navigate = useNavigate();
   const isPaid = usePaymentState();
   const autopay = useAutopayState();
   const { toasts, showToast, removeToast } = useToast();
-  const [showSettings, setShowSettings] = useState(false);
   const [showInvoice, setShowInvoice] = useState(false);
-
-  if (showSettings) {
-    return <AccountSettings onClose={() => setShowSettings(false)} />;
-  }
 
   const comingSoon = () => showToast("Coming soon", "info");
 
@@ -59,13 +65,6 @@ export const Menu = (): JSX.Element => {
               <div className="text-[14px] text-mfneutralsn-300 leading-snug truncate">matt.freedman@email.com</div>
               <div className="text-[14px] text-mfneutralsn-300 leading-snug">+44 2324932948239</div>
             </div>
-            <button
-              onClick={() => setShowSettings(true)}
-              aria-label="Settings"
-              className="w-12 h-12 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0 hover:bg-gray-50"
-            >
-              <SettingsIcon className="w-5 h-5 text-mfneutralsn-400" />
-            </button>
           </div>
 
           {/* Payments card */}
@@ -118,44 +117,61 @@ export const Menu = (): JSX.Element => {
           </div>
 
           {/* Navigation tiles */}
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={comingSoon}
-              className="flex flex-col items-start justify-between h-[76px] bg-white border border-mfneutralsn-75 rounded-2xl p-3 hover:bg-gray-50"
-            >
-              <CalendarIcon className="w-6 h-6 text-mfprimaryp-400" />
-              <div className="flex items-center gap-1 w-full">
-                <span className="text-[14px] text-mfneutralsn-500 flex-1 text-left">Calendar</span>
-                <ChevronRightIcon className="w-3.5 h-3.5 text-mfneutralsn-300" />
-              </div>
-            </button>
+          <div className="flex flex-col gap-3">
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={comingSoon}
+                className="flex flex-col items-start justify-between h-[76px] bg-white border border-mfneutralsn-75 rounded-2xl p-3 hover:bg-gray-50"
+              >
+                <CalendarIcon className="w-6 h-6 text-mfprimaryp-400" />
+                <div className="flex items-center gap-1 w-full">
+                  <span className="text-[14px] text-mfneutralsn-500 flex-1 text-left">Calendar</span>
+                  <ChevronRightIcon className="w-3.5 h-3.5 text-mfneutralsn-300" />
+                </div>
+              </button>
+
+              <button
+                onClick={() => navigate("/activity-plans")}
+                className="flex flex-col items-start justify-between h-[76px] bg-white border border-mfneutralsn-75 rounded-2xl p-3 hover:bg-gray-50"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-mfyellowy-400">
+                  <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+                  <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+                  <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+                  <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+                </svg>
+                <div className="flex items-center gap-1 w-full">
+                  <span className="text-[14px] text-mfneutralsn-500 flex-1 text-left">Learning plans</span>
+                  <ChevronRightIcon className="w-3.5 h-3.5 text-mfneutralsn-300" />
+                </div>
+              </button>
+            </div>
 
             <button
-              onClick={() => navigate("/activity-plans")}
-              className="flex flex-col items-start justify-between h-[76px] bg-white border border-mfneutralsn-75 rounded-2xl p-3 hover:bg-gray-50"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-mfyellowy-400">
-                <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
-                <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
-                <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
-                <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
-              </svg>
-              <div className="flex items-center gap-1 w-full">
-                <span className="text-[14px] text-mfneutralsn-500 flex-1 text-left">Learning plans</span>
-                <ChevronRightIcon className="w-3.5 h-3.5 text-mfneutralsn-300" />
-              </div>
-            </button>
-
-            <button
               onClick={comingSoon}
-              className="flex flex-col items-start justify-between h-[76px] bg-white border border-mfneutralsn-75 rounded-2xl p-3 hover:bg-gray-50"
+              className="flex items-center gap-3 h-[60px] bg-white border border-mfneutralsn-75 rounded-2xl px-3 hover:bg-gray-50"
             >
-              <VideoIcon className="w-6 h-6 text-brandblueb-400" />
-              <div className="flex items-center gap-1 w-full">
-                <span className="text-[14px] text-mfneutralsn-500 flex-1 text-left">WatchMeGrow</span>
-                <ChevronRightIcon className="w-3.5 h-3.5 text-mfneutralsn-300" />
-              </div>
+              <VideoIcon className="w-6 h-6 text-brandblueb-400 flex-shrink-0" />
+              <span className="text-[14px] text-mfneutralsn-500 flex-1 text-left">WatchMeGrow</span>
+              <ChevronRightIcon className="w-3.5 h-3.5 text-mfneutralsn-300" />
             </button>
+          </div>
+
+          {/* Settings list */}
+          <div className="flex flex-col">
+            {settingsItems.map(({ id, label, Icon }) => (
+              <button
+                key={id}
+                onClick={comingSoon}
+                className="flex items-center justify-between h-12 hover:bg-gray-50"
+              >
+                <div className="flex items-center gap-3">
+                  <Icon className="w-5 h-5 text-mfneutralsn-400" />
+                  <span className="text-[14px] text-mfneutralsn-500">{label}</span>
+                </div>
+                <ChevronRightIcon className="w-4 h-4 text-mfneutralsn-300" />
+              </button>
+            ))}
           </div>
 
           {/* Log out */}
