@@ -84,14 +84,18 @@ const SectionHeader = ({
   title,
   onBack,
   onEdit,
+  onSave,
+  onCancel,
   editActive,
 }: {
   title: string;
   onBack: () => void;
   onEdit?: () => void;
+  onSave?: () => void;
+  onCancel?: () => void;
   editActive?: boolean;
 }) => (
-  <div className="flex items-center gap-3 px-4 py-3">
+  <div className="flex items-center gap-2 px-4 py-3">
     <button
       onClick={onBack}
       className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0"
@@ -99,18 +103,31 @@ const SectionHeader = ({
       <ArrowLeftIcon className="w-4 h-4 text-mfneutralsn-500" />
     </button>
     <span className="text-base font-semibold text-mfneutralsn-500 flex-1">{title}</span>
-    {onEdit && (
-      <button
-        onClick={onEdit}
-        aria-label={editActive ? `Done editing ${title}` : `Edit ${title}`}
-        className={`px-3 h-9 rounded-full border flex-shrink-0 text-[13px] font-medium ${
-          editActive
-            ? "bg-mfprimaryp-400 border-mfprimaryp-400 text-white"
-            : "bg-white border-mfneutralsn-200 text-mfneutralsn-500 active:bg-gray-50"
-        }`}
-      >
-        {editActive ? "Done" : "Edit"}
-      </button>
+    {editActive ? (
+      <div className="flex items-center gap-2 flex-shrink-0">
+        <button
+          onClick={onCancel}
+          className="px-3 h-9 rounded-lg border border-mfneutralsn-200 bg-white text-[13px] font-medium text-mfneutralsn-500 active:bg-gray-50"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={onSave}
+          className="px-3 h-9 rounded-lg bg-mfprimaryp-400 text-white text-[13px] font-medium"
+        >
+          Save
+        </button>
+      </div>
+    ) : (
+      onEdit && (
+        <button
+          onClick={onEdit}
+          aria-label={`Edit ${title}`}
+          className="px-3 h-9 rounded-full border border-mfneutralsn-200 bg-white text-[13px] font-medium text-mfneutralsn-500 active:bg-gray-50 flex-shrink-0"
+        >
+          Edit
+        </button>
+      )
     )}
   </div>
 );
@@ -247,26 +264,6 @@ const SecondaryBadge = () => (
   <span className="text-[11px] px-2 py-0.5 rounded-full border border-mfneutralsn-200 text-mfneutralsn-400">Secondary</span>
 );
 
-const FamilyDetail = () => (
-  <div className="flex flex-col pb-24">
-    <SubsectionTitle>Parents</SubsectionTitle>
-    <SubpagePersonRow
-      avatarSrc={MOTHER_AVATAR}
-      avatarAlt="Sarah Freedman"
-      fallback="SF"
-      label="Sarah Freedman · Mother"
-      badge={<PrimaryBadge />}
-    />
-    <SubpagePersonRow
-      avatarSrc={FATHER_AVATAR}
-      avatarAlt="Michael Freedman"
-      fallback="MF"
-      label="Michael Freedman · Father"
-      badge={<SecondaryBadge />}
-    />
-  </div>
-);
-
 const LabelValueRow = ({ label, value }: { label: string; value: string }) => (
   <div className="px-4 py-3 border-b border-mfneutralsn-75">
     <p className="text-[12px] text-mfneutralsn-300 leading-tight">{label}</p>
@@ -286,7 +283,38 @@ const AddFieldRow = ({ label, onPress }: { label: string; onPress?: () => void }
   </button>
 );
 
-const EditFieldRow = ({
+const FieldShell = ({ label, children }: { label: string; children: React.ReactNode }) => (
+  <div className="px-4 py-3 border-b border-mfneutralsn-75">
+    <p className="text-[12px] text-mfneutralsn-300 leading-tight mb-1.5">{label}</p>
+    {children}
+  </div>
+);
+
+const inputClass =
+  "w-full h-10 px-3 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] text-mfneutralsn-500 focus:outline-none focus:border-mfprimaryp-400";
+
+const TextField = ({
+  label,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+}) => (
+  <FieldShell label={label}>
+    <input
+      value={value}
+      placeholder={placeholder}
+      onChange={(e) => onChange(e.target.value)}
+      className={inputClass}
+    />
+  </FieldShell>
+);
+
+const DateField = ({
   label,
   value,
   onChange,
@@ -295,76 +323,372 @@ const EditFieldRow = ({
   value: string;
   onChange: (v: string) => void;
 }) => (
-  <div className="px-4 py-3 border-b border-mfneutralsn-75">
-    <p className="text-[12px] text-mfneutralsn-300 leading-tight">{label}</p>
+  <FieldShell label={label}>
     <input
+      type="date"
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full mt-1 text-[14px] text-mfneutralsn-500 leading-tight bg-transparent border-0 p-0 focus:outline-none focus:ring-0"
+      className={inputClass}
     />
-  </div>
+  </FieldShell>
 );
 
+const SelectField = ({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  options: string[];
+  onChange: (v: string) => void;
+}) => (
+  <FieldShell label={label}>
+    <select value={value} onChange={(e) => onChange(e.target.value)} className={inputClass}>
+      {options.map((o) => (
+        <option key={o} value={o}>
+          {o}
+        </option>
+      ))}
+    </select>
+  </FieldShell>
+);
+
+const LANGUAGE_OPTIONS = ["English", "Spanish", "French", "German", "Italian", "Portuguese", "Mandarin", "Arabic", "Polish", "Turkish"];
+
+const LanguagesField = ({
+  label,
+  values,
+  onChange,
+}: {
+  label: string;
+  values: string[];
+  onChange: (v: string[]) => void;
+}) => {
+  const [adding, setAdding] = useState(false);
+  const available = LANGUAGE_OPTIONS.filter((l) => !values.includes(l));
+
+  return (
+    <FieldShell label={label}>
+      <div className="flex flex-col gap-2">
+        {values.map((lang, i) => (
+          <div key={i} className="flex items-center gap-2">
+            <select
+              value={lang}
+              onChange={(e) => {
+                const next = [...values];
+                next[i] = e.target.value;
+                onChange(next);
+              }}
+              className={inputClass}
+            >
+              <option value={lang}>{lang}</option>
+              {LANGUAGE_OPTIONS.filter((l) => !values.includes(l) || l === lang).map((o) => (
+                <option key={o} value={o}>
+                  {o}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={() => onChange(values.filter((_, idx) => idx !== i))}
+              aria-label={`Remove ${lang}`}
+              className="w-9 h-9 rounded-lg border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0 text-mfneutralsn-400 active:bg-gray-50"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </button>
+          </div>
+        ))}
+        {adding ? (
+          <select
+            autoFocus
+            onChange={(e) => {
+              if (e.target.value) {
+                onChange([...values, e.target.value]);
+                setAdding(false);
+              }
+            }}
+            className={inputClass}
+          >
+            <option value="">Choose a language…</option>
+            {available.map((o) => (
+              <option key={o} value={o}>
+                {o}
+              </option>
+            ))}
+          </select>
+        ) : (
+          available.length > 0 && (
+            <button
+              onClick={() => setAdding(true)}
+              className="flex items-center gap-2 text-[14px] text-mfprimaryp-400 py-1"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              Add language
+            </button>
+          )
+        )}
+      </div>
+    </FieldShell>
+  );
+};
+
+// ── Detail view: Basic info ───────────────────────────────────────────────────
+
+type OptionalKey = "nationality" | "birthplace" | "specialNotes" | "sensitiveInfo";
+const OPTIONAL_LABELS: Record<OptionalKey, string> = {
+  nationality: "Nationality",
+  birthplace: "Birthplace",
+  specialNotes: "Special notes",
+  sensitiveInfo: "Sensitive info",
+};
+
 const BasicInfoDetail = ({ editing }: { editing: boolean }) => {
-  const [fields, setFields] = useState({
-    dateOfBirth: "1 Feb 2025",
-    languages: "English, Spanish",
-    gender: "Boy",
-  });
+  const [dateOfBirth, setDateOfBirth] = useState("2025-02-01");
+  const [languages, setLanguages] = useState<string[]>(["English", "Spanish"]);
+  const [gender, setGender] = useState("Boy");
+  const [optional, setOptional] = useState<Partial<Record<OptionalKey, string>>>({});
+
+  const formatDate = (iso: string) => {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return iso;
+    return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+  };
+
+  const showOptional = (k: OptionalKey) => setOptional((p) => ({ ...p, [k]: p[k] ?? "" }));
+  const setOptionalValue = (k: OptionalKey, v: string) => setOptional((p) => ({ ...p, [k]: v }));
 
   if (editing) {
     return (
       <div className="flex flex-col pb-24">
-        <EditFieldRow label="Date of birth" value={fields.dateOfBirth} onChange={(v) => setFields({ ...fields, dateOfBirth: v })} />
-        <EditFieldRow label="Languages" value={fields.languages} onChange={(v) => setFields({ ...fields, languages: v })} />
-        <EditFieldRow label="Gender" value={fields.gender} onChange={(v) => setFields({ ...fields, gender: v })} />
-        <AddFieldRow label="Add nationality" />
-        <AddFieldRow label="Add birthplace" />
-        <AddFieldRow label="Add special notes" />
-        <AddFieldRow label="Add sensitive info" />
+        <DateField label="Date of birth" value={dateOfBirth} onChange={setDateOfBirth} />
+        <LanguagesField label="Languages" values={languages} onChange={setLanguages} />
+        <SelectField label="Gender" value={gender} options={["Boy", "Girl", "Other", "Prefer not to say"]} onChange={setGender} />
+        {(Object.keys(OPTIONAL_LABELS) as OptionalKey[]).map((k) =>
+          optional[k] !== undefined ? (
+            <TextField
+              key={k}
+              label={OPTIONAL_LABELS[k]}
+              value={optional[k] ?? ""}
+              placeholder={`Enter ${OPTIONAL_LABELS[k].toLowerCase()}`}
+              onChange={(v) => setOptionalValue(k, v)}
+            />
+          ) : (
+            <AddFieldRow key={k} label={`Add ${OPTIONAL_LABELS[k].toLowerCase()}`} onPress={() => showOptional(k)} />
+          )
+        )}
       </div>
     );
   }
 
   return (
     <div className="flex flex-col pb-24">
-      <LabelValueRow label="Date of birth" value={fields.dateOfBirth} />
-      <LabelValueRow label="Languages" value={fields.languages} />
-      <LabelValueRow label="Gender" value={fields.gender} />
-      <AddFieldRow label="Add nationality" />
-      <AddFieldRow label="Add birthplace" />
-      <AddFieldRow label="Add special notes" />
-      <AddFieldRow label="Add sensitive info" />
+      <LabelValueRow label="Date of birth" value={formatDate(dateOfBirth)} />
+      <LabelValueRow label="Languages" value={languages.join(", ") || "—"} />
+      <LabelValueRow label="Gender" value={gender} />
+      {(Object.keys(OPTIONAL_LABELS) as OptionalKey[]).map((k) =>
+        optional[k] ? (
+          <LabelValueRow key={k} label={OPTIONAL_LABELS[k]} value={optional[k] as string} />
+        ) : (
+          <AddFieldRow key={k} label={`Add ${OPTIONAL_LABELS[k].toLowerCase()}`} />
+        )
+      )}
     </div>
   );
 };
 
+// ── Detail view: Health details ───────────────────────────────────────────────
+
+type HealthOptionalKey = "medication" | "immunization";
+const HEALTH_OPTIONAL_LABELS: Record<HealthOptionalKey, string> = {
+  medication: "Medication",
+  immunization: "Immunization record",
+};
+
 const HealthDetailsDetail = ({ editing }: { editing: boolean }) => {
-  const [fields, setFields] = useState({
-    doctor: "Phil Cawlins · +1 (555) 123-4567",
-    allergies: "Lactose, Peanuts",
-    notes: "Tolerates penicillin",
-  });
+  const [doctorName, setDoctorName] = useState("Phil Cawlins");
+  const [doctorPhone, setDoctorPhone] = useState("+1 (555) 123-4567");
+  const [allergies, setAllergies] = useState("Lactose, Peanuts");
+  const [notes, setNotes] = useState("Tolerates penicillin");
+  const [optional, setOptional] = useState<Partial<Record<HealthOptionalKey, string>>>({});
+
+  const showOptional = (k: HealthOptionalKey) => setOptional((p) => ({ ...p, [k]: p[k] ?? "" }));
+  const setOptionalValue = (k: HealthOptionalKey, v: string) => setOptional((p) => ({ ...p, [k]: v }));
 
   if (editing) {
     return (
       <div className="flex flex-col pb-24">
-        <EditFieldRow label="Doctor" value={fields.doctor} onChange={(v) => setFields({ ...fields, doctor: v })} />
-        <EditFieldRow label="Allergies" value={fields.allergies} onChange={(v) => setFields({ ...fields, allergies: v })} />
-        <EditFieldRow label="Additional notes" value={fields.notes} onChange={(v) => setFields({ ...fields, notes: v })} />
-        <AddFieldRow label="Add medication" />
-        <AddFieldRow label="Add immunization record" />
+        <TextField label="Doctor's name" value={doctorName} onChange={setDoctorName} />
+        <TextField label="Doctor's phone" value={doctorPhone} onChange={setDoctorPhone} />
+        <TextField label="Allergies" value={allergies} onChange={setAllergies} placeholder="Comma separated" />
+        <TextField label="Additional notes" value={notes} onChange={setNotes} />
+        {(Object.keys(HEALTH_OPTIONAL_LABELS) as HealthOptionalKey[]).map((k) =>
+          optional[k] !== undefined ? (
+            <TextField
+              key={k}
+              label={HEALTH_OPTIONAL_LABELS[k]}
+              value={optional[k] ?? ""}
+              placeholder={`Enter ${HEALTH_OPTIONAL_LABELS[k].toLowerCase()}`}
+              onChange={(v) => setOptionalValue(k, v)}
+            />
+          ) : (
+            <AddFieldRow key={k} label={`Add ${HEALTH_OPTIONAL_LABELS[k].toLowerCase()}`} onPress={() => showOptional(k)} />
+          )
+        )}
       </div>
     );
   }
 
   return (
     <div className="flex flex-col pb-24">
-      <LabelValueRow label="Doctor" value={fields.doctor} />
-      <LabelValueRow label="Allergies" value={fields.allergies} />
-      <LabelValueRow label="Additional notes" value={fields.notes} />
-      <AddFieldRow label="Add medication" />
-      <AddFieldRow label="Add immunization record" />
+      <LabelValueRow label="Doctor" value={`${doctorName} · ${doctorPhone}`} />
+      <LabelValueRow label="Allergies" value={allergies || "—"} />
+      <LabelValueRow label="Additional notes" value={notes || "—"} />
+      {(Object.keys(HEALTH_OPTIONAL_LABELS) as HealthOptionalKey[]).map((k) =>
+        optional[k] ? (
+          <LabelValueRow key={k} label={HEALTH_OPTIONAL_LABELS[k]} value={optional[k] as string} />
+        ) : (
+          <AddFieldRow key={k} label={`Add ${HEALTH_OPTIONAL_LABELS[k].toLowerCase()}`} />
+        )
+      )}
+    </div>
+  );
+};
+
+// ── Detail view: Family ───────────────────────────────────────────────────────
+
+type ContactDef = {
+  id: string;
+  name: string;
+  role: string;
+  avatar: string;
+  fallback: string;
+  primary: boolean;
+};
+
+const CONTACTS: ContactDef[] = [
+  { id: "sarah", name: "Sarah Freedman", role: "Mother", avatar: MOTHER_AVATAR, fallback: "SF", primary: true },
+  { id: "michael", name: "Michael Freedman", role: "Father", avatar: FATHER_AVATAR, fallback: "MF", primary: false },
+];
+
+type ContactExtras = { email?: string; phone?: string };
+
+const ContactEditCard = ({
+  contact,
+  extras,
+  onChange,
+}: {
+  contact: ContactDef;
+  extras: ContactExtras;
+  onChange: (next: ContactExtras) => void;
+}) => {
+  const Badge = contact.primary ? PrimaryBadge : SecondaryBadge;
+  return (
+    <div className="border-b border-mfneutralsn-75 px-4 py-4 flex flex-col gap-3">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <Avatar className="w-9 h-9 flex-shrink-0">
+            <AvatarImage src={contact.avatar} alt={contact.name} />
+            <AvatarFallback>{contact.fallback}</AvatarFallback>
+          </Avatar>
+          <div className="min-w-0">
+            <p className="text-[14px] font-medium text-mfneutralsn-500 truncate">{contact.name}</p>
+            <p className="text-[12px] text-mfneutralsn-300">{contact.role}</p>
+          </div>
+        </div>
+        <Badge />
+      </div>
+
+      {extras.email !== undefined ? (
+        <FieldShell label="Email">
+          <input
+            value={extras.email}
+            placeholder="name@example.com"
+            onChange={(e) => onChange({ ...extras, email: e.target.value })}
+            className={inputClass}
+          />
+        </FieldShell>
+      ) : (
+        <button
+          onClick={() => onChange({ ...extras, email: "" })}
+          className="flex items-center gap-2 text-[14px] text-mfprimaryp-400"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+          Add email
+        </button>
+      )}
+
+      {extras.phone !== undefined ? (
+        <FieldShell label="Phone number">
+          <input
+            value={extras.phone}
+            placeholder="+1 (555) 123-4567"
+            onChange={(e) => onChange({ ...extras, phone: e.target.value })}
+            className={inputClass}
+          />
+        </FieldShell>
+      ) : (
+        <button
+          onClick={() => onChange({ ...extras, phone: "" })}
+          className="flex items-center gap-2 text-[14px] text-mfprimaryp-400"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+          Add phone number
+        </button>
+      )}
+    </div>
+  );
+};
+
+const FamilyDetail = ({ editing }: { editing: boolean }) => {
+  const [extras, setExtras] = useState<Record<string, ContactExtras>>({
+    sarah: { phone: "+1 (555) 123-4567" },
+    michael: { phone: "+1 (555) 123-4567" },
+  });
+
+  return (
+    <div className="flex flex-col pb-24">
+      <SubsectionTitle>Parents</SubsectionTitle>
+      {editing
+        ? CONTACTS.map((c) => (
+            <ContactEditCard
+              key={c.id}
+              contact={c}
+              extras={extras[c.id] ?? {}}
+              onChange={(next) => setExtras((prev) => ({ ...prev, [c.id]: next }))}
+            />
+          ))
+        : CONTACTS.map((c) => (
+            <SubpagePersonRow
+              key={c.id}
+              avatarSrc={c.avatar}
+              avatarAlt={c.name}
+              fallback={c.fallback}
+              label={`${c.name} · ${c.role}`}
+              badge={c.primary ? <PrimaryBadge /> : <SecondaryBadge />}
+            />
+          ))}
+
+      <SubsectionTitle>Siblings</SubsectionTitle>
+      <div className="px-4 py-4 border-b border-mfneutralsn-75">
+        <p className="text-[13px] text-mfneutralsn-300 mb-3 leading-snug">
+          Link a sibling so you can see both children in one place.
+        </p>
+        <button className="flex items-center gap-2 h-9 px-3 rounded-lg border border-mfprimaryp-400 text-[13px] font-medium text-mfprimaryp-400 active:bg-mfprimaryp-50">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+          Link siblings
+        </button>
+      </div>
     </div>
   );
 };
@@ -619,12 +943,14 @@ export const OverviewContent = (): JSX.Element => {
             setEditing(false);
             setSection(null);
           }}
-          onEdit={editable ? () => setEditing((e) => !e) : undefined}
+          onEdit={editable ? () => setEditing(true) : undefined}
+          onSave={() => setEditing(false)}
+          onCancel={() => setEditing(false)}
           editActive={editing}
         />
         {section === "childcare" && <ChildcareDetail />}
         {section === "care" && <CareDetail />}
-        {section === "family" && <FamilyDetail />}
+        {section === "family" && <FamilyDetail editing={editing} />}
         {section === "basic" && <BasicInfoDetail editing={editing} />}
         {section === "health" && <HealthDetailsDetail editing={editing} />}
         {section === "leave" && <LeaveDetail />}

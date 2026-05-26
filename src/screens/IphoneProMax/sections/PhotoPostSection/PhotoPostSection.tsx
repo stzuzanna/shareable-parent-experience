@@ -122,7 +122,7 @@ export const PhotoPostSection: React.FC<PhotoPostSectionProps> = ({
               </div>
 
               {comments.length > 0 && (
-                <div className="flex flex-col gap-3 w-full mb-4">
+                <div className="flex flex-col gap-3 w-full mt-4 mb-4">
                   {comments.map((comment, index) => (
                     <div key={index} className="flex items-start gap-2">
                       <Avatar className="w-8 h-8">
