@@ -12,6 +12,7 @@ import {
   HelpCircleIcon,
   ScaleIcon,
   HomeIcon,
+  CreditCardIcon,
 } from "lucide-react";
 import { BASE_PATH } from "../../constants";
 import { useDeviceDetection } from "../../hooks/useDeviceDetection";
@@ -32,6 +33,7 @@ const settingsItems = [
   { id: "contact-info", label: "Contact information", Icon: PencilIcon },
   { id: "password", label: "Password and sign in", Icon: LockIcon },
   { id: "language-notifications", label: "Language and notifications", Icon: GlobeIcon },
+  { id: "payment-settings", label: "Payment settings", Icon: CreditCardIcon },
   { id: "help", label: "Help and support", Icon: HelpCircleIcon },
   { id: "terms", label: "Terms and policies", Icon: ScaleIcon },
 ] as const;

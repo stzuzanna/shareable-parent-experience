@@ -4,10 +4,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   SearchIcon,
-  CreditCardIcon,
   BarChart3Icon,
-  UserCircleIcon,
-  UsersIcon,
   FileTextIcon,
 } from "lucide-react";
 import { BASE_PATH } from "../../constants";
@@ -118,37 +115,15 @@ export const Balance = (): JSX.Element => {
             </div>
           )}
 
-          {/* 2x2 quick-action grid */}
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={comingSoon}
-              className="flex flex-col items-start justify-between h-[77px] bg-white border border-mfneutralsn-75 rounded-lg p-2 hover:bg-gray-50"
-            >
-              <CreditCardIcon className="w-6 h-6 text-mfneutralsn-400" />
-              <span className="text-[14px] text-mfneutralsn-500">Payment methods</span>
-            </button>
-            <button
-              onClick={comingSoon}
-              className="flex flex-col items-start justify-between h-[77px] bg-white border border-mfneutralsn-75 rounded-lg p-2 hover:bg-gray-50"
-            >
-              <BarChart3Icon className="w-[18px] h-[18px] text-mfneutralsn-400" />
-              <span className="text-[14px] text-mfneutralsn-500">Annual statement</span>
-            </button>
-            <button
-              onClick={comingSoon}
-              className="flex flex-col items-start justify-between h-[77px] bg-white border border-mfneutralsn-75 rounded-lg p-2 hover:bg-gray-50"
-            >
-              <UserCircleIcon className="w-[18px] h-[18px] text-mfneutralsn-400" />
-              <span className="text-[14px] text-mfneutralsn-500">Payer info</span>
-            </button>
-            <button
-              onClick={comingSoon}
-              className="flex flex-col items-start justify-between h-[77px] bg-white border border-mfneutralsn-75 rounded-lg p-2 hover:bg-gray-50"
-            >
-              <UsersIcon className="w-[18px] h-[18px] text-mfneutralsn-400" />
-              <span className="text-[14px] text-mfneutralsn-500">Invoice recipients</span>
-            </button>
-          </div>
+          {/* Annual statement */}
+          <button
+            onClick={comingSoon}
+            className="flex items-center gap-3 h-[60px] bg-white border border-mfneutralsn-75 rounded-2xl px-3 hover:bg-gray-50"
+          >
+            <BarChart3Icon className="w-6 h-6 text-mfneutralsn-400 flex-shrink-0" />
+            <span className="text-[14px] text-mfneutralsn-500 flex-1 text-left">Annual statement</span>
+            <ChevronRightIcon className="w-4 h-4 text-mfneutralsn-300" />
+          </button>
 
           {/* Transactions */}
           <div className="space-y-3">
