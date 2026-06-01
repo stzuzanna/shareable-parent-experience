@@ -31,7 +31,7 @@ const Divider = () => <div className="h-px bg-mfneutralsn-75 mx-4" />;
 const InfoRow = ({ label, sublabel }: { label: string; sublabel: string }) => (
   <div className="px-4 py-3">
     <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">{label}</p>
-    <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">{sublabel}</p>
+    <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">{sublabel}</p>
   </div>
 );
 
@@ -252,7 +252,7 @@ const SecondaryBadge = () => (
 
 const LabelValueRow = ({ label, value }: { label: string; value: string }) => (
   <div className="px-4 py-3 border-b border-mfneutralsn-75">
-    <p className="text-[12px] text-mfneutralsn-300 leading-tight">{label}</p>
+    <p className="text-[14px] text-mfneutralsn-300 leading-tight">{label}</p>
     <p className="text-[14px] text-mfneutralsn-500 leading-tight mt-1">{value}</p>
   </div>
 );
@@ -271,7 +271,7 @@ const AddFieldRow = ({ label, onPress }: { label: string; onPress?: () => void }
 
 const FieldShell = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <div className="px-4 py-3 border-b border-mfneutralsn-75">
-    <p className="text-[12px] text-mfneutralsn-300 leading-tight mb-1.5">{label}</p>
+    <p className="text-[14px] text-mfneutralsn-300 leading-tight mb-1.5">{label}</p>
     {children}
   </div>
 );
@@ -583,7 +583,7 @@ const ContactEditCard = ({
           </Avatar>
           <div className="min-w-0">
             <p className="text-[14px] font-medium text-mfneutralsn-500 truncate">{contact.name}</p>
-            <p className="text-[12px] text-mfneutralsn-300">{contact.role}</p>
+            <p className="text-[14px] text-mfneutralsn-300">{contact.role}</p>
           </div>
         </div>
         <Badge />
@@ -721,7 +721,7 @@ const SubpageRowDual = ({
       </div>
       <div className="min-w-0">
         <p className="text-[14px] text-mfneutralsn-400 truncate">{label}</p>
-        {sublabel && <p className="text-[12px] text-mfneutralsn-300 mt-0.5 truncate">{sublabel}</p>}
+        {sublabel && <p className="text-[14px] text-mfneutralsn-300 mt-0.5 truncate">{sublabel}</p>}
       </div>
     </div>
     {trailing && <div className="flex-shrink-0">{trailing}</div>}
@@ -778,9 +778,9 @@ const PermissionRow = ({ item }: { item: { label: string; status: PermissionStat
     <div className="flex-1 min-w-0">
       <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">{item.label}</p>
       {item.lastChanged ? (
-        <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">Last changed {item.lastChanged}</p>
+        <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">Last changed {item.lastChanged}</p>
       ) : (
-        <p className="text-[12px] text-mfprimaryp-400 mt-1 leading-tight">Needs your response</p>
+        <p className="text-[14px] text-mfprimaryp-400 mt-1 leading-tight">Needs your response</p>
       )}
     </div>
   </div>
@@ -1000,8 +1000,8 @@ const LeaveRow = ({ icon, label, sublabel, trailing }: { icon: React.ReactNode; 
     </div>
     <div className="flex-1 min-w-0">
       <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">{label}</p>
-      <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight truncate">{sublabel}</p>
+      <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight truncate">{sublabel}</p>
     </div>
-    <span className="text-[12px] text-mfneutralsn-300 flex-shrink-0">{trailing}</span>
+    <span className="text-[14px] text-mfneutralsn-300 flex-shrink-0">{trailing}</span>
   </div>
 );

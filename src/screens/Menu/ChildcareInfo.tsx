@@ -63,7 +63,7 @@ const ClosureRow = ({ label, sublabel }: { label: string; sublabel: string }) =>
       </div>
       <div className="min-w-0">
         <p className="text-[14px] text-mfneutralsn-400 truncate">{label}</p>
-        <p className="text-[12px] text-mfneutralsn-300 mt-0.5 truncate">{sublabel}</p>
+        <p className="text-[14px] text-mfneutralsn-300 mt-0.5 truncate">{sublabel}</p>
       </div>
     </div>
   </div>

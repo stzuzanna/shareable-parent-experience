@@ -53,7 +53,7 @@ const DetailRow = ({
       </div>
       <div className="min-w-0">
         <p className="text-sm font-medium text-mfneutralsn-500">{label}</p>
-        {sublabel && <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">{sublabel}</p>}
+        {sublabel && <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">{sublabel}</p>}
       </div>
     </div>
     {badge && <div className="flex-shrink-0 ml-2">{badge}</div>}
@@ -161,11 +161,11 @@ export const HealthAndSafetyContent = (): JSX.Element => {
         <div className="px-4 py-3 flex flex-col gap-4">
           <div>
             <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">Phil Cawlins</p>
-            <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">+1 (555) 123-4567 · Doctor</p>
+            <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">+1 (555) 123-4567 · Doctor</p>
           </div>
           <div>
             <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">Lactose, Peanuts</p>
-            <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">Allergies</p>
+            <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">Allergies</p>
           </div>
           <div>
             <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">Tolerates penicillin</p>
@@ -187,7 +187,7 @@ export const HealthAndSafetyContent = (): JSX.Element => {
             <div className="px-4 py-3 flex items-center justify-between">
               <div>
                 <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">{med.name}</p>
-                <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">{med.detail}</p>
+                <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">{med.detail}</p>
               </div>
               <span className={`text-xs px-2.5 py-0.5 rounded-full ${med.badgeStyle}`}>{med.badge}</span>
             </div>
@@ -204,7 +204,7 @@ export const HealthAndSafetyContent = (): JSX.Element => {
             <div className="px-4 py-3 flex items-center justify-between">
               <div>
                 <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">{imm.name}</p>
-                <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">{imm.date}</p>
+                <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">{imm.date}</p>
               </div>
               <ChevronRightIcon className="w-4 h-4 text-mfneutralsn-200" />
             </div>

@@ -25,7 +25,7 @@ export const ChildProfileInfo = (): JSX.Element => {
         </div>
         <div className="flex items-center">
           <span
-            className="inline-flex items-center px-2 h-[20px] rounded-full text-[12px] leading-none border"
+            className="inline-flex items-center px-2 h-[20px] rounded-full text-[14px] leading-none border"
             style={{ backgroundColor: "#fffcf5", borderColor: "#fac12e", color: "#2d2d39" }}
           >
             Lactose

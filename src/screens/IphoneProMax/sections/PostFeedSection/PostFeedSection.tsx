@@ -229,7 +229,7 @@ export const PostFeedSection = ({
 
               <div className="flex flex-col gap-5 px-5 pb-6">
                 <div>
-                  <label className="text-[12px] text-mfneutralsn-300">Search</label>
+                  <label className="text-[14px] text-mfneutralsn-300">Search</label>
                   <div className="mt-1.5 flex items-center gap-2 h-10 px-3 rounded-lg border border-mfneutralsn-200 bg-white">
                     <SearchIcon className="w-4 h-4 text-mfneutralsn-300" />
                     <input
@@ -247,7 +247,7 @@ export const PostFeedSection = ({
                 </div>
 
                 <div>
-                  <label className="text-[12px] text-mfneutralsn-300">Date range</label>
+                  <label className="text-[14px] text-mfneutralsn-300">Date range</label>
                   <div className="mt-1.5 grid grid-cols-2 gap-2">
                     <input
                       type="date"
@@ -265,7 +265,7 @@ export const PostFeedSection = ({
                 </div>
 
                 <div>
-                  <label className="text-[12px] text-mfneutralsn-300">Sender</label>
+                  <label className="text-[14px] text-mfneutralsn-300">Sender</label>
                   <div className="mt-1.5 flex flex-wrap gap-2">
                     {SENDER_OPTIONS.map((s) => {
                       const selected = senders.has(s);

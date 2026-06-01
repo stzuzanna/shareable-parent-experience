@@ -53,7 +53,7 @@ export const BookingsContent = (): JSX.Element => {
       <Section title="Care pattern">
         <div className="px-4 pb-3">
           <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">Monthly full time</p>
-          <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">$1,350/month · Aug 31 -</p>
+          <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">$1,350/month · Aug 31 -</p>
         </div>
       </Section>
 
@@ -65,7 +65,7 @@ export const BookingsContent = (): JSX.Element => {
               className="px-4 py-4 flex items-center justify-between gap-2 border-t border-mfneutralsn-75 first:border-t-0"
             >
               <p className="text-[14px] font-medium text-mfneutralsn-500 flex-1 min-w-0 truncate leading-tight">{b.name}</p>
-              <span className="text-[12px] text-mfneutralsn-300 w-10 text-right">{b.date}</span>
+              <span className="text-[14px] text-mfneutralsn-300 w-10 text-right">{b.date}</span>
               <span className="text-[13px] text-mfneutralsn-400 w-14 text-right tabular-nums">{b.amount}</span>
               <StatusIcon status={b.status} />
             </div>

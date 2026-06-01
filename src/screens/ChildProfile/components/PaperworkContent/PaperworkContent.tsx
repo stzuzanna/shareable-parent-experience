@@ -199,7 +199,7 @@ export const PaperworkContent = (): JSX.Element => {
           >
             <div className="flex-1 min-w-0">
               <p className="text-[14px] font-medium text-mfneutralsn-500 truncate leading-tight">{it.title}</p>
-              <p className="text-[12px] text-mfneutralsn-300 mt-1 truncate leading-tight">{it.meta}</p>
+              <p className="text-[14px] text-mfneutralsn-300 mt-1 truncate leading-tight">{it.meta}</p>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
               {it.badge && <Badge label={it.badge.label} variant={it.badge.variant} />}
@@ -252,7 +252,7 @@ export const PaperworkContent = (): JSX.Element => {
               <div className="flex flex-col gap-5 px-5 pb-6">
                 {/* Search */}
                 <div>
-                  <label className="text-[12px] text-mfneutralsn-300">Search</label>
+                  <label className="text-[14px] text-mfneutralsn-300">Search</label>
                   <div className="mt-1.5 flex items-center gap-2 h-10 px-3 rounded-lg border border-mfneutralsn-200 bg-white">
                     <SearchIcon className="w-4 h-4 text-mfneutralsn-300" />
                     <input
@@ -271,7 +271,7 @@ export const PaperworkContent = (): JSX.Element => {
 
                 {/* Date range */}
                 <div>
-                  <label className="text-[12px] text-mfneutralsn-300">Date range</label>
+                  <label className="text-[14px] text-mfneutralsn-300">Date range</label>
                   <div className="mt-1.5 grid grid-cols-2 gap-2">
                     <input
                       type="date"
@@ -290,7 +290,7 @@ export const PaperworkContent = (): JSX.Element => {
 
                 {/* Status */}
                 <div>
-                  <label className="text-[12px] text-mfneutralsn-300">Status</label>
+                  <label className="text-[14px] text-mfneutralsn-300">Status</label>
                   <div className="mt-1.5 flex flex-wrap gap-2">
                     {ALL_STATUSES.map((s) => {
                       const selected = statuses.has(s);

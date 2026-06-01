@@ -68,7 +68,7 @@ const DetailItem = ({
       <FileTextIcon className="w-4 h-4 text-mfneutralsn-300 flex-shrink-0" />
       <div className="min-w-0">
         <p className="text-sm font-medium text-mfneutralsn-500 truncate">{title}</p>
-        {subtitle && <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight truncate">{subtitle}</p>}
+        {subtitle && <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight truncate">{subtitle}</p>}
       </div>
     </div>
     <div className="flex items-center gap-2 flex-shrink-0">
@@ -229,7 +229,7 @@ export const DocumentsContent = (): JSX.Element => {
         <Divider />
         <div className="px-4 py-3">
           <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">Abby has been really active lately...</p>
-          <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">Feb 21</p>
+          <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">Feb 21</p>
         </div>
       </Card>
 
@@ -240,7 +240,7 @@ export const DocumentsContent = (): JSX.Element => {
         <div className="px-4 py-3 flex items-center justify-between">
           <div>
             <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">About me form</p>
-            <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">Sent by Olivia Wilson · 03/03/2026</p>
+            <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">Sent by Olivia Wilson · 03/03/2026</p>
           </div>
           <Badge label="Sign" variant="sign" />
         </div>
@@ -248,7 +248,7 @@ export const DocumentsContent = (): JSX.Element => {
         <div className="px-4 py-3 flex items-center justify-between">
           <div>
             <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">Merchandise</p>
-            <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">Sent by Olivia Wilson · 03/03/2026</p>
+            <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">Sent by Olivia Wilson · 03/03/2026</p>
           </div>
           <Badge label="Complete" variant="complete" />
         </div>
@@ -256,7 +256,7 @@ export const DocumentsContent = (): JSX.Element => {
         <div className="px-4 py-3 flex items-center justify-between">
           <div>
             <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">Enrollment form</p>
-            <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">Sent by Olivia Wilson · 21/02/2026</p>
+            <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">Sent by Olivia Wilson · 21/02/2026</p>
           </div>
           <Badge label="Complete" variant="complete" />
         </div>
