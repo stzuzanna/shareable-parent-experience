@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   ChevronLeftIcon,
   SearchIcon,
   MailIcon,
   PencilIcon,
-  Trash2Icon,
   PlusIcon,
 } from "lucide-react";
 import { BASE_PATH } from "../../constants";
@@ -45,39 +44,11 @@ const PaymentMethodSection = () => (
       </div>
     </Card>
     <div className="px-4 pt-3">
-      <button className="w-full h-11 rounded-lg bg-mfprimaryp-400 text-white text-[14px] font-medium flex items-center justify-center gap-2">
+      <button className="w-full h-11 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] font-medium text-mfneutralsn-500 flex items-center justify-center gap-2 active:bg-gray-50">
         <PlusIcon className="w-4 h-4" />
         Add payment method
       </button>
     </div>
-  </>
-);
-
-const AutopaySection = () => (
-  <>
-    <SectionTitle>Mandatory autopay</SectionTitle>
-    <Card>
-      <p className="text-[14px] text-mfneutralsn-300 mb-3 leading-snug">
-        These contacts are charged automatically when an invoice is issued.
-      </p>
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <Avatar className="w-8 h-8 flex-shrink-0">
-              <AvatarImage src={`${BASE_PATH}avatar-2.png`} alt="Matt Freedman" />
-              <AvatarFallback>MF</AvatarFallback>
-            </Avatar>
-            <p className="text-[14px] text-mfneutralsn-500 truncate">Matt Freedman</p>
-          </div>
-          <button
-            aria-label="Remove from autopay"
-            className="w-8 h-8 flex items-center justify-center text-mfneutralsn-400 active:bg-gray-50 rounded-full flex-shrink-0"
-          >
-            <Trash2Icon className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-    </Card>
   </>
 );
 
@@ -158,7 +129,6 @@ export const PaymentSettings: React.FC<PaymentSettingsProps> = ({ onClose }): JS
       {/* Content */}
       <div className={`flex-1 overflow-y-auto bg-white ${!shouldShowFrame ? "touch:pb-20" : ""}`}>
         <PaymentMethodSection />
-        <AutopaySection />
         <InvoiceRecipientsSection />
         <PayerInfoSection />
         <div className="pb-24" />

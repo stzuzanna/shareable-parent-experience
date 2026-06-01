@@ -1,10 +1,18 @@
 import { BASE_PATH } from '../../../../constants';
 import React from "react";
 import { Avatar, AvatarImage } from "../../../../components/ui/avatar";
-import { Button } from "../../../../components/ui/button";
 import { Card, CardContent } from "../../../../components/ui/card";
+import { PostBookmarkButton } from "../../../../components/PostBookmarkButton/PostBookmarkButton";
 
-export const WelcomePostSection: React.FC = (): JSX.Element => {
+interface WelcomePostSectionProps {
+  isSaved: boolean;
+  onToggleSaved: () => void;
+}
+
+export const WelcomePostSection: React.FC<WelcomePostSectionProps> = ({
+  isSaved,
+  onToggleSaved,
+}): JSX.Element => {
   const messageContent = [
     "Welcome to Sandbox Childcare!",
     "",
@@ -35,17 +43,7 @@ export const WelcomePostSection: React.FC = (): JSX.Element => {
               </div>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="inline-flex items-center gap-2 p-3 relative self-stretch flex-[0_0_auto] h-auto"
-          >
-            <img
-              className="relative w-6 h-6 mt-[-6.00px] mb-[-6.00px]"
-              alt="Dual state icons"
-              src={`${BASE_PATH}dual-state-icons.svg`}
-            />
-          </Button>
+          <PostBookmarkButton isSaved={isSaved} onToggle={onToggleSaved} className="mr-1" />
         </div>
       </div>
 

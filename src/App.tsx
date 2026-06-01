@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { BASE_PATH } from './constants';
-import { useToast } from './hooks/useToast';
 import { useDeviceDetection } from './hooks/useDeviceDetection';
 import { DeviceFrame } from './components/DeviceFrame/DeviceFrame';
 import { PlusIcon } from 'lucide-react';
@@ -16,39 +15,43 @@ import { Balance } from './screens/Balance/Balance';
 import { ActivityPlans } from './screens/ActivityPlans/ActivityPlans';
 import { Notifications } from './screens/Notifications/Notifications';
 import { GlobalAddSheet } from './screens/ChildProfile/components/GlobalAddSheet/GlobalAddSheet';
-import { AbsenceOverlay } from './components/AbsenceOverlay/AbsenceOverlay';
 import { FeedbackSheet } from './components/FeedbackSheet/FeedbackSheet';
-import { Toast } from './components/Toast/Toast';
+import { ToastProvider, useAppToast } from './contexts/ToastContext';
+import { GlobalUiProvider, useGlobalUi } from './contexts/GlobalUiContext';
 
 function AppRoutes() {
   const navigate = useNavigate();
-  const { toasts, showToast, removeToast } = useToast();
+  const { showToast } = useAppToast();
+  const { hideGlobalFab } = useGlobalUi();
   const { shouldShowFrame } = useDeviceDetection();
-  // Inside the scaled DeviceFrame use absolute (contained in the 430×932 area).
-  // On mobile use fixed (viewport-anchored so overlays stay visible while scrolling).
   const overlayPos = shouldShowFrame ? 'absolute' : 'fixed';
 
   const [showAddSheet, setShowAddSheet] = useState(false);
-  const [showAbsenceOverlay, setShowAbsenceOverlay] = useState(false);
   const [showFeedbackSheet, setShowFeedbackSheet] = useState(false);
 
   const handleAddAction = (actionId: string) => {
-    setShowAddSheet(false);
     switch (actionId) {
       case 'add-leave':
-        setShowAbsenceOverlay(true);
         break;
       case 'message':
-        navigate('/messages');
+        setShowAddSheet(false);
+        navigate('/messages/chat/1');
         break;
       case 'feedback':
+        setShowAddSheet(false);
         setShowFeedbackSheet(true);
         break;
       case 'checkin-pin':
       case 'request-care':
+        break;
       case 'meals':
+        break;
       case 'check-out':
+        setShowAddSheet(false);
         showToast('Coming soon', 'info');
+        break;
+      default:
+        setShowAddSheet(false);
         break;
     }
   };
@@ -70,15 +73,15 @@ function AppRoutes() {
         <Route path="/notifications" element={<Notifications />} />
       </Routes>
 
-      {/* Global FAB */}
-      <button
-        onClick={() => setShowAddSheet(true)}
-        className={`${overlayPos} bottom-24 right-4 w-14 h-14 rounded-full bg-mfprimaryp-400 shadow-elevation-elevation-4 flex items-center justify-center z-[60] active:scale-95 transition-transform`}
-      >
-        <PlusIcon className="w-6 h-6 text-white" />
-      </button>
+      {!hideGlobalFab && (
+        <button
+          onClick={() => setShowAddSheet(true)}
+          className={`${overlayPos} bottom-24 right-4 w-14 h-14 rounded-full bg-mfprimaryp-400 shadow-elevation-elevation-4 flex items-center justify-center z-[60] active:scale-95 transition-transform`}
+        >
+          <PlusIcon className="w-6 h-6 text-white" />
+        </button>
+      )}
 
-      {/* Global bottom sheet */}
       <GlobalAddSheet
         isOpen={showAddSheet}
         onClose={() => setShowAddSheet(false)}
@@ -86,38 +89,28 @@ function AppRoutes() {
         useAbsolute={shouldShowFrame}
       />
 
-      {/* Feedback sheet */}
       <FeedbackSheet
         isOpen={showFeedbackSheet}
         onClose={() => setShowFeedbackSheet(false)}
         useAbsolute={shouldShowFrame}
       />
-
-      {/* Absence overlay */}
-      {showAbsenceOverlay && (
-        <div className={`${overlayPos} inset-0 z-[90]`}>
-          <AbsenceOverlay type="sick" onClose={() => setShowAbsenceOverlay(false)} />
-        </div>
-      )}
-
-      {/* Toasts */}
-      <div className={`${overlayPos} top-4 left-4 right-4 z-[100] flex flex-col gap-2`}>
-        {toasts.map((toast) => (
-          <Toast key={toast.id} message={toast.message} type={toast.type} onClose={() => removeToast(toast.id)} />
-        ))}
-      </div>
     </>
   );
 }
 
 function App() {
   const { shouldShowFrame } = useDeviceDetection();
+  const overlayPos = shouldShowFrame ? 'absolute' : 'fixed';
+
   return (
     <BrowserRouter basename={BASE_PATH}>
       <DeviceFrame showFrame={shouldShowFrame}>
-        {/* relative wrapper so absolute overlays (FAB, sheets, toasts) fill exactly the screen area */}
         <div className="relative w-full h-full">
-          <AppRoutes />
+          <ToastProvider position={overlayPos}>
+            <GlobalUiProvider>
+              <AppRoutes />
+            </GlobalUiProvider>
+          </ToastProvider>
         </div>
       </DeviceFrame>
     </BrowserRouter>

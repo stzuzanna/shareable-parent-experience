@@ -100,7 +100,7 @@ export const Balance = (): JSX.Element => {
                   <FileTextIcon className="w-4 h-4 text-mfneutralsn-400" />
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <span className="text-[11px] text-mfneutralsn-300 leading-tight">
+                  <span className="text-[14px] text-mfneutralsn-300 leading-tight">
                     Latest invoice • Charged on Nov 24
                   </span>
                   <span className="text-[14px] text-mfneutralsn-500 leading-tight">Invoice for $1024.00</span>

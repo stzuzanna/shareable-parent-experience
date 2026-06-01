@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ChevronRightIcon, ArrowLeftIcon, FileTextIcon, CheckCircle2Icon, XCircleIcon, HelpCircleIcon } from "lucide-react";
+import { setChildProfileSubpageActive } from "../../../../hooks/useChildProfileSubpage";
+import { DocumentPreviewPage } from "../DocumentPreviewPage/DocumentPreviewPage";
 
 // ── Shared primitives ─────────────────────────────────────────────────────────
 
@@ -46,62 +48,114 @@ const Badge = ({ label, variant }: { label: string; variant: "sign" | "complete"
     yes: "bg-green-50 border border-green-500 text-green-700",
   };
   return (
-    <span className={`text-xs px-2.5 py-0.5 rounded-full whitespace-nowrap ${styles[variant]}`}>
+    <span className={`text-[14px] px-2.5 py-0.5 rounded-full whitespace-nowrap ${styles[variant]}`}>
       {label}
     </span>
   );
 };
 
+interface DocumentItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  badge?: { label: string; variant: "sign" | "complete" | "answer" | "yes" };
+  bodyText?: string;
+}
+
+const NOTE_ITEMS: DocumentItem[] = [
+  {
+    id: "note-active",
+    title: "Abby has been really active lately",
+    subtitle: "Added by Anna Müller · 21 Feb 2026",
+    bodyText:
+      "Abby has been really active lately at nursery. She's been joining in with group activities, especially outdoor play and story time. We're seeing more confidence when she tries new things with her friends.\n\nWe'll keep you posted on how she settles over the next few weeks.",
+  },
+];
+
+const FORM_DOCUMENTS: DocumentItem[] = [
+  {
+    id: "about-me",
+    title: "About me form",
+    subtitle: "Sent by Olivia Wilson · 03/03/2026 4:16 PM",
+    badge: { label: "Sign", variant: "sign" },
+  },
+  {
+    id: "merchandise",
+    title: "Merchandise",
+    subtitle: "Sent by Olivia Wilson · 03/03/2026 4:16 PM",
+    badge: { label: "Complete", variant: "complete" },
+  },
+  {
+    id: "enrollment",
+    title: "Enrollment form",
+    subtitle: "Sent by Olivia Wilson · 03/03/2026 4:16 PM",
+    badge: { label: "Complete", variant: "complete" },
+  },
+  {
+    id: "care-contract",
+    title: "Updated care contract",
+    subtitle: "Sent by Olivia Wilson · 21/02/2026 9:00 AM",
+    badge: { label: "Complete", variant: "complete" },
+  },
+];
+
+const DocumentBadge = ({ badge }: { badge: DocumentItem["badge"] }) =>
+  badge ? <Badge label={badge.label} variant={badge.variant} /> : null;
+
 // ── Detail item row (matching Figma) ──────────────────────────────────────────
 
-const DetailItem = ({
-  title,
-  subtitle,
-  badge,
-}: {
-  title: string;
-  subtitle?: string;
-  badge?: React.ReactNode;
-}) => (
-  <div className="flex items-center justify-between px-4 py-3 gap-3 border border-mfprimaryp-100 rounded-xl mx-2 mb-2 bg-white">
+const DetailItem = ({ doc, onOpen }: { doc: DocumentItem; onOpen: (doc: DocumentItem) => void }) => (
+  <button
+    type="button"
+    onClick={() => onOpen(doc)}
+    className="w-full flex items-center justify-between px-4 py-3 gap-3 border border-mfprimaryp-100 rounded-xl mx-2 mb-2 bg-white text-left active:bg-gray-50"
+  >
     <div className="flex items-center gap-3 flex-1 min-w-0">
       <FileTextIcon className="w-4 h-4 text-mfneutralsn-300 flex-shrink-0" />
       <div className="min-w-0">
-        <p className="text-sm font-medium text-mfneutralsn-500 truncate">{title}</p>
-        {subtitle && <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight truncate">{subtitle}</p>}
+        <p className="text-sm font-medium text-mfneutralsn-500 truncate">{doc.title}</p>
+        <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight truncate">{doc.subtitle}</p>
       </div>
     </div>
     <div className="flex items-center gap-2 flex-shrink-0">
-      {badge}
+      <DocumentBadge badge={doc.badge} />
       <ChevronRightIcon className="w-4 h-4 text-mfneutralsn-200" />
     </div>
-  </div>
+  </button>
+);
+
+const FormDocumentRow = ({
+  doc,
+  onOpen,
+  showDivider,
+}: {
+  doc: DocumentItem;
+  onOpen: (doc: DocumentItem) => void;
+  showDivider?: boolean;
+}) => (
+  <>
+    <button
+      type="button"
+      onClick={() => onOpen(doc)}
+      className="w-full px-4 py-3 flex items-center justify-between text-left active:bg-gray-50"
+    >
+      <div>
+        <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">{doc.title}</p>
+        <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">{doc.subtitle}</p>
+      </div>
+      <DocumentBadge badge={doc.badge} />
+    </button>
+    {showDivider ? <Divider /> : null}
+  </>
 );
 
 // ── Detail views ──────────────────────────────────────────────────────────────
 
-const FormsDetail = () => (
+const FormsDetail = ({ onOpenDocument }: { onOpenDocument: (doc: DocumentItem) => void }) => (
   <div className="flex flex-col pt-2 pb-24 gap-0">
-    <DetailItem
-      title="About me form"
-      subtitle="Sent by Olivia Wilson · 03/03/2026 4:16 PM"
-      badge={<Badge label="Sign" variant="sign" />}
-    />
-    <DetailItem
-      title="Merchandise"
-      subtitle="Sent by Olivia Wilson · 03/03/2026 4:16 PM"
-      badge={<Badge label="Complete" variant="complete" />}
-    />
-    <DetailItem
-      title="Enrollment form"
-      subtitle="Sent by Olivia Wilson · 03/03/2026 4:16 PM"
-      badge={<Badge label="Complete" variant="complete" />}
-    />
-    <DetailItem
-      title="Updated care contract"
-      subtitle="Sent by Olivia Wilson · 21/02/2026 9:00 AM"
-      badge={<Badge label="Complete" variant="complete" />}
-    />
+    {FORM_DOCUMENTS.map((doc) => (
+      <DetailItem key={doc.id} doc={doc} onOpen={onOpenDocument} />
+    ))}
   </div>
 );
 
@@ -148,13 +202,13 @@ const PermissionsDetail = () => {
               <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => setAnswer(item.id, "yes")}
-                  className="px-3 py-1 text-xs font-medium rounded-md border border-gray-200 bg-white text-mfneutralsn-500 active:bg-gray-50"
+                  className="px-3 py-1 text-[14px] font-medium rounded-md border border-gray-200 bg-white text-mfneutralsn-500 active:bg-gray-50"
                 >
                   Yes
                 </button>
                 <button
                   onClick={() => setAnswer(item.id, "no")}
-                  className="px-3 py-1 text-xs font-medium rounded-md border border-gray-200 bg-white text-mfneutralsn-500 active:bg-gray-50"
+                  className="px-3 py-1 text-[14px] font-medium rounded-md border border-gray-200 bg-white text-mfneutralsn-500 active:bg-gray-50"
                 >
                   No
                 </button>
@@ -162,7 +216,7 @@ const PermissionsDetail = () => {
             ) : (
               <button
                 onClick={() => setEditingId(item.id)}
-                className="px-3 py-1 text-xs font-medium rounded-md border border-gray-200 bg-white text-mfneutralsn-400 active:bg-gray-50"
+                className="px-3 py-1 text-[14px] font-medium rounded-md border border-gray-200 bg-white text-mfneutralsn-400 active:bg-gray-50"
               >
                 Edit
               </button>
@@ -174,12 +228,19 @@ const PermissionsDetail = () => {
   );
 };
 
-const NotesDetail = () => (
+const NotesDetail = ({ onOpenNote }: { onOpenNote: (note: DocumentItem) => void }) => (
   <div className="flex flex-col pt-2 pb-24 gap-2 px-2">
-    <div className="bg-white border border-gray-100 rounded-xl p-4">
-      <p className="text-sm font-medium text-mfneutralsn-500">Abby has been really active lately...</p>
-      <p className="text-xs text-mfneutralsn-300 mt-1">Added by Anna Müller · Feb 21</p>
-    </div>
+    {NOTE_ITEMS.map((note) => (
+      <button
+        key={note.id}
+        type="button"
+        onClick={() => onOpenNote(note)}
+        className="w-full bg-white border border-gray-100 rounded-xl p-4 text-left active:bg-gray-50"
+      >
+        <p className="text-sm font-medium text-mfneutralsn-500">{note.title}</p>
+        <p className="text-[14px] text-mfneutralsn-300 mt-1">{note.subtitle}</p>
+      </button>
+    ))}
   </div>
 );
 
@@ -202,20 +263,40 @@ const sectionTitles: Record<NonNullable<Section>, string> = {
 
 export const DocumentsContent = (): JSX.Element => {
   const [section, setSection] = useState<Section>(null);
+  const [openDocument, setOpenDocument] = useState<DocumentItem | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setChildProfileSubpageActive(section !== null || openDocument !== null);
+  }, [section, openDocument]);
+
+  useEffect(() => () => setChildProfileSubpageActive(false), []);
 
   useEffect(() => {
     const scrollable = rootRef.current?.closest(".overflow-y-auto") as HTMLElement | null;
     scrollable?.scrollTo({ top: 0, behavior: "smooth" });
-  }, [section]);
+  }, [section, openDocument]);
+
+  if (openDocument !== null) {
+    return (
+      <div ref={rootRef} className="flex flex-col min-h-full">
+        <DocumentPreviewPage
+          title={openDocument.title}
+          subtitle={openDocument.subtitle}
+          bodyText={openDocument.bodyText}
+          onBack={() => setOpenDocument(null)}
+        />
+      </div>
+    );
+  }
 
   if (section !== null) {
     return (
       <div ref={rootRef} className="flex flex-col bg-mfneutralsn-50 min-h-full">
         <SectionHeader title={sectionTitles[section]} onBack={() => setSection(null)} />
-        {section === "forms" && <FormsDetail />}
+        {section === "forms" && <FormsDetail onOpenDocument={setOpenDocument} />}
         {section === "permissions" && <PermissionsDetail />}
-        {section === "notes" && <NotesDetail />}
+        {section === "notes" && <NotesDetail onOpenNote={setOpenDocument} />}
         {section === "resources" && <ResourcesDetail />}
       </div>
     );
@@ -225,41 +306,29 @@ export const DocumentsContent = (): JSX.Element => {
     <div ref={rootRef} className="flex flex-col bg-mfneutralsn-50 pb-24 gap-4">
       {/* Notes */}
       <Card>
-        <CardHeader title="Notes" count={1} onPress={() => setSection("notes")} />
+        <CardHeader title="Notes" count={NOTE_ITEMS.length} onPress={() => setSection("notes")} />
         <Divider />
-        <div className="px-4 py-3">
-          <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">Abby has been really active lately...</p>
-          <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">Feb 21</p>
-        </div>
+        <button
+          type="button"
+          onClick={() => setOpenDocument(NOTE_ITEMS[0])}
+          className="w-full px-4 py-3 text-left active:bg-gray-50"
+        >
+          <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">{NOTE_ITEMS[0].title}</p>
+          <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">21 Feb 2026</p>
+        </button>
       </Card>
 
       {/* Forms and contracts */}
       <Card>
         <CardHeader title="Forms and contracts" count={6} onPress={() => setSection("forms")} />
-        <Divider />
-        <div className="px-4 py-3 flex items-center justify-between">
-          <div>
-            <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">About me form</p>
-            <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">Sent by Olivia Wilson · 03/03/2026</p>
-          </div>
-          <Badge label="Sign" variant="sign" />
-        </div>
-        <Divider />
-        <div className="px-4 py-3 flex items-center justify-between">
-          <div>
-            <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">Merchandise</p>
-            <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">Sent by Olivia Wilson · 03/03/2026</p>
-          </div>
-          <Badge label="Complete" variant="complete" />
-        </div>
-        <Divider />
-        <div className="px-4 py-3 flex items-center justify-between">
-          <div>
-            <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">Enrollment form</p>
-            <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">Sent by Olivia Wilson · 21/02/2026</p>
-          </div>
-          <Badge label="Complete" variant="complete" />
-        </div>
+        {FORM_DOCUMENTS.slice(0, 3).map((doc, index, list) => (
+          <FormDocumentRow
+            key={doc.id}
+            doc={doc}
+            onOpen={setOpenDocument}
+            showDivider={index < list.length - 1}
+          />
+        ))}
       </Card>
 
       {/* Permissions */}

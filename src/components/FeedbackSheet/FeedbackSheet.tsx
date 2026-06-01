@@ -96,8 +96,9 @@ export const FeedbackSheet: React.FC<FeedbackSheetProps> = ({
                 <h2 className="text-base font-semibold text-mfneutralsn-500">
                   Share your thoughts
                 </h2>
-                <p className="text-xs text-mfneutralsn-300 mt-0.5">
-                  Any feedback helps us improve
+                <p className="text-[14px] text-mfneutralsn-300 mt-1.5 leading-snug pr-2">
+                  This is just a prototype. We&apos;re trying new approaches for parent experience in Famly.
+                  Please let us know what&apos;s missing, feels off, or any wishes that come to mind.
                 </p>
               </div>
               <button
@@ -134,7 +135,7 @@ export const FeedbackSheet: React.FC<FeedbackSheetProps> = ({
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-mfneutralsn-500 placeholder:text-mfneutralsn-300 focus:outline-none focus:border-mfprimaryp-400 bg-gray-50 resize-none"
                 />
                 {status === "error" && (
-                  <p className="text-xs text-red-500">
+                  <p className="text-[14px] text-red-500">
                     Something went wrong — please try again.
                   </p>
                 )}

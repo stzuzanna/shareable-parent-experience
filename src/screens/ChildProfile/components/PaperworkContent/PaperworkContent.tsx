@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronRightIcon, FilterIcon, XIcon, SearchIcon, CheckIcon, ChevronDownIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { setChildProfileSubpageActive } from "../../../../hooks/useChildProfileSubpage";
+import { DocumentPreviewPage } from "../DocumentPreviewPage/DocumentPreviewPage";
 
 type FilterKey = "all" | "notes" | "forms" | "health";
 
@@ -9,6 +11,7 @@ interface Item {
   meta: string;
   badge?: { label: string; variant: "sign" | "complete" | "ack" | "accident" };
   type: Exclude<FilterKey, "all">;
+  bodyText?: string;
 }
 
 const items: Item[] = [
@@ -27,8 +30,20 @@ const items: Item[] = [
   { title: "Updated care contract", meta: "21 Feb 2026 · Form", badge: { label: "Signed", variant: "complete" }, type: "forms" },
 
   // No pill
-  { title: "Abby has been really active lately. We expect...", meta: "21 Feb 2026 · Note", type: "notes" },
-  { title: "Settling in observations", meta: "8 Feb 2026 · Note", type: "notes" },
+  {
+    title: "Abby has been really active lately",
+    meta: "21 Feb 2026 · Note",
+    type: "notes",
+    bodyText:
+      "Abby has been really active lately at nursery. She's been joining in with group activities, especially outdoor play and story time. We're seeing more confidence when she tries new things with her friends.\n\nWe'll keep you posted on how she settles over the next few weeks.",
+  },
+  {
+    title: "Settling in observations",
+    meta: "8 Feb 2026 · Note",
+    type: "notes",
+    bodyText:
+      "Abby is settling in well overall. She separates from parents comfortably most mornings and engages with staff within ten minutes of arrival.\n\nShe enjoys sensory play and has started initiating play with one or two familiar children. Nap time is still a little variable but improving.",
+  },
   { title: "Curriculum for new year", meta: "21 Feb 2026 · Document", type: "forms" },
   { title: "Summer programme overview", meta: "1 Feb 2026 · Document", type: "forms" },
   { title: "Accident report", meta: "21 Feb 2026 · Accident report", type: "health" },
@@ -50,7 +65,7 @@ const Badge = ({ label, variant }: { label: string; variant: NonNullable<Item["b
     accident: "bg-orange-50 border border-orange-400 text-orange-600",
   };
   return (
-    <span className={`text-[11px] px-2 h-[20px] inline-flex items-center rounded-full whitespace-nowrap leading-none ${styles[variant]}`}>
+    <span className={`text-[14px] px-2.5 h-[22px] inline-flex items-center rounded-full whitespace-nowrap leading-none ${styles[variant]}`}>
       {label}
     </span>
   );
@@ -134,6 +149,17 @@ export const PaperworkContent = (): JSX.Element => {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [statuses, setStatuses] = useState<Set<StatusKey>>(new Set());
+  const [openDocument, setOpenDocument] = useState<{
+    title: string;
+    subtitle: string;
+    bodyText?: string;
+  } | null>(null);
+
+  useEffect(() => {
+    setChildProfileSubpageActive(openDocument !== null);
+  }, [openDocument]);
+
+  useEffect(() => () => setChildProfileSubpageActive(false), []);
 
   const advancedActive =
     query.trim() !== "" || dateFrom !== "" || dateTo !== "" || statuses.size > 0;
@@ -174,6 +200,17 @@ export const PaperworkContent = (): JSX.Element => {
     });
   };
 
+  if (openDocument !== null) {
+    return (
+      <DocumentPreviewPage
+        title={openDocument.title}
+        subtitle={openDocument.subtitle}
+        bodyText={openDocument.bodyText}
+        onBack={() => setOpenDocument(null)}
+      />
+    );
+  }
+
   return (
     <div className="flex flex-col bg-white pb-24 pt-4">
       {/* Filter row */}
@@ -198,6 +235,10 @@ export const PaperworkContent = (): JSX.Element => {
         {visible.map((it, idx) => (
           <button
             key={`${it.title}-${idx}`}
+            type="button"
+            onClick={() =>
+              setOpenDocument({ title: it.title, subtitle: it.meta, bodyText: it.bodyText })
+            }
             className="flex items-center justify-between gap-3 px-4 py-3 bg-white border border-mfneutralsn-75 rounded-xl text-left active:bg-gray-50"
           >
             <div className="flex-1 min-w-0">
@@ -301,7 +342,7 @@ export const PaperworkContent = (): JSX.Element => {
                         <button
                           key={s}
                           onClick={() => toggleStatus(s)}
-                          className={`h-9 px-3 rounded-full border text-[13px] flex items-center gap-1.5 ${
+                          className={`h-9 px-3 rounded-full border text-[14px] flex items-center gap-1.5 ${
                             selected
                               ? "bg-mfprimaryp-400 border-mfprimaryp-400 text-white"
                               : "bg-white border-mfneutralsn-200 text-mfneutralsn-500"

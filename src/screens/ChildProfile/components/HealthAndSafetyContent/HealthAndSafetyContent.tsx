@@ -61,7 +61,7 @@ const DetailRow = ({
 );
 
 const Badge = ({ label, variant }: { label: string; variant: "orange" | "green" }) => (
-  <span className={`text-xs px-2.5 py-0.5 rounded-full border whitespace-nowrap ${
+  <span className={`text-[14px] px-2.5 py-0.5 rounded-full border whitespace-nowrap ${
     variant === "orange"
       ? "bg-orange-50 border-orange-400 text-orange-600"
       : "bg-green-50 border-green-500 text-green-700"
@@ -189,7 +189,7 @@ export const HealthAndSafetyContent = (): JSX.Element => {
                 <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">{med.name}</p>
                 <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">{med.detail}</p>
               </div>
-              <span className={`text-xs px-2.5 py-0.5 rounded-full ${med.badgeStyle}`}>{med.badge}</span>
+              <span className={`text-[14px] px-2.5 py-0.5 rounded-full ${med.badgeStyle}`}>{med.badge}</span>
             </div>
           </React.Fragment>
         ))}

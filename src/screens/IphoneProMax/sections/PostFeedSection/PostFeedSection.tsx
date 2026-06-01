@@ -3,6 +3,9 @@ import React, { useEffect, useRef, useState } from "react";
 import { SearchIcon, SlidersHorizontalIcon, XIcon, ChevronDownIcon, CheckIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDeviceDetection } from "../../../../hooks/useDeviceDetection";
+import { PhotosCalendarPicker } from "../PhotosCalendarPicker";
+import { DateRangeCalendar, DateRangePickerFields } from "../DateRangeCalendar";
+import { LEARNING_FILTER_AREAS } from "../LearningPostSection/LearningPostSection";
 
 const SENDER_OPTIONS = [
   "Little Explorers",
@@ -20,11 +23,38 @@ const allActivityTypes = [
   { id: "medication", label: "Medication" },
 ];
 
+export const postSourceOptions = [
+  { id: "all", label: "All posts" },
+  { id: "little-explorers", label: "Little Explorers" },
+  { id: "sandbox", label: "Sandbox Childcare" },
+  { id: "polls", label: "Polls" },
+] as const;
+
+export type PostSourceFilter = (typeof postSourceOptions)[number]["id"];
+
+export const learningTypeOptions = [
+  { id: "all", label: "All" },
+  { id: "observations", label: "Observations" },
+  { id: "assessments", label: "Assessments" },
+  { id: "resources", label: "Resources" },
+] as const;
+
+export type LearningTypeFilter = (typeof learningTypeOptions)[number]["id"];
+
 interface PostFeedSectionProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   activityTypeFilter?: string;
   onActivityTypeFilterChange?: (filter: string) => void;
+  postSourceFilter?: PostSourceFilter;
+  onPostSourceFilterChange?: (filter: PostSourceFilter) => void;
+  learningTypeFilter?: LearningTypeFilter;
+  onLearningTypeFilterChange?: (filter: LearningTypeFilter) => void;
+  learningAreasFilter?: Set<string>;
+  onLearningAreasFilterChange?: (areas: Set<string>) => void;
+  photoFilterDate?: string | null;
+  onPhotoFilterDateChange?: (date: string | null) => void;
+  photoDatesWithContent?: string[];
 }
 
 const tabs = [
@@ -36,10 +66,6 @@ const tabs = [
 ];
 
 const DROPDOWN_LABEL: Record<string, string> = {
-  home: 'All posts',
-  activity: 'All types',
-  learning: 'All areas',
-  photos: 'All dates',
   saved: 'All types',
 };
 
@@ -95,6 +121,65 @@ const ActivityDropdown = ({
   );
 };
 
+const FilterDropdown = ({
+  options,
+  value,
+  onChange,
+}: {
+  options: readonly { id: string; label: string }[];
+  value: string;
+  onChange: (id: string) => void;
+}) => {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const current = options.find((o) => o.id === value) ?? options[0];
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
+  return (
+    <div ref={containerRef} className="relative flex-shrink-0">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border border-mfneutralsn-200 text-mfneutralsn-400 bg-white"
+      >
+        {current.label}
+        <ChevronDownIcon className="w-3.5 h-3.5" />
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 mt-1.5 min-w-[180px] bg-white rounded-xl shadow-lg border border-gray-100 z-50">
+          {options.map((option) => (
+            <button
+              key={option.id}
+              type="button"
+              onMouseDown={(e) => e.stopPropagation()}
+              onClick={() => {
+                onChange(option.id);
+                setOpen(false);
+              }}
+              className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 first:rounded-t-xl last:rounded-b-xl ${
+                value === option.id ? "text-mfprimaryp-400 font-medium" : "text-mfneutralsn-500"
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const StaticDropdown = ({ label }: { label: string }) => (
   <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border border-mfneutralsn-200 text-mfneutralsn-400 bg-white flex-shrink-0">
     {label}
@@ -107,6 +192,15 @@ export const PostFeedSection = ({
   onTabChange,
   activityTypeFilter = 'all',
   onActivityTypeFilterChange = () => {},
+  postSourceFilter = 'all',
+  onPostSourceFilterChange = () => {},
+  learningTypeFilter = 'all',
+  onLearningTypeFilterChange = () => {},
+  learningAreasFilter = new Set<string>(),
+  onLearningAreasFilterChange = () => {},
+  photoFilterDate = null,
+  onPhotoFilterDateChange = () => {},
+  photoDatesWithContent = [],
 }: PostFeedSectionProps): JSX.Element => {
   const { shouldShowFrame } = useDeviceDetection();
 
@@ -115,7 +209,26 @@ export const PostFeedSection = ({
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [senders, setSenders] = useState<Set<string>>(new Set());
-  const filtersActive = searchQuery.trim() !== '' || dateFrom !== '' || dateTo !== '' || senders.size > 0;
+  const [activitySearchQuery, setActivitySearchQuery] = useState('');
+  const [activityDateFrom, setActivityDateFrom] = useState('');
+  const [activityDateTo, setActivityDateTo] = useState('');
+  const [activitySenders, setActivitySenders] = useState<Set<string>>(new Set());
+  const [learningSearchQuery, setLearningSearchQuery] = useState('');
+  const [learningDateFrom, setLearningDateFrom] = useState('');
+  const [learningDateTo, setLearningDateTo] = useState('');
+
+  const filtersActive =
+    activeTab === 'activity'
+      ? activitySearchQuery.trim() !== '' ||
+        activityDateFrom !== '' ||
+        activityDateTo !== '' ||
+        activitySenders.size > 0
+      : activeTab === 'learning'
+        ? learningSearchQuery.trim() !== '' ||
+          learningDateFrom !== '' ||
+          learningDateTo !== '' ||
+          learningAreasFilter.size > 0
+        : searchQuery.trim() !== '' || dateFrom !== '' || dateTo !== '' || senders.size > 0;
 
   const toggleSender = (s: string) => {
     setSenders((prev) => {
@@ -126,12 +239,60 @@ export const PostFeedSection = ({
     });
   };
 
+  const toggleActivitySender = (s: string) => {
+    setActivitySenders((prev) => {
+      const next = new Set(prev);
+      if (next.has(s)) next.delete(s);
+      else next.add(s);
+      return next;
+    });
+  };
+
+  const toggleLearningArea = (area: string) => {
+    const next = new Set(learningAreasFilter);
+    if (next.has(area)) next.delete(area);
+    else next.add(area);
+    onLearningAreasFilterChange(next);
+  };
+
   const clearFilters = () => {
+    if (activeTab === 'activity') {
+      setActivitySearchQuery('');
+      setActivityDateFrom('');
+      setActivityDateTo('');
+      setActivitySenders(new Set());
+      return;
+    }
+    if (activeTab === 'learning') {
+      setLearningSearchQuery('');
+      setLearningDateFrom('');
+      setLearningDateTo('');
+      onLearningAreasFilterChange(new Set());
+      return;
+    }
     setSearchQuery('');
     setDateFrom('');
     setDateTo('');
     setSenders(new Set());
   };
+
+  const filterSheetTitle =
+    activeTab === "activity"
+      ? "Filter activities"
+      : activeTab === "learning"
+        ? "Filter learning"
+        : "Filter newsfeed";
+
+  const searchPlaceholder =
+    activeTab === "activity"
+      ? "Search activities"
+      : activeTab === "learning"
+        ? "Search learning"
+        : "Search posts";
+
+  const showSenderFilters = activeTab === "home" || activeTab === "activity";
+  const currentSenders = activeTab === "activity" ? activitySenders : senders;
+  const onToggleCurrentSender = activeTab === "activity" ? toggleActivitySender : toggleSender;
 
   return (
     <header className={`flex flex-col w-full bg-white overflow-visible ${!shouldShowFrame ? 'sticky top-0 z-50' : ''}`}>
@@ -144,7 +305,7 @@ export const PostFeedSection = ({
       </div>
 
       {/* Title row */}
-      <div className="flex items-center justify-between px-5 pt-3 pb-3">
+      <div className="flex items-center justify-between px-5 pt-3 pb-6">
         <h1 className="text-[20px] font-bold text-mfneutralsn-500 tracking-tight leading-tight">
           Home
         </h1>
@@ -174,24 +335,49 @@ export const PostFeedSection = ({
       </div>
 
       {/* Filter row */}
-      <div className="flex items-center justify-between px-4 py-3 w-full bg-white">
+      <div
+        className={`flex items-center px-4 py-3 w-full bg-white ${
+          activeTab === 'photos' ? 'justify-end' : 'justify-between'
+        }`}
+      >
         {activeTab === 'activity' ? (
           <ActivityDropdown typeFilter={activityTypeFilter} onTypeFilterChange={onActivityTypeFilterChange} />
-        ) : (
+        ) : activeTab === 'home' ? (
+          <FilterDropdown
+            options={postSourceOptions}
+            value={postSourceFilter}
+            onChange={(id) => onPostSourceFilterChange(id as PostSourceFilter)}
+          />
+        ) : activeTab === 'learning' ? (
+          <FilterDropdown
+            options={learningTypeOptions}
+            value={learningTypeFilter}
+            onChange={(id) => onLearningTypeFilterChange(id as LearningTypeFilter)}
+          />
+        ) : activeTab === 'photos' ? null : (
           <StaticDropdown label={DROPDOWN_LABEL[activeTab] ?? 'All'} />
         )}
-        <button
-          aria-label="Filters"
-          onClick={() => setShowFilterSheet(true)}
-          className={`relative flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-full border bg-white ${
-            filtersActive ? 'border-mfprimaryp-400' : 'border-mfneutralsn-200'
-          }`}
-        >
-          <SlidersHorizontalIcon className={`w-4 h-4 ${filtersActive ? 'text-mfprimaryp-400' : 'text-mfneutralsn-400'}`} />
-          {filtersActive && (
-            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-mfprimaryp-400" />
-          )}
-        </button>
+        {activeTab === 'photos' ? (
+          <PhotosCalendarPicker
+            selectedDate={photoFilterDate}
+            onSelectDate={onPhotoFilterDateChange}
+            datesWithPhotos={photoDatesWithContent}
+            popoverAlign="right"
+          />
+        ) : (
+          <button
+            aria-label="Filters"
+            onClick={() => setShowFilterSheet(true)}
+            className={`relative flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-full border bg-white ${
+              filtersActive ? 'border-mfprimaryp-400' : 'border-mfneutralsn-200'
+            }`}
+          >
+            <SlidersHorizontalIcon className={`w-4 h-4 ${filtersActive ? 'text-mfprimaryp-400' : 'text-mfneutralsn-400'}`} />
+            {filtersActive && (
+              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-mfprimaryp-400" />
+            )}
+          </button>
+        )}
       </div>
 
       <AnimatePresence>
@@ -217,7 +403,7 @@ export const PostFeedSection = ({
               </div>
 
               <div className="flex items-center justify-between px-5 pt-2 pb-4">
-                <h2 className="text-[16px] font-medium text-mfneutralsn-500">Filter newsfeed</h2>
+                <h2 className="text-[16px] font-medium text-mfneutralsn-500">{filterSheetTitle}</h2>
                 <button
                   onClick={() => setShowFilterSheet(false)}
                   aria-label="Close"
@@ -233,13 +419,34 @@ export const PostFeedSection = ({
                   <div className="mt-1.5 flex items-center gap-2 h-10 px-3 rounded-lg border border-mfneutralsn-200 bg-white">
                     <SearchIcon className="w-4 h-4 text-mfneutralsn-300" />
                     <input
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search posts"
+                      value={
+                        activeTab === "activity"
+                          ? activitySearchQuery
+                          : activeTab === "learning"
+                            ? learningSearchQuery
+                            : searchQuery
+                      }
+                      onChange={(e) => {
+                        if (activeTab === "activity") setActivitySearchQuery(e.target.value);
+                        else if (activeTab === "learning") setLearningSearchQuery(e.target.value);
+                        else setSearchQuery(e.target.value);
+                      }}
+                      placeholder={searchPlaceholder}
                       className="flex-1 text-[14px] text-mfneutralsn-500 bg-transparent focus:outline-none placeholder:text-mfneutralsn-300"
                     />
-                    {searchQuery && (
-                      <button onClick={() => setSearchQuery('')} aria-label="Clear search">
+                    {(activeTab === "activity"
+                      ? activitySearchQuery
+                      : activeTab === "learning"
+                        ? learningSearchQuery
+                        : searchQuery) && (
+                      <button
+                        onClick={() => {
+                          if (activeTab === "activity") setActivitySearchQuery("");
+                          else if (activeTab === "learning") setLearningSearchQuery("");
+                          else setSearchQuery("");
+                        }}
+                        aria-label="Clear search"
+                      >
                         <XIcon className="w-4 h-4 text-mfneutralsn-300" />
                       </button>
                     )}
@@ -248,44 +455,95 @@ export const PostFeedSection = ({
 
                 <div>
                   <label className="text-[14px] text-mfneutralsn-300">Date range</label>
-                  <div className="mt-1.5 grid grid-cols-2 gap-2">
-                    <input
-                      type="date"
-                      value={dateFrom}
-                      onChange={(e) => setDateFrom(e.target.value)}
-                      className="h-10 px-3 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] text-mfneutralsn-500 focus:outline-none"
+                  {activeTab === "activity" ? (
+                    <DateRangePickerFields
+                      dateFrom={activityDateFrom}
+                      dateTo={activityDateTo}
+                      onChange={(from, to) => {
+                        setActivityDateFrom(from);
+                        setActivityDateTo(to);
+                      }}
                     />
-                    <input
-                      type="date"
-                      value={dateTo}
-                      onChange={(e) => setDateTo(e.target.value)}
-                      className="h-10 px-3 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] text-mfneutralsn-500 focus:outline-none"
-                    />
-                  </div>
+                  ) : activeTab === "learning" ? (
+                    <div className="mt-1.5">
+                      <DateRangeCalendar
+                        dateFrom={learningDateFrom}
+                        dateTo={learningDateTo}
+                        onChange={(from, to) => {
+                          setLearningDateFrom(from);
+                          setLearningDateTo(to);
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="mt-1.5 grid grid-cols-2 gap-2">
+                      <input
+                        type="date"
+                        value={dateFrom}
+                        onChange={(e) => setDateFrom(e.target.value)}
+                        className="h-10 px-3 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] text-mfneutralsn-500 focus:outline-none"
+                      />
+                      <input
+                        type="date"
+                        value={dateTo}
+                        onChange={(e) => setDateTo(e.target.value)}
+                        className="h-10 px-3 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] text-mfneutralsn-500 focus:outline-none"
+                      />
+                    </div>
+                  )}
                 </div>
 
-                <div>
-                  <label className="text-[14px] text-mfneutralsn-300">Sender</label>
-                  <div className="mt-1.5 flex flex-wrap gap-2">
-                    {SENDER_OPTIONS.map((s) => {
-                      const selected = senders.has(s);
-                      return (
-                        <button
-                          key={s}
-                          onClick={() => toggleSender(s)}
-                          className={`h-9 px-3 rounded-full border text-[13px] flex items-center gap-1.5 ${
-                            selected
-                              ? 'bg-mfprimaryp-400 border-mfprimaryp-400 text-white'
-                              : 'bg-white border-mfneutralsn-200 text-mfneutralsn-500'
-                          }`}
-                        >
-                          {selected && <CheckIcon className="w-3.5 h-3.5" />}
-                          {s}
-                        </button>
-                      );
-                    })}
+                {activeTab === "learning" && (
+                  <div>
+                    <label className="text-[14px] text-mfneutralsn-300">Areas</label>
+                    <div className="mt-1.5 flex flex-wrap gap-2">
+                      {LEARNING_FILTER_AREAS.map((area) => {
+                        const selected = learningAreasFilter.has(area.id);
+                        return (
+                          <button
+                            key={area.id}
+                            type="button"
+                            onClick={() => toggleLearningArea(area.id)}
+                            className={`h-9 px-3 rounded-full border text-[14px] flex items-center gap-1.5 ${
+                              selected
+                                ? "bg-mfprimaryp-400 border-mfprimaryp-400 text-white"
+                                : "bg-white border-mfneutralsn-200 text-mfneutralsn-500"
+                            }`}
+                          >
+                            {selected && <CheckIcon className="w-3.5 h-3.5" />}
+                            {area.label}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {showSenderFilters && (
+                  <div>
+                    <label className="text-[14px] text-mfneutralsn-300">Sender</label>
+                    <div className="mt-1.5 flex flex-wrap gap-2">
+                      {SENDER_OPTIONS.map((s) => {
+                        const selected = currentSenders.has(s);
+                        return (
+                          <button
+                            key={s}
+                            type="button"
+                            onClick={() => onToggleCurrentSender(s)}
+                            className={`h-9 px-3 rounded-full border text-[14px] flex items-center gap-1.5 ${
+                              selected
+                                ? "bg-mfprimaryp-400 border-mfprimaryp-400 text-white"
+                                : "bg-white border-mfneutralsn-200 text-mfneutralsn-500"
+                            }`}
+                          >
+                            {selected && <CheckIcon className="w-3.5 h-3.5" />}
+                            {s}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex items-center gap-3 pt-2">
                   <button

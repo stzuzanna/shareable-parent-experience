@@ -66,7 +66,7 @@ export const BookingsContent = (): JSX.Element => {
             >
               <p className="text-[14px] font-medium text-mfneutralsn-500 flex-1 min-w-0 truncate leading-tight">{b.name}</p>
               <span className="text-[14px] text-mfneutralsn-300 w-10 text-right">{b.date}</span>
-              <span className="text-[13px] text-mfneutralsn-400 w-14 text-right tabular-nums">{b.amount}</span>
+              <span className="text-[14px] text-mfneutralsn-400 w-14 text-right tabular-nums">{b.amount}</span>
               <StatusIcon status={b.status} />
             </div>
           ))}

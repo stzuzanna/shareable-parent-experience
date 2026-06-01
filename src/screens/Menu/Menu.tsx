@@ -107,7 +107,7 @@ export const Menu = (): JSX.Element => {
             {isPaid && autopay && (
               <div className="inline-flex items-center gap-2 px-3 h-7 mt-3 rounded-full bg-blue-50 border border-blue-500">
                 <span className="w-2 h-2 rounded-full bg-blue-500" />
-                <span className="text-[13px] text-blue-700">You're set to pay invoices automatically</span>
+                <span className="text-[14px] text-blue-700">You're set to pay invoices automatically</span>
               </div>
             )}
 
@@ -118,7 +118,7 @@ export const Menu = (): JSX.Element => {
                     <FileTextIcon className="w-4 h-4 text-mfneutralsn-400" />
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="text-[11px] text-mfneutralsn-300 leading-tight">
+                    <span className="text-[14px] text-mfneutralsn-300 leading-tight">
                       Latest invoice • Charged on Nov 24
                     </span>
                     <span className="text-[14px] text-mfneutralsn-500 leading-tight">Invoice for $1024.00</span>

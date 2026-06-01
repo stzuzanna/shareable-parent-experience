@@ -73,7 +73,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ onClose, onPaymentSu
             className="w-full h-14 flex items-center justify-between px-4 bg-white border-gray-200 text-left"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-5 bg-blue-600 rounded text-white text-xs font-bold flex items-center justify-center">
+              <div className="w-8 h-5 bg-blue-600 rounded text-white text-[14px] font-bold flex items-center justify-center">
                 VISA
               </div>
               <span className="text-gray-800">Visa (Credit) •••• 4242</span>

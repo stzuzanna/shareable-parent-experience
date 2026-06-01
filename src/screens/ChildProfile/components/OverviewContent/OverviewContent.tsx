@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ChevronRightIcon, ArrowLeftIcon, HomeIcon, PhoneIcon, InfoIcon, CalendarIcon, BookOpenIcon, SunIcon, ThermometerIcon, MessageSquareIcon, PencilIcon, KeyRoundIcon, UserIcon, StethoscopeIcon, ShieldAlertIcon, StickyNoteIcon, IdCardIcon, CheckCircle2Icon, XCircleIcon, HelpCircleIcon } from "lucide-react";
+import { ChevronRightIcon, ArrowLeftIcon, HomeIcon, PhoneIcon, InfoIcon, CalendarIcon, BookOpenIcon, SunIcon, ThermometerIcon, MessageSquareIcon, PencilIcon, KeyRoundIcon, UserIcon, StethoscopeIcon, ShieldAlertIcon, StickyNoteIcon, IdCardIcon, CheckCircle2Icon, XCircleIcon, HelpCircleIcon, PlusIcon } from "lucide-react";
 import { useProfileVariant } from "../../../../hooks/useProfileVariant";
 import { useDeviceDetection } from "../../../../hooks/useDeviceDetection";
 import { setChildProfileSubpageActive } from "../../../../hooks/useChildProfileSubpage";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
-import { AbsenceOverlay } from "../../../../components/AbsenceOverlay/AbsenceOverlay";
+import { AddLeaveSheet } from "../../../../components/AddLeaveSheet/AddLeaveSheet";
 
 const KEY_PERSON_NAME = "Olivia Wilson";
 const KEY_PERSON_INITIALS = "OW";
@@ -90,6 +90,7 @@ const SectionHeader = ({
   onSave,
   onCancel,
   editActive,
+  trailing,
 }: {
   title: string;
   onBack: () => void;
@@ -97,6 +98,7 @@ const SectionHeader = ({
   onSave?: () => void;
   onCancel?: () => void;
   editActive?: boolean;
+  trailing?: React.ReactNode;
 }) => (
   <div className="flex items-center gap-2 px-4 py-3">
     <button
@@ -110,28 +112,29 @@ const SectionHeader = ({
       <div className="flex items-center gap-2 flex-shrink-0">
         <button
           onClick={onCancel}
-          className="px-3 h-9 rounded-lg border border-mfneutralsn-200 bg-white text-[13px] font-medium text-mfneutralsn-500 active:bg-gray-50"
+          className="px-3 h-9 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] font-medium text-mfneutralsn-500 active:bg-gray-50"
         >
           Cancel
         </button>
         <button
           onClick={onSave}
-          className="px-3 h-9 rounded-lg bg-mfprimaryp-400 text-white text-[13px] font-medium"
+          className="px-3 h-9 rounded-lg bg-mfprimaryp-400 text-white text-[14px] font-medium"
         >
           Save
         </button>
       </div>
     ) : (
-      onEdit && (
+      trailing ??
+      (onEdit && (
         <button
           onClick={onEdit}
           aria-label={`Edit ${title}`}
-          className="flex items-center gap-1.5 px-3 h-9 rounded-lg border border-mfneutralsn-200 bg-white text-[13px] font-medium text-mfneutralsn-500 active:bg-gray-50 flex-shrink-0"
+          className="flex items-center gap-1.5 px-3 h-9 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] font-medium text-mfneutralsn-500 active:bg-gray-50 flex-shrink-0"
         >
           <PencilIcon className="w-3.5 h-3.5" />
           Edit
         </button>
-      )
+      ))
     )}
   </div>
 );
@@ -219,16 +222,16 @@ const SubsectionTitle = ({ children }: { children: React.ReactNode }) => (
 const CareDetail = () => (
   <div className="flex flex-col pt-2 pb-24 gap-2 px-2">
     <div className="bg-white border border-mfprimaryp-100 rounded-xl p-4">
-      <p className="text-xs text-mfneutralsn-300 mb-1">Care plan</p>
+      <p className="text-[14px] text-mfneutralsn-300 mb-1">Care plan</p>
       <p className="text-sm font-semibold text-mfneutralsn-500">Monthly full time</p>
-      <p className="text-xs text-mfneutralsn-300 mt-0.5">$1,350/month · Aug 31 –</p>
+      <p className="text-[14px] text-mfneutralsn-300 mt-0.5">$1,350/month · Aug 31 –</p>
     </div>
     <div className="bg-white border border-mfprimaryp-100 rounded-xl p-4">
-      <p className="text-xs text-mfneutralsn-300 mb-3">Upcoming bookings</p>
+      <p className="text-[14px] text-mfneutralsn-300 mb-3">Upcoming bookings</p>
       <div className="flex items-center justify-between py-1">
         <p className="text-sm font-semibold text-mfneutralsn-500 flex-1">After School Care</p>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-mfneutralsn-300">Mar 7</span>
+          <span className="text-[14px] text-mfneutralsn-300">Mar 7</span>
           <span className="text-sm text-mfneutralsn-400">$50.00</span>
           <BookingStatusIcon status="pending" />
         </div>
@@ -237,7 +240,7 @@ const CareDetail = () => (
       <div className="flex items-center justify-between py-1">
         <p className="text-sm font-semibold text-mfneutralsn-500 flex-1">After School Care</p>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-mfneutralsn-300">Feb 1</span>
+          <span className="text-[14px] text-mfneutralsn-300">Feb 1</span>
           <span className="text-sm text-mfneutralsn-400">$50.00</span>
           <BookingStatusIcon status="paid" />
         </div>
@@ -247,17 +250,27 @@ const CareDetail = () => (
 );
 
 const PrimaryBadge = () => (
-  <span className="text-[11px] px-2 py-0.5 rounded-full border border-mfprimaryp-400 text-mfprimaryp-400">Primary</span>
+  <span className="text-[14px] px-2 py-0.5 rounded-full border border-mfprimaryp-400 text-mfprimaryp-400">Primary</span>
 );
 
 const SecondaryBadge = () => (
-  <span className="text-[11px] px-2 py-0.5 rounded-full border border-mfneutralsn-200 text-mfneutralsn-400">Secondary</span>
+  <span className="text-[14px] px-2 py-0.5 rounded-full border border-mfneutralsn-200 text-mfneutralsn-400">Secondary</span>
 );
 
-const LabelValueRow = ({ label, value }: { label: string; value: string }) => (
-  <div className="px-4 pt-2 pb-4">
+const LabelValueRow = ({
+  label,
+  value,
+  compact = false,
+}: {
+  label: string;
+  value: string;
+  compact?: boolean;
+}) => (
+  <div className={compact ? "py-1" : "px-4 pt-2 pb-4"}>
     <p className="text-[14px] text-mfneutralsn-300 leading-tight">{label}</p>
-    <p className="text-[16px] text-mfneutralsn-500 leading-tight mt-1">{value || "-"}</p>
+    <p className={`text-[16px] text-mfneutralsn-500 leading-tight ${compact ? "mt-0.5" : "mt-1"}`}>
+      {value || "-"}
+    </p>
   </div>
 );
 
@@ -268,9 +281,21 @@ const MultilineLabelValueRow = ({ label, value }: { label: string; value: string
   </div>
 );
 
-const FieldShell = ({ label, children }: { label: string; children: React.ReactNode }) => (
-  <div className="px-4 pt-2 pb-4">
-    <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight mb-1.5">{label}</p>
+const FieldShell = ({
+  label,
+  children,
+  compact = false,
+}: {
+  label: string;
+  children: React.ReactNode;
+  compact?: boolean;
+}) => (
+  <div className={compact ? "py-1" : "px-4 pt-2 pb-4"}>
+    <p
+      className={`text-[14px] leading-tight ${compact ? "text-mfneutralsn-300 mb-1" : "font-medium text-mfneutralsn-500 mb-1.5"}`}
+    >
+      {label}
+    </p>
     {children}
   </div>
 );
@@ -596,7 +621,7 @@ const ContactCard = ({
 }) => {
   const Badge = contact.primary ? PrimaryBadge : SecondaryBadge;
   return (
-    <div className="px-4 pt-4 pb-2 flex flex-col gap-3">
+    <div className="px-4 pt-4 pb-4 border-b border-mfneutralsn-75 last:border-b-0 flex flex-col gap-2">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <Avatar className="w-9 h-9 flex-shrink-0">
@@ -612,8 +637,8 @@ const ContactCard = ({
       </div>
 
       {editing ? (
-        <>
-          <FieldShell label="Email">
+        <div className="flex flex-col gap-1">
+          <FieldShell compact label="Email">
             <input
               value={extras.email ?? ""}
               placeholder="name@example.com"
@@ -621,7 +646,7 @@ const ContactCard = ({
               className={inputClass}
             />
           </FieldShell>
-          <FieldShell label="Phone number">
+          <FieldShell compact label="Phone number">
             <input
               value={extras.phone ?? ""}
               placeholder="+1 (555) 123-4567"
@@ -629,12 +654,12 @@ const ContactCard = ({
               className={inputClass}
             />
           </FieldShell>
-        </>
+        </div>
       ) : (
-        <>
-          <LabelValueRow label="Email" value={extras.email ?? ""} />
-          <LabelValueRow label="Phone number" value={extras.phone ?? ""} />
-        </>
+        <div className="flex flex-col gap-0.5">
+          <LabelValueRow compact label="Email" value={extras.email ?? ""} />
+          <LabelValueRow compact label="Phone number" value={extras.phone ?? ""} />
+        </div>
       )}
     </div>
   );
@@ -661,10 +686,10 @@ const FamilyDetail = ({ editing }: { editing: boolean }) => {
 
       <SubsectionTitle>Siblings</SubsectionTitle>
       <div className="px-4 py-4">
-        <p className="text-[13px] text-mfneutralsn-300 mb-3 leading-snug">
+        <p className="text-[14px] text-mfneutralsn-300 mb-3 leading-snug">
           Link a sibling so you can see both children in one place.
         </p>
-        <button className="flex items-center gap-2 h-9 px-3 rounded-lg border border-mfprimaryp-400 text-[13px] font-medium text-mfprimaryp-400 active:bg-mfprimaryp-50">
+        <button className="flex items-center gap-2 h-9 px-3 rounded-lg border border-mfprimaryp-400 text-[14px] font-medium text-mfprimaryp-400 active:bg-mfprimaryp-50">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
             <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>
@@ -692,7 +717,7 @@ const BookingRow = ({ name, date, amount, status }: { name: string; date: string
   <div className="px-4 py-2.5 flex items-center justify-between gap-2">
     <p className="text-sm font-semibold text-mfneutralsn-500 flex-1 min-w-0 truncate">{name}</p>
     <div className="flex items-center gap-2 flex-shrink-0">
-      <span className="text-xs text-mfneutralsn-300">{date}</span>
+      <span className="text-[14px] text-mfneutralsn-300">{date}</span>
       <span className="text-sm text-mfneutralsn-400">{amount}</span>
       <BookingStatusIcon status={status} />
     </div>
@@ -724,25 +749,8 @@ const SubpageRowDual = ({
   </div>
 );
 
-const LeaveDetail = () => {
-  const { shouldShowFrame } = useDeviceDetection();
-  const [showAbsence, setShowAbsence] = useState(false);
-  const overlayPos = shouldShowFrame ? "absolute" : "fixed";
-
-  return (
+const LeaveDetail = () => (
     <div className="flex flex-col pb-24">
-      <div className="px-4 pt-2 pb-3">
-        <button
-          onClick={() => setShowAbsence(true)}
-          className="flex items-center gap-2 h-9 px-3 rounded-lg border border-mfprimaryp-400 text-[14px] font-medium text-mfprimaryp-400 active:bg-mfprimaryp-50"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-          Add leave
-        </button>
-      </div>
-
       <SubsectionTitle>Upcoming</SubsectionTitle>
       <SubpageRowDual
         icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />}
@@ -766,15 +774,8 @@ const LeaveDetail = () => {
         icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />}
         label="23 Dec 2025 - 2 Jan 2026"
       />
-
-      {showAbsence && (
-        <div className={`${overlayPos} inset-0 z-[90]`}>
-          <AbsenceOverlay type="sick" onClose={() => setShowAbsence(false)} />
-        </div>
-      )}
     </div>
-  );
-};
+);
 
 type PermissionStatus = "yes" | "no" | "pending";
 
@@ -844,13 +845,13 @@ const PermissionsDetail = () => {
               <div className="flex items-center gap-1.5 flex-shrink-0">
                 <button
                   onClick={() => setAnswer(item.id, "yes")}
-                  className="px-3 py-1 text-xs font-medium rounded-md border border-gray-200 bg-white text-mfneutralsn-500 active:bg-gray-50"
+                  className="px-3 py-1 text-[14px] font-medium rounded-md border border-gray-200 bg-white text-mfneutralsn-500 active:bg-gray-50"
                 >
                   Yes
                 </button>
                 <button
                   onClick={() => setAnswer(item.id, "no")}
-                  className="px-3 py-1 text-xs font-medium rounded-md border border-gray-200 bg-white text-mfneutralsn-500 active:bg-gray-50"
+                  className="px-3 py-1 text-[14px] font-medium rounded-md border border-gray-200 bg-white text-mfneutralsn-500 active:bg-gray-50"
                 >
                   No
                 </button>
@@ -858,7 +859,7 @@ const PermissionsDetail = () => {
             ) : (
               <button
                 onClick={() => setEditingId(item.id)}
-                className="px-3 py-1 text-xs font-medium rounded-md border border-gray-200 bg-white text-mfneutralsn-400 active:bg-gray-50 flex-shrink-0"
+                className="px-3 py-1 text-[14px] font-medium rounded-md border border-gray-200 bg-white text-mfneutralsn-400 active:bg-gray-50 flex-shrink-0"
               >
                 Edit
               </button>
@@ -872,10 +873,12 @@ const PermissionsDetail = () => {
 
 export const OverviewContent = (): JSX.Element => {
   const variant = useProfileVariant();
+  const { shouldShowFrame } = useDeviceDetection();
   const navigate = useNavigate();
   const location = useLocation();
   const [section, setSection] = useState<Section>(null);
   const [editing, setEditing] = useState(false);
+  const [showLeaveSheet, setShowLeaveSheet] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -893,6 +896,7 @@ export const OverviewContent = (): JSX.Element => {
     const scrollable = rootRef.current?.closest(".overflow-y-auto") as HTMLElement | null;
     scrollable?.scrollTo({ top: 0, behavior: "smooth" });
     setEditing(false);
+    setShowLeaveSheet(false);
     setChildProfileSubpageActive(section !== null);
   }, [section]);
 
@@ -913,6 +917,18 @@ export const OverviewContent = (): JSX.Element => {
           onSave={() => setEditing(false)}
           onCancel={() => setEditing(false)}
           editActive={editing}
+          trailing={
+            section === "leave" ? (
+              <button
+                type="button"
+                onClick={() => setShowLeaveSheet(true)}
+                className="flex items-center gap-1.5 px-3 h-9 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] font-medium text-mfneutralsn-500 active:bg-gray-50 flex-shrink-0"
+              >
+                <PlusIcon className="w-3.5 h-3.5" />
+                Add leave
+              </button>
+            ) : undefined
+          }
         />
         {section === "care" && <CareDetail />}
         {section === "family" && <FamilyDetail editing={editing} />}
@@ -920,6 +936,11 @@ export const OverviewContent = (): JSX.Element => {
         {section === "health" && <HealthDetailsDetail editing={editing} />}
         {section === "leave" && <LeaveDetail />}
         {section === "permissions" && <PermissionsDetail />}
+        <AddLeaveSheet
+          isOpen={section === "leave" && showLeaveSheet}
+          onClose={() => setShowLeaveSheet(false)}
+          useAbsolute={shouldShowFrame}
+        />
       </div>
     );
   }
@@ -953,7 +974,7 @@ export const OverviewContent = (): JSX.Element => {
           <Divider />
           <div className="px-4 py-3">
             <p className="text-sm font-medium text-mfneutralsn-500">Monthly full time</p>
-            <p className="text-xs text-mfneutralsn-300 mt-0.5">$1,350/month · Aug 31 –</p>
+            <p className="text-[14px] text-mfneutralsn-300 mt-0.5">$1,350/month · Aug 31 –</p>
           </div>
           <Divider />
           <BookingRow name="After School Care" date="Mar 7" amount="$50.00" status="pending" />
@@ -974,10 +995,10 @@ export const OverviewContent = (): JSX.Element => {
             </Avatar>
             <div className="min-w-0">
               <p className="text-sm font-semibold text-mfneutralsn-500 truncate">Sarah Freedman</p>
-              <p className="text-xs text-mfneutralsn-300 mt-0.5">+1 (555) 123-4567 · Mother</p>
+              <p className="text-[14px] text-mfneutralsn-300 mt-0.5">+1 (555) 123-4567 · Mother</p>
             </div>
           </div>
-          <span className="text-xs px-2.5 py-0.5 rounded-full border border-mfprimaryp-400 text-mfprimaryp-400 flex-shrink-0">Primary</span>
+          <span className="text-[14px] px-2.5 py-0.5 rounded-full border border-mfprimaryp-400 text-mfprimaryp-400 flex-shrink-0">Primary</span>
         </div>
         <Divider />
         <div className="px-4 py-3 flex items-center justify-between gap-3">
@@ -988,10 +1009,10 @@ export const OverviewContent = (): JSX.Element => {
             </Avatar>
             <div className="min-w-0">
               <p className="text-sm font-semibold text-mfneutralsn-500 truncate">Michael Freedman</p>
-              <p className="text-xs text-mfneutralsn-300 mt-0.5">+1 (555) 123-4567 · Father</p>
+              <p className="text-[14px] text-mfneutralsn-300 mt-0.5">+1 (555) 123-4567 · Father</p>
             </div>
           </div>
-          <span className="text-xs px-2.5 py-0.5 rounded-full border border-mfneutralsn-200 text-mfneutralsn-400 flex-shrink-0">Secondary</span>
+          <span className="text-[14px] px-2.5 py-0.5 rounded-full border border-mfneutralsn-200 text-mfneutralsn-400 flex-shrink-0">Secondary</span>
         </div>
       </Card>
 
