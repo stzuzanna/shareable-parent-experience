@@ -130,9 +130,9 @@ const ActivityRow = ({ activity }: { activity: Activity }) => {
             <span className="text-sm text-mfneutralsn-400">{activity.detail}</span>
           )}
         </div>
-        <p className="text-xs text-mfneutralsn-300">by {activity.by}</p>
+        <p className="text-[14px] text-mfneutralsn-300">by {activity.by}</p>
       </div>
-      <span className="text-xs text-mfneutralsn-300 flex-shrink-0">{activity.time}</span>
+      <span className="text-[14px] text-mfneutralsn-300 flex-shrink-0">{activity.time}</span>
     </div>
   );
 };
@@ -190,8 +190,8 @@ const SleepSummaryCard = () => {
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-mfneutralsn-500">Sleep</p>
           <div className="flex gap-3 mt-0.5">
-            <span className="text-xs text-mfneutralsn-300">{todayMinutes} min today</span>
-            <span className="text-xs text-mfneutralsn-300">avg {avg} min / day</span>
+            <span className="text-[14px] text-mfneutralsn-300">{todayMinutes} min today</span>
+            <span className="text-[14px] text-mfneutralsn-300">avg {avg} min / day</span>
           </div>
         </div>
       </div>
@@ -241,8 +241,8 @@ const GenericSummaryCard = ({ typeFilter }: { typeFilter: string }) => {
         <div>
           <p className="text-sm font-semibold text-mfneutralsn-500">{label}</p>
           <div className="flex gap-3 mt-0.5">
-            <span className="text-xs text-mfneutralsn-300">{todayCount} today</span>
-            <span className="text-xs text-mfneutralsn-300">{totalCount} this week</span>
+            <span className="text-[14px] text-mfneutralsn-300">{todayCount} today</span>
+            <span className="text-[14px] text-mfneutralsn-300">{totalCount} this week</span>
           </div>
         </div>
       </div>

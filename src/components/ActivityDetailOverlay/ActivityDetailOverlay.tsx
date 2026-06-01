@@ -325,7 +325,7 @@ export const ActivityDetailOverlay: React.FC<ActivityDetailOverlayProps> = ({ on
                 <div className="flex flex-col gap-1 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-gray-800 text-sm">{comment.author}</span>
-                    <span className="text-gray-500 text-xs">{comment.timestamp}</span>
+                    <span className="text-gray-500 text-[14px]">{comment.timestamp}</span>
                   </div>
                   <p className="text-gray-700 text-sm">{comment.text}</p>
                 </div>

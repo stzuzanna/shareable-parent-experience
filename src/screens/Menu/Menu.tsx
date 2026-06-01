@@ -11,6 +11,8 @@ import {
   GlobeIcon,
   HelpCircleIcon,
   ScaleIcon,
+  HomeIcon,
+  CreditCardIcon,
 } from "lucide-react";
 import { BASE_PATH } from "../../constants";
 import { useDeviceDetection } from "../../hooks/useDeviceDetection";
@@ -23,6 +25,8 @@ import { AppHeader } from "../../components/AppHeader/AppHeader";
 import { BottomNav } from "../../components/BottomNav/BottomNav";
 import { Toast } from "../../components/Toast/Toast";
 import { Invoice } from "../../components/Invoice/Invoice";
+import { ChildcareInfo } from "./ChildcareInfo";
+import { PaymentSettings } from "./PaymentSettings";
 
 const OUTSTANDING_AMOUNT = "1024.88";
 
@@ -30,6 +34,7 @@ const settingsItems = [
   { id: "contact-info", label: "Contact information", Icon: PencilIcon },
   { id: "password", label: "Password and sign in", Icon: LockIcon },
   { id: "language-notifications", label: "Language and notifications", Icon: GlobeIcon },
+  { id: "payment-settings", label: "Payment settings", Icon: CreditCardIcon },
   { id: "help", label: "Help and support", Icon: HelpCircleIcon },
   { id: "terms", label: "Terms and policies", Icon: ScaleIcon },
 ] as const;
@@ -41,8 +46,22 @@ export const Menu = (): JSX.Element => {
   const autopay = useAutopayState();
   const { toasts, showToast, removeToast } = useToast();
   const [showInvoice, setShowInvoice] = useState(false);
+  const [showChildcareInfo, setShowChildcareInfo] = useState(false);
+  const [showPaymentSettings, setShowPaymentSettings] = useState(false);
+
+  if (showChildcareInfo) {
+    return <ChildcareInfo onClose={() => setShowChildcareInfo(false)} />;
+  }
+  if (showPaymentSettings) {
+    return <PaymentSettings onClose={() => setShowPaymentSettings(false)} />;
+  }
 
   const comingSoon = () => showToast("Coming soon", "info");
+
+  const onSettingsItem = (id: string) => {
+    if (id === "payment-settings") setShowPaymentSettings(true);
+    else comingSoon();
+  };
 
   return (
     <div className={`flex flex-col bg-white ${shouldShowFrame ? "h-full" : "min-h-screen"} ${!shouldShowFrame ? "touch:h-screen" : ""}`}>
@@ -88,7 +107,7 @@ export const Menu = (): JSX.Element => {
             {isPaid && autopay && (
               <div className="inline-flex items-center gap-2 px-3 h-7 mt-3 rounded-full bg-blue-50 border border-blue-500">
                 <span className="w-2 h-2 rounded-full bg-blue-500" />
-                <span className="text-[13px] text-blue-700">You're set to pay invoices automatically</span>
+                <span className="text-[14px] text-blue-700">You're set to pay invoices automatically</span>
               </div>
             )}
 
@@ -99,7 +118,7 @@ export const Menu = (): JSX.Element => {
                     <FileTextIcon className="w-4 h-4 text-mfneutralsn-400" />
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="text-[11px] text-mfneutralsn-300 leading-tight">
+                    <span className="text-[14px] text-mfneutralsn-300 leading-tight">
                       Latest invoice • Charged on Nov 24
                     </span>
                     <span className="text-[14px] text-mfneutralsn-500 leading-tight">Invoice for $1024.00</span>
@@ -117,43 +136,42 @@ export const Menu = (): JSX.Element => {
           </div>
 
           {/* Navigation tiles */}
-          <div className="flex flex-col gap-3">
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={comingSoon}
-                className="flex flex-col items-start justify-between h-[76px] bg-white border border-mfneutralsn-75 rounded-2xl p-3 hover:bg-gray-50"
-              >
-                <CalendarIcon className="w-6 h-6 text-mfprimaryp-400" />
-                <div className="flex items-center gap-1 w-full">
-                  <span className="text-[14px] text-mfneutralsn-500 flex-1 text-left">Calendar</span>
-                  <ChevronRightIcon className="w-3.5 h-3.5 text-mfneutralsn-300" />
-                </div>
-              </button>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={comingSoon}
+              className="flex flex-col items-start justify-between h-[76px] bg-white border border-mfneutralsn-75 rounded-2xl p-3 hover:bg-gray-50"
+            >
+              <CalendarIcon className="w-6 h-6 text-mfprimaryp-400" />
+              <span className="text-[14px] text-mfneutralsn-500 text-left">Calendar</span>
+            </button>
 
-              <button
-                onClick={() => navigate("/activity-plans")}
-                className="flex flex-col items-start justify-between h-[76px] bg-white border border-mfneutralsn-75 rounded-2xl p-3 hover:bg-gray-50"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-mfyellowy-400">
-                  <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
-                  <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
-                  <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
-                  <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
-                </svg>
-                <div className="flex items-center gap-1 w-full">
-                  <span className="text-[14px] text-mfneutralsn-500 flex-1 text-left">Learning plans</span>
-                  <ChevronRightIcon className="w-3.5 h-3.5 text-mfneutralsn-300" />
-                </div>
-              </button>
-            </div>
+            <button
+              onClick={() => navigate("/activity-plans")}
+              className="flex flex-col items-start justify-between h-[76px] bg-white border border-mfneutralsn-75 rounded-2xl p-3 hover:bg-gray-50"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-mfyellowy-400">
+                <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+                <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+                <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+                <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+              </svg>
+              <span className="text-[14px] text-mfneutralsn-500 text-left">Learning plans</span>
+            </button>
+
+            <button
+              onClick={() => setShowChildcareInfo(true)}
+              className="flex flex-col items-start justify-between h-[76px] bg-white border border-mfneutralsn-75 rounded-2xl p-3 hover:bg-gray-50"
+            >
+              <HomeIcon className="w-6 h-6 text-mfneutralsn-500" />
+              <span className="text-[14px] text-mfneutralsn-500 text-left">Childcare info</span>
+            </button>
 
             <button
               onClick={comingSoon}
-              className="flex items-center gap-3 h-[60px] bg-white border border-mfneutralsn-75 rounded-2xl px-3 hover:bg-gray-50"
+              className="flex flex-col items-start justify-between h-[76px] bg-white border border-mfneutralsn-75 rounded-2xl p-3 hover:bg-gray-50"
             >
-              <VideoIcon className="w-6 h-6 text-brandblueb-400 flex-shrink-0" />
-              <span className="text-[14px] text-mfneutralsn-500 flex-1 text-left">WatchMeGrow</span>
-              <ChevronRightIcon className="w-3.5 h-3.5 text-mfneutralsn-300" />
+              <VideoIcon className="w-6 h-6 text-brandblueb-400" />
+              <span className="text-[14px] text-mfneutralsn-500 text-left">WatchMeGrow</span>
             </button>
           </div>
 
@@ -162,7 +180,7 @@ export const Menu = (): JSX.Element => {
             {settingsItems.map(({ id, label, Icon }) => (
               <button
                 key={id}
-                onClick={comingSoon}
+                onClick={() => onSettingsItem(id)}
                 className="flex items-center justify-between h-12 hover:bg-gray-50"
               >
                 <div className="flex items-center gap-3">

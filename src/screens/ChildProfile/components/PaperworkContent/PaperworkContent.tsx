@@ -1,6 +1,8 @@
-import React, { useMemo, useState } from "react";
-import { ChevronRightIcon, FilterIcon, XIcon, SearchIcon, CheckIcon } from "lucide-react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { ChevronRightIcon, FilterIcon, XIcon, SearchIcon, CheckIcon, ChevronDownIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { setChildProfileSubpageActive } from "../../../../hooks/useChildProfileSubpage";
+import { DocumentPreviewPage } from "../DocumentPreviewPage/DocumentPreviewPage";
 
 type FilterKey = "all" | "notes" | "forms" | "health";
 
@@ -9,6 +11,7 @@ interface Item {
   meta: string;
   badge?: { label: string; variant: "sign" | "complete" | "ack" | "accident" };
   type: Exclude<FilterKey, "all">;
+  bodyText?: string;
 }
 
 const items: Item[] = [
@@ -27,8 +30,20 @@ const items: Item[] = [
   { title: "Updated care contract", meta: "21 Feb 2026 · Form", badge: { label: "Signed", variant: "complete" }, type: "forms" },
 
   // No pill
-  { title: "Abby has been really active lately. We expect...", meta: "21 Feb 2026 · Note", type: "notes" },
-  { title: "Settling in observations", meta: "8 Feb 2026 · Note", type: "notes" },
+  {
+    title: "Abby has been really active lately",
+    meta: "21 Feb 2026 · Note",
+    type: "notes",
+    bodyText:
+      "Abby has been really active lately at nursery. She's been joining in with group activities, especially outdoor play and story time. We're seeing more confidence when she tries new things with her friends.\n\nWe'll keep you posted on how she settles over the next few weeks.",
+  },
+  {
+    title: "Settling in observations",
+    meta: "8 Feb 2026 · Note",
+    type: "notes",
+    bodyText:
+      "Abby is settling in well overall. She separates from parents comfortably most mornings and engages with staff within ten minutes of arrival.\n\nShe enjoys sensory play and has started initiating play with one or two familiar children. Nap time is still a little variable but improving.",
+  },
   { title: "Curriculum for new year", meta: "21 Feb 2026 · Document", type: "forms" },
   { title: "Summer programme overview", meta: "1 Feb 2026 · Document", type: "forms" },
   { title: "Accident report", meta: "21 Feb 2026 · Accident report", type: "health" },
@@ -36,7 +51,7 @@ const items: Item[] = [
 ];
 
 const filters: { id: FilterKey; label: string }[] = [
-  { id: "all", label: "All" },
+  { id: "all", label: "All types" },
   { id: "notes", label: "Notes" },
   { id: "forms", label: "Forms" },
   { id: "health", label: "Health" },
@@ -50,24 +65,66 @@ const Badge = ({ label, variant }: { label: string; variant: NonNullable<Item["b
     accident: "bg-orange-50 border border-orange-400 text-orange-600",
   };
   return (
-    <span className={`text-[11px] px-2 h-[20px] inline-flex items-center rounded-full whitespace-nowrap leading-none ${styles[variant]}`}>
+    <span className={`text-[14px] px-2.5 h-[22px] inline-flex items-center rounded-full whitespace-nowrap leading-none ${styles[variant]}`}>
       {label}
     </span>
   );
 };
 
-const Pill = ({ label, selected, onClick }: { label: string; selected?: boolean; onClick?: () => void }) => (
-  <button
-    onClick={onClick}
-    className={`flex-shrink-0 h-9 px-3.5 rounded-full text-[14px] leading-none border transition-colors ${
-      selected
-        ? "bg-mfprimaryp-400 text-white border-mfprimaryp-400"
-        : "bg-white text-mfneutralsn-500 border-mfneutralsn-200"
-    }`}
-  >
-    {label}
-  </button>
-);
+const TypeDropdown = ({
+  value,
+  onChange,
+}: {
+  value: FilterKey;
+  onChange: (v: FilterKey) => void;
+}) => {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const current = filters.find((f) => f.id === value) ?? filters[0];
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
+  return (
+    <div ref={containerRef} className="relative flex-shrink-0">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border border-mfneutralsn-200 text-mfneutralsn-400 bg-white"
+      >
+        {current.label}
+        <ChevronDownIcon className="w-3.5 h-3.5" />
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 mt-1.5 min-w-[160px] bg-white rounded-xl shadow-lg border border-gray-100 z-50">
+          {filters.map((f) => (
+            <button
+              key={f.id}
+              onMouseDown={(e) => e.stopPropagation()}
+              onClick={() => {
+                onChange(f.id);
+                setOpen(false);
+              }}
+              className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 first:rounded-t-xl last:rounded-b-xl ${
+                value === f.id ? "text-mfprimaryp-400 font-medium" : "text-mfneutralsn-500"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 type StatusKey = "Sign" | "Acknowledge" | "Signed" | "Completed";
 const ALL_STATUSES: StatusKey[] = ["Sign", "Acknowledge", "Signed", "Completed"];
@@ -92,8 +149,18 @@ export const PaperworkContent = (): JSX.Element => {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [statuses, setStatuses] = useState<Set<StatusKey>>(new Set());
+  const [openDocument, setOpenDocument] = useState<{
+    title: string;
+    subtitle: string;
+    bodyText?: string;
+  } | null>(null);
 
-  const isFiltered = activeFilter !== "all";
+  useEffect(() => {
+    setChildProfileSubpageActive(openDocument !== null);
+  }, [openDocument]);
+
+  useEffect(() => () => setChildProfileSubpageActive(false), []);
+
   const advancedActive =
     query.trim() !== "" || dateFrom !== "" || dateTo !== "" || statuses.size > 0;
 
@@ -117,8 +184,6 @@ export const PaperworkContent = (): JSX.Element => {
     });
   }, [activeFilter, query, dateFrom, dateTo, statuses]);
 
-  const activeLabel = filters.find((f) => f.id === activeFilter)?.label ?? "All";
-
   const clearAdvanced = () => {
     setQuery("");
     setDateFrom("");
@@ -135,59 +200,34 @@ export const PaperworkContent = (): JSX.Element => {
     });
   };
 
+  if (openDocument !== null) {
+    return (
+      <DocumentPreviewPage
+        title={openDocument.title}
+        subtitle={openDocument.subtitle}
+        bodyText={openDocument.bodyText}
+        onBack={() => setOpenDocument(null)}
+      />
+    );
+  }
+
   return (
     <div className="flex flex-col bg-white pb-24 pt-4">
-      {/* Filter pills */}
-      <div className="flex items-center gap-2 px-4 pb-6 bg-white">
-        {isFiltered ? (
-          <>
-            <button
-              onClick={() => setActiveFilter("all")}
-              aria-label="Clear filter"
-              className="flex-shrink-0 w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center"
-            >
-              <XIcon className="w-4 h-4 text-mfneutralsn-500" />
-            </button>
-            <Pill label={activeLabel} selected />
-            <button
-              aria-label="More filters"
-              onClick={() => setShowFilterSheet(true)}
-              className={`relative flex-shrink-0 w-9 h-9 ml-auto rounded-full border bg-white flex items-center justify-center ${
-                advancedActive ? "border-mfprimaryp-400" : "border-mfneutralsn-200"
-              }`}
-            >
-              <FilterIcon className={`w-4 h-4 ${advancedActive ? "text-mfprimaryp-400" : "text-mfneutralsn-400"}`} />
-              {advancedActive && (
-                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-mfprimaryp-400" />
-              )}
-            </button>
-          </>
-        ) : (
-          <>
-            <div className="flex items-center gap-2 flex-1 overflow-x-auto no-scrollbar">
-              {filters.map((f) => (
-                <Pill
-                  key={f.id}
-                  label={f.label}
-                  selected={activeFilter === f.id}
-                  onClick={() => setActiveFilter(f.id)}
-                />
-              ))}
-            </div>
-            <button
-              aria-label="More filters"
-              onClick={() => setShowFilterSheet(true)}
-              className={`relative flex-shrink-0 w-9 h-9 rounded-full border bg-white flex items-center justify-center ${
-                advancedActive ? "border-mfprimaryp-400" : "border-mfneutralsn-200"
-              }`}
-            >
-              <FilterIcon className={`w-4 h-4 ${advancedActive ? "text-mfprimaryp-400" : "text-mfneutralsn-400"}`} />
-              {advancedActive && (
-                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-mfprimaryp-400" />
-              )}
-            </button>
-          </>
-        )}
+      {/* Filter row */}
+      <div className="flex items-center justify-between gap-2 px-4 pb-6 bg-white">
+        <TypeDropdown value={activeFilter} onChange={setActiveFilter} />
+        <button
+          aria-label="More filters"
+          onClick={() => setShowFilterSheet(true)}
+          className={`relative flex-shrink-0 w-9 h-9 rounded-full border bg-white flex items-center justify-center ${
+            advancedActive ? "border-mfprimaryp-400" : "border-mfneutralsn-200"
+          }`}
+        >
+          <FilterIcon className={`w-4 h-4 ${advancedActive ? "text-mfprimaryp-400" : "text-mfneutralsn-400"}`} />
+          {advancedActive && (
+            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-mfprimaryp-400" />
+          )}
+        </button>
       </div>
 
       {/* Items */}
@@ -195,11 +235,15 @@ export const PaperworkContent = (): JSX.Element => {
         {visible.map((it, idx) => (
           <button
             key={`${it.title}-${idx}`}
+            type="button"
+            onClick={() =>
+              setOpenDocument({ title: it.title, subtitle: it.meta, bodyText: it.bodyText })
+            }
             className="flex items-center justify-between gap-3 px-4 py-3 bg-white border border-mfneutralsn-75 rounded-xl text-left active:bg-gray-50"
           >
             <div className="flex-1 min-w-0">
               <p className="text-[14px] font-medium text-mfneutralsn-500 truncate leading-tight">{it.title}</p>
-              <p className="text-[12px] text-mfneutralsn-300 mt-1 truncate leading-tight">{it.meta}</p>
+              <p className="text-[14px] text-mfneutralsn-300 mt-1 truncate leading-tight">{it.meta}</p>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
               {it.badge && <Badge label={it.badge.label} variant={it.badge.variant} />}
@@ -252,7 +296,7 @@ export const PaperworkContent = (): JSX.Element => {
               <div className="flex flex-col gap-5 px-5 pb-6">
                 {/* Search */}
                 <div>
-                  <label className="text-[12px] text-mfneutralsn-300">Search</label>
+                  <label className="text-[14px] text-mfneutralsn-300">Search</label>
                   <div className="mt-1.5 flex items-center gap-2 h-10 px-3 rounded-lg border border-mfneutralsn-200 bg-white">
                     <SearchIcon className="w-4 h-4 text-mfneutralsn-300" />
                     <input
@@ -271,7 +315,7 @@ export const PaperworkContent = (): JSX.Element => {
 
                 {/* Date range */}
                 <div>
-                  <label className="text-[12px] text-mfneutralsn-300">Date range</label>
+                  <label className="text-[14px] text-mfneutralsn-300">Date range</label>
                   <div className="mt-1.5 grid grid-cols-2 gap-2">
                     <input
                       type="date"
@@ -290,7 +334,7 @@ export const PaperworkContent = (): JSX.Element => {
 
                 {/* Status */}
                 <div>
-                  <label className="text-[12px] text-mfneutralsn-300">Status</label>
+                  <label className="text-[14px] text-mfneutralsn-300">Status</label>
                   <div className="mt-1.5 flex flex-wrap gap-2">
                     {ALL_STATUSES.map((s) => {
                       const selected = statuses.has(s);
@@ -298,7 +342,7 @@ export const PaperworkContent = (): JSX.Element => {
                         <button
                           key={s}
                           onClick={() => toggleStatus(s)}
-                          className={`h-9 px-3 rounded-full border text-[13px] flex items-center gap-1.5 ${
+                          className={`h-9 px-3 rounded-full border text-[14px] flex items-center gap-1.5 ${
                             selected
                               ? "bg-mfprimaryp-400 border-mfprimaryp-400 text-white"
                               : "bg-white border-mfneutralsn-200 text-mfneutralsn-500"

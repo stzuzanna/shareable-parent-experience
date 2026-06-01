@@ -48,17 +48,17 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ isPaid, onPaymen
             <p className="text-sm font-semibold text-mfneutralsn-500">
               {isPaid ? 'Invoice #15 paid' : 'Pay invoice #15'}
             </p>
-            <p className="text-xs text-mfneutralsn-300 mt-0.5">
+            <p className="text-[14px] text-mfneutralsn-300 mt-0.5">
               Sandbox Childcare · {isPaid ? 'Paid' : 'Due today'}
             </p>
           </div>
           {!isPaid && (
-            <span className="flex-shrink-0 text-xs font-medium px-2.5 py-1 rounded-full bg-orange-50 text-orange-500 border border-orange-200">
+            <span className="flex-shrink-0 text-[14px] font-medium px-2.5 py-1 rounded-full bg-orange-50 text-orange-500 border border-orange-200">
               Due
             </span>
           )}
           {isPaid && (
-            <span className="flex-shrink-0 text-xs font-medium px-2.5 py-1 rounded-full bg-green-50 text-green-600 border border-green-200">
+            <span className="flex-shrink-0 text-[14px] font-medium px-2.5 py-1 rounded-full bg-green-50 text-green-600 border border-green-200">
               Paid
             </span>
           )}

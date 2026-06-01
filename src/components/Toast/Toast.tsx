@@ -7,13 +7,16 @@ interface ToastProps {
   type?: 'success' | 'error' | 'info';
   onClose: () => void;
   duration?: number;
+  /** Stacked in a parent container (no absolute positioning) */
+  inline?: boolean;
 }
 
 export const Toast: React.FC<ToastProps> = ({ 
   message, 
   type = 'success', 
   onClose, 
-  duration = 4000 
+  duration = 4000,
+  inline = false,
 }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -46,7 +49,13 @@ export const Toast: React.FC<ToastProps> = ({
   };
 
   return (
-    <div className="absolute top-4 left-4 right-4 z-[100] animate-fade-up">
+    <div
+      className={
+        inline
+          ? "w-full animate-fade-up"
+          : "absolute top-4 left-4 right-4 z-[100] animate-fade-up"
+      }
+    >
       <div className={`flex items-center gap-3 p-4 rounded-lg border shadow-lg ${getBgColor()}`}>
         {getIcon()}
         <span className="flex-1 text-gray-800 font-medium">{message}</span>

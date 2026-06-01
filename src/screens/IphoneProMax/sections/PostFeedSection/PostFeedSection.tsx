@@ -1,8 +1,11 @@
 import { BASE_PATH } from '../../../../constants';
-import React, { useState, useRef, useEffect } from "react";
-import { SearchIcon, SlidersHorizontalIcon, XIcon, ChevronDownIcon, BookmarkIcon, CheckIcon } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { SearchIcon, SlidersHorizontalIcon, XIcon, ChevronDownIcon, CheckIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDeviceDetection } from "../../../../hooks/useDeviceDetection";
+import { PhotosCalendarPicker } from "../PhotosCalendarPicker";
+import { DateRangeCalendar, DateRangePickerFields } from "../DateRangeCalendar";
+import { LEARNING_FILTER_AREAS } from "../LearningPostSection/LearningPostSection";
 
 const SENDER_OPTIONS = [
   "Little Explorers",
@@ -20,20 +23,53 @@ const allActivityTypes = [
   { id: "medication", label: "Medication" },
 ];
 
+export const postSourceOptions = [
+  { id: "all", label: "All posts" },
+  { id: "little-explorers", label: "Little Explorers" },
+  { id: "sandbox", label: "Sandbox Childcare" },
+  { id: "polls", label: "Polls" },
+] as const;
+
+export type PostSourceFilter = (typeof postSourceOptions)[number]["id"];
+
+export const learningTypeOptions = [
+  { id: "all", label: "All" },
+  { id: "observations", label: "Observations" },
+  { id: "assessments", label: "Assessments" },
+  { id: "resources", label: "Resources" },
+] as const;
+
+export type LearningTypeFilter = (typeof learningTypeOptions)[number]["id"];
+
 interface PostFeedSectionProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   activityTypeFilter?: string;
   onActivityTypeFilterChange?: (filter: string) => void;
+  postSourceFilter?: PostSourceFilter;
+  onPostSourceFilterChange?: (filter: PostSourceFilter) => void;
+  learningTypeFilter?: LearningTypeFilter;
+  onLearningTypeFilterChange?: (filter: LearningTypeFilter) => void;
+  learningAreasFilter?: Set<string>;
+  onLearningAreasFilterChange?: (areas: Set<string>) => void;
+  photoFilterDate?: string | null;
+  onPhotoFilterDateChange?: (date: string | null) => void;
+  photoDatesWithContent?: string[];
 }
 
 const tabs = [
-  { id: 'activity', label: 'Activity' },
-  { id: 'photos', label: 'Photos' },
+  { id: 'home', label: 'Posts' },
+  { id: 'activity', label: 'Activities' },
   { id: 'learning', label: 'Learning' },
+  { id: 'photos', label: 'Photos' },
+  { id: 'saved', label: 'Saved' },
 ];
 
-const ActivityControls = ({
+const DROPDOWN_LABEL: Record<string, string> = {
+  saved: 'All types',
+};
+
+const ActivityDropdown = ({
   typeFilter,
   onTypeFilterChange,
 }: {
@@ -44,7 +80,6 @@ const ActivityControls = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const current = allActivityTypes.find((t) => t.id === typeFilter) ?? allActivityTypes[0];
 
-  // Close on outside click
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
@@ -57,75 +92,99 @@ const ActivityControls = ({
   }, [open]);
 
   return (
-    <>
-      {/* Dropdown trigger — relative wrapper keeps dropdown inside the frame */}
-      <div ref={containerRef} className="relative flex-shrink-0">
-        <button
-          onClick={() => setOpen((v) => !v)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border border-mfneutralsn-200 text-mfneutralsn-400 bg-transparent"
-        >
-          {current.label}
-          <ChevronDownIcon className="w-3.5 h-3.5" />
-        </button>
-
-        {open && (
-          <div className="absolute top-full left-0 mt-1.5 min-w-[160px] bg-white rounded-xl shadow-lg border border-gray-100 z-50">
-            {allActivityTypes.map((t) => (
-              <button
-                key={t.id}
-                onMouseDown={(e) => e.stopPropagation()}
-                onClick={() => { onTypeFilterChange(t.id); setOpen(false); }}
-                className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 first:rounded-t-xl last:rounded-b-xl ${
-                  typeFilter === t.id ? 'text-mfprimaryp-400 font-medium' : 'text-mfneutralsn-500'
-                }`}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <button className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-mfneutralsn-200">
-        <SlidersHorizontalIcon className="w-4 h-4 text-mfneutralsn-400" />
+    <div ref={containerRef} className="relative flex-shrink-0">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border border-mfneutralsn-200 text-mfneutralsn-400 bg-white"
+      >
+        {current.label}
+        <ChevronDownIcon className="w-3.5 h-3.5" />
       </button>
-    </>
+
+      {open && (
+        <div className="absolute top-full left-0 mt-1.5 min-w-[160px] bg-white rounded-xl shadow-lg border border-gray-100 z-50">
+          {allActivityTypes.map((t) => (
+            <button
+              key={t.id}
+              onMouseDown={(e) => e.stopPropagation()}
+              onClick={() => { onTypeFilterChange(t.id); setOpen(false); }}
+              className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 first:rounded-t-xl last:rounded-b-xl ${
+                typeFilter === t.id ? 'text-mfprimaryp-400 font-medium' : 'text-mfneutralsn-500'
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 
-const PhotosControls = () => (
-  <>
-    <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border border-mfneutralsn-200 text-mfneutralsn-400 bg-transparent flex-shrink-0">
-      All dates
-      <ChevronDownIcon className="w-3.5 h-3.5" />
-    </button>
-    <button className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-mfneutralsn-200">
-      <SlidersHorizontalIcon className="w-4 h-4 text-mfneutralsn-400" />
-    </button>
-  </>
-);
+const FilterDropdown = ({
+  options,
+  value,
+  onChange,
+}: {
+  options: readonly { id: string; label: string }[];
+  value: string;
+  onChange: (id: string) => void;
+}) => {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const current = options.find((o) => o.id === value) ?? options[0];
 
-const SavedControls = () => (
-  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border border-mfneutralsn-200 text-mfneutralsn-400 bg-transparent flex-shrink-0">
-    All types
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
+  return (
+    <div ref={containerRef} className="relative flex-shrink-0">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border border-mfneutralsn-200 text-mfneutralsn-400 bg-white"
+      >
+        {current.label}
+        <ChevronDownIcon className="w-3.5 h-3.5" />
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 mt-1.5 min-w-[180px] bg-white rounded-xl shadow-lg border border-gray-100 z-50">
+          {options.map((option) => (
+            <button
+              key={option.id}
+              type="button"
+              onMouseDown={(e) => e.stopPropagation()}
+              onClick={() => {
+                onChange(option.id);
+                setOpen(false);
+              }}
+              className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 first:rounded-t-xl last:rounded-b-xl ${
+                value === option.id ? "text-mfprimaryp-400 font-medium" : "text-mfneutralsn-500"
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const StaticDropdown = ({ label }: { label: string }) => (
+  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border border-mfneutralsn-200 text-mfneutralsn-400 bg-white flex-shrink-0">
+    {label}
     <ChevronDownIcon className="w-3.5 h-3.5" />
   </button>
-);
-
-const LearningControls = ({ onOpenFilters }: { onOpenFilters: () => void }) => (
-  <>
-    <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border border-mfneutralsn-200 text-mfneutralsn-400 bg-transparent flex-shrink-0">
-      All areas
-      <ChevronDownIcon className="w-3.5 h-3.5" />
-    </button>
-    <button
-      onClick={onOpenFilters}
-      aria-label="Filters"
-      className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-mfneutralsn-200"
-    >
-      <SlidersHorizontalIcon className="w-4 h-4 text-mfneutralsn-400" />
-    </button>
-  </>
 );
 
 export const PostFeedSection = ({
@@ -133,17 +192,43 @@ export const PostFeedSection = ({
   onTabChange,
   activityTypeFilter = 'all',
   onActivityTypeFilterChange = () => {},
+  postSourceFilter = 'all',
+  onPostSourceFilterChange = () => {},
+  learningTypeFilter = 'all',
+  onLearningTypeFilterChange = () => {},
+  learningAreasFilter = new Set<string>(),
+  onLearningAreasFilterChange = () => {},
+  photoFilterDate = null,
+  onPhotoFilterDateChange = () => {},
+  photoDatesWithContent = [],
 }: PostFeedSectionProps): JSX.Element => {
   const { shouldShowFrame } = useDeviceDetection();
-  const isFiltered = activeTab !== 'home';
-  const activeTabLabel = tabs.find(t => t.id === activeTab)?.label ?? (activeTab === 'saved' ? 'Saved' : undefined);
 
   const [showFilterSheet, setShowFilterSheet] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [senders, setSenders] = useState<Set<string>>(new Set());
-  const filtersActive = searchQuery.trim() !== '' || dateFrom !== '' || dateTo !== '' || senders.size > 0;
+  const [activitySearchQuery, setActivitySearchQuery] = useState('');
+  const [activityDateFrom, setActivityDateFrom] = useState('');
+  const [activityDateTo, setActivityDateTo] = useState('');
+  const [activitySenders, setActivitySenders] = useState<Set<string>>(new Set());
+  const [learningSearchQuery, setLearningSearchQuery] = useState('');
+  const [learningDateFrom, setLearningDateFrom] = useState('');
+  const [learningDateTo, setLearningDateTo] = useState('');
+
+  const filtersActive =
+    activeTab === 'activity'
+      ? activitySearchQuery.trim() !== '' ||
+        activityDateFrom !== '' ||
+        activityDateTo !== '' ||
+        activitySenders.size > 0
+      : activeTab === 'learning'
+        ? learningSearchQuery.trim() !== '' ||
+          learningDateFrom !== '' ||
+          learningDateTo !== '' ||
+          learningAreasFilter.size > 0
+        : searchQuery.trim() !== '' || dateFrom !== '' || dateTo !== '' || senders.size > 0;
 
   const toggleSender = (s: string) => {
     setSenders((prev) => {
@@ -154,30 +239,63 @@ export const PostFeedSection = ({
     });
   };
 
+  const toggleActivitySender = (s: string) => {
+    setActivitySenders((prev) => {
+      const next = new Set(prev);
+      if (next.has(s)) next.delete(s);
+      else next.add(s);
+      return next;
+    });
+  };
+
+  const toggleLearningArea = (area: string) => {
+    const next = new Set(learningAreasFilter);
+    if (next.has(area)) next.delete(area);
+    else next.add(area);
+    onLearningAreasFilterChange(next);
+  };
+
   const clearFilters = () => {
+    if (activeTab === 'activity') {
+      setActivitySearchQuery('');
+      setActivityDateFrom('');
+      setActivityDateTo('');
+      setActivitySenders(new Set());
+      return;
+    }
+    if (activeTab === 'learning') {
+      setLearningSearchQuery('');
+      setLearningDateFrom('');
+      setLearningDateTo('');
+      onLearningAreasFilterChange(new Set());
+      return;
+    }
     setSearchQuery('');
     setDateFrom('');
     setDateTo('');
     setSenders(new Set());
   };
 
-  const renderActiveControls = () => {
-    if (activeTab === 'activity') {
-      return (
-        <ActivityControls
-          typeFilter={activityTypeFilter}
-          onTypeFilterChange={onActivityTypeFilterChange}
-        />
-      );
-    }
-    if (activeTab === 'photos') return <PhotosControls />;
-    if (activeTab === 'saved') return <SavedControls />;
-    if (activeTab === 'learning') return <LearningControls onOpenFilters={() => setShowFilterSheet(true)} />;
-    return null;
-  };
+  const filterSheetTitle =
+    activeTab === "activity"
+      ? "Filter activities"
+      : activeTab === "learning"
+        ? "Filter learning"
+        : "Filter newsfeed";
+
+  const searchPlaceholder =
+    activeTab === "activity"
+      ? "Search activities"
+      : activeTab === "learning"
+        ? "Search learning"
+        : "Search posts";
+
+  const showSenderFilters = activeTab === "home" || activeTab === "activity";
+  const currentSenders = activeTab === "activity" ? activitySenders : senders;
+  const onToggleCurrentSender = activeTab === "activity" ? toggleActivitySender : toggleSender;
 
   return (
-    <header className={`flex flex-col w-full ${activeTab === 'home' ? 'bg-white' : 'bg-mfneutralsn-50'} overflow-visible ${!shouldShowFrame ? 'sticky top-0 z-50' : ''}`}>
+    <header className={`flex flex-col w-full bg-white overflow-visible ${!shouldShowFrame ? 'sticky top-0 z-50' : ''}`}>
       {/* Status bar */}
       <div className={`flex items-center justify-between px-5 pt-2 pb-1 ${!shouldShowFrame ? 'hidden' : ''}`}>
         <span className="[font-family:'Inter',Helvetica] font-semibold text-mfneutralsn-500 text-[15px] tracking-[-0.3px]">
@@ -187,65 +305,80 @@ export const PostFeedSection = ({
       </div>
 
       {/* Title row */}
-      <div className="flex items-center justify-between px-5 pt-3 pb-4">
+      <div className="flex items-center justify-between px-5 pt-3 pb-6">
         <h1 className="text-[20px] font-bold text-mfneutralsn-500 tracking-tight leading-tight">
           Home
         </h1>
         <SearchIcon className="w-5 h-5 text-mfneutralsn-400" />
       </div>
 
-      {/* Default pill row */}
-      {!isFiltered && (
-        <div className="flex items-center gap-2 px-4 pb-3 w-full">
-          <div className="flex items-center gap-2 flex-1 overflow-x-auto">
-            {tabs.map((tab) => (
+      {/* Underline tabs */}
+      <div className="bg-white border-b border-[#e2e2e9] px-4">
+        <div className="flex items-center justify-start overflow-x-auto no-scrollbar">
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
               <button
                 key={tab.id}
                 onClick={() => onTabChange(tab.id)}
-                className="flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border border-mfneutralsn-200 text-mfneutralsn-400 bg-transparent transition-all duration-150"
+                className={`flex h-12 items-center justify-center pr-4 first:pl-0 pl-4 -mb-px border-b-2 text-[16px] leading-tight whitespace-nowrap transition-colors flex-shrink-0 ${
+                  isActive
+                    ? "border-mfprimaryp-400 text-mfprimaryp-400 font-medium"
+                    : "border-transparent text-mfneutralsn-400 opacity-80 font-normal"
+                }`}
               >
                 {tab.label}
               </button>
-            ))}
-            <button
-              onClick={() => onTabChange('saved')}
-              aria-label="Saved"
-              className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-mfneutralsn-200"
-            >
-              <BookmarkIcon className="w-4 h-4 text-mfneutralsn-400" />
-            </button>
-          </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Filter row */}
+      <div
+        className={`flex items-center px-4 py-3 w-full bg-white ${
+          activeTab === 'photos' ? 'justify-end' : 'justify-between'
+        }`}
+      >
+        {activeTab === 'activity' ? (
+          <ActivityDropdown typeFilter={activityTypeFilter} onTypeFilterChange={onActivityTypeFilterChange} />
+        ) : activeTab === 'home' ? (
+          <FilterDropdown
+            options={postSourceOptions}
+            value={postSourceFilter}
+            onChange={(id) => onPostSourceFilterChange(id as PostSourceFilter)}
+          />
+        ) : activeTab === 'learning' ? (
+          <FilterDropdown
+            options={learningTypeOptions}
+            value={learningTypeFilter}
+            onChange={(id) => onLearningTypeFilterChange(id as LearningTypeFilter)}
+          />
+        ) : activeTab === 'photos' ? null : (
+          <StaticDropdown label={DROPDOWN_LABEL[activeTab] ?? 'All'} />
+        )}
+        {activeTab === 'photos' ? (
+          <PhotosCalendarPicker
+            selectedDate={photoFilterDate}
+            onSelectDate={onPhotoFilterDateChange}
+            datesWithPhotos={photoDatesWithContent}
+            popoverAlign="right"
+          />
+        ) : (
           <button
             aria-label="Filters"
             onClick={() => setShowFilterSheet(true)}
-            className={`relative flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border bg-white ${
+            className={`relative flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-full border bg-white ${
               filtersActive ? 'border-mfprimaryp-400' : 'border-mfneutralsn-200'
             }`}
           >
             <SlidersHorizontalIcon className={`w-4 h-4 ${filtersActive ? 'text-mfprimaryp-400' : 'text-mfneutralsn-400'}`} />
             {filtersActive && (
-              <span className="absolute top-0.5 right-0.5 w-2 h-2 rounded-full bg-mfprimaryp-400" />
+              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-mfprimaryp-400" />
             )}
           </button>
-        </div>
-      )}
-
-      {/* Active pill row: ✕ | active pill | tab-specific controls */}
-      {isFiltered && (
-        <div className="flex items-center gap-2 px-4 pb-3 w-full">
-          <button
-            onClick={() => onTabChange('home')}
-            className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-mfneutralsn-200 bg-transparent"
-            aria-label="Close filter"
-          >
-            <XIcon className="w-4 h-4 text-mfneutralsn-500" />
-          </button>
-          <button className="flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border bg-mfprimaryp-400 text-white border-mfprimaryp-400">
-            {activeTabLabel}
-          </button>
-          {renderActiveControls()}
-        </div>
-      )}
+        )}
+      </div>
 
       <AnimatePresence>
         {showFilterSheet && (
@@ -270,7 +403,7 @@ export const PostFeedSection = ({
               </div>
 
               <div className="flex items-center justify-between px-5 pt-2 pb-4">
-                <h2 className="text-[16px] font-medium text-mfneutralsn-500">Filter newsfeed</h2>
+                <h2 className="text-[16px] font-medium text-mfneutralsn-500">{filterSheetTitle}</h2>
                 <button
                   onClick={() => setShowFilterSheet(false)}
                   aria-label="Close"
@@ -282,17 +415,38 @@ export const PostFeedSection = ({
 
               <div className="flex flex-col gap-5 px-5 pb-6">
                 <div>
-                  <label className="text-[12px] text-mfneutralsn-300">Search</label>
+                  <label className="text-[14px] text-mfneutralsn-300">Search</label>
                   <div className="mt-1.5 flex items-center gap-2 h-10 px-3 rounded-lg border border-mfneutralsn-200 bg-white">
                     <SearchIcon className="w-4 h-4 text-mfneutralsn-300" />
                     <input
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search posts"
+                      value={
+                        activeTab === "activity"
+                          ? activitySearchQuery
+                          : activeTab === "learning"
+                            ? learningSearchQuery
+                            : searchQuery
+                      }
+                      onChange={(e) => {
+                        if (activeTab === "activity") setActivitySearchQuery(e.target.value);
+                        else if (activeTab === "learning") setLearningSearchQuery(e.target.value);
+                        else setSearchQuery(e.target.value);
+                      }}
+                      placeholder={searchPlaceholder}
                       className="flex-1 text-[14px] text-mfneutralsn-500 bg-transparent focus:outline-none placeholder:text-mfneutralsn-300"
                     />
-                    {searchQuery && (
-                      <button onClick={() => setSearchQuery('')} aria-label="Clear search">
+                    {(activeTab === "activity"
+                      ? activitySearchQuery
+                      : activeTab === "learning"
+                        ? learningSearchQuery
+                        : searchQuery) && (
+                      <button
+                        onClick={() => {
+                          if (activeTab === "activity") setActivitySearchQuery("");
+                          else if (activeTab === "learning") setLearningSearchQuery("");
+                          else setSearchQuery("");
+                        }}
+                        aria-label="Clear search"
+                      >
                         <XIcon className="w-4 h-4 text-mfneutralsn-300" />
                       </button>
                     )}
@@ -300,45 +454,96 @@ export const PostFeedSection = ({
                 </div>
 
                 <div>
-                  <label className="text-[12px] text-mfneutralsn-300">Date range</label>
-                  <div className="mt-1.5 grid grid-cols-2 gap-2">
-                    <input
-                      type="date"
-                      value={dateFrom}
-                      onChange={(e) => setDateFrom(e.target.value)}
-                      className="h-10 px-3 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] text-mfneutralsn-500 focus:outline-none"
+                  <label className="text-[14px] text-mfneutralsn-300">Date range</label>
+                  {activeTab === "activity" ? (
+                    <DateRangePickerFields
+                      dateFrom={activityDateFrom}
+                      dateTo={activityDateTo}
+                      onChange={(from, to) => {
+                        setActivityDateFrom(from);
+                        setActivityDateTo(to);
+                      }}
                     />
-                    <input
-                      type="date"
-                      value={dateTo}
-                      onChange={(e) => setDateTo(e.target.value)}
-                      className="h-10 px-3 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] text-mfneutralsn-500 focus:outline-none"
-                    />
-                  </div>
+                  ) : activeTab === "learning" ? (
+                    <div className="mt-1.5">
+                      <DateRangeCalendar
+                        dateFrom={learningDateFrom}
+                        dateTo={learningDateTo}
+                        onChange={(from, to) => {
+                          setLearningDateFrom(from);
+                          setLearningDateTo(to);
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="mt-1.5 grid grid-cols-2 gap-2">
+                      <input
+                        type="date"
+                        value={dateFrom}
+                        onChange={(e) => setDateFrom(e.target.value)}
+                        className="h-10 px-3 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] text-mfneutralsn-500 focus:outline-none"
+                      />
+                      <input
+                        type="date"
+                        value={dateTo}
+                        onChange={(e) => setDateTo(e.target.value)}
+                        className="h-10 px-3 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] text-mfneutralsn-500 focus:outline-none"
+                      />
+                    </div>
+                  )}
                 </div>
 
-                <div>
-                  <label className="text-[12px] text-mfneutralsn-300">Sender</label>
-                  <div className="mt-1.5 flex flex-wrap gap-2">
-                    {SENDER_OPTIONS.map((s) => {
-                      const selected = senders.has(s);
-                      return (
-                        <button
-                          key={s}
-                          onClick={() => toggleSender(s)}
-                          className={`h-9 px-3 rounded-full border text-[13px] flex items-center gap-1.5 ${
-                            selected
-                              ? 'bg-mfprimaryp-400 border-mfprimaryp-400 text-white'
-                              : 'bg-white border-mfneutralsn-200 text-mfneutralsn-500'
-                          }`}
-                        >
-                          {selected && <CheckIcon className="w-3.5 h-3.5" />}
-                          {s}
-                        </button>
-                      );
-                    })}
+                {activeTab === "learning" && (
+                  <div>
+                    <label className="text-[14px] text-mfneutralsn-300">Areas</label>
+                    <div className="mt-1.5 flex flex-wrap gap-2">
+                      {LEARNING_FILTER_AREAS.map((area) => {
+                        const selected = learningAreasFilter.has(area.id);
+                        return (
+                          <button
+                            key={area.id}
+                            type="button"
+                            onClick={() => toggleLearningArea(area.id)}
+                            className={`h-9 px-3 rounded-full border text-[14px] flex items-center gap-1.5 ${
+                              selected
+                                ? "bg-mfprimaryp-400 border-mfprimaryp-400 text-white"
+                                : "bg-white border-mfneutralsn-200 text-mfneutralsn-500"
+                            }`}
+                          >
+                            {selected && <CheckIcon className="w-3.5 h-3.5" />}
+                            {area.label}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {showSenderFilters && (
+                  <div>
+                    <label className="text-[14px] text-mfneutralsn-300">Sender</label>
+                    <div className="mt-1.5 flex flex-wrap gap-2">
+                      {SENDER_OPTIONS.map((s) => {
+                        const selected = currentSenders.has(s);
+                        return (
+                          <button
+                            key={s}
+                            type="button"
+                            onClick={() => onToggleCurrentSender(s)}
+                            className={`h-9 px-3 rounded-full border text-[14px] flex items-center gap-1.5 ${
+                              selected
+                                ? "bg-mfprimaryp-400 border-mfprimaryp-400 text-white"
+                                : "bg-white border-mfneutralsn-200 text-mfneutralsn-500"
+                            }`}
+                          >
+                            {selected && <CheckIcon className="w-3.5 h-3.5" />}
+                            {s}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex items-center gap-3 pt-2">
                   <button

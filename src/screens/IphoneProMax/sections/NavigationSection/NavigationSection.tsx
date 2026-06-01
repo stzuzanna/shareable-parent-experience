@@ -8,9 +8,12 @@ import {
 import { Button } from "../../../../components/ui/button";
 import { Card, CardContent } from "../../../../components/ui/card";
 import { BASE_PATH } from "../../../../constants";
+import { PostBookmarkButton } from "../../../../components/PostBookmarkButton/PostBookmarkButton";
 
 interface NavigationSectionProps {
   onShowRSVP: () => void;
+  isSaved: boolean;
+  onToggleSaved: () => void;
   rsvpState: {
     hasReplied: boolean;
     isAttending: boolean | null;
@@ -19,12 +22,22 @@ interface NavigationSectionProps {
   };
 }
 
-export const NavigationSection: React.FC<NavigationSectionProps> = ({ onShowRSVP, rsvpState }): JSX.Element => {
+export const NavigationSection: React.FC<NavigationSectionProps> = ({
+  onShowRSVP,
+  rsvpState,
+  isSaved,
+  onToggleSaved,
+}): JSX.Element => {
   return (
-    <Card className="w-full bg-white rounded-lg">
+    <Card className="relative w-full bg-white rounded-lg">
+      <PostBookmarkButton
+        isSaved={isSaved}
+        onToggle={onToggleSaved}
+        className="absolute top-4 right-4 z-10"
+      />
       <CardContent className="flex flex-col items-start gap-4 p-6">
         <div className="flex flex-col items-start gap-4 w-full">
-          <div className="flex items-start gap-2.5 w-full">
+          <div className="flex items-start gap-2.5 w-full pr-10">
             <Avatar className="w-11 h-11">
               <AvatarImage
                 src={`${BASE_PATH}avatar---rounded---xl.png`}

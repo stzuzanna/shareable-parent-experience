@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useGlobalUi } from "../../../../contexts/GlobalUiContext";
 import { Button } from "../../../../components/ui/button";
 import { useDeviceDetection } from "../../../../hooks/useDeviceDetection";
 import { XIcon } from "lucide-react";
@@ -28,8 +29,14 @@ const kindergartenPhotos = [
 ];
 
 export const PhotosPage: React.FC<PhotosPageProps> = ({ onClose }): JSX.Element => {
+  const { setHideGlobalFab } = useGlobalUi();
   const { shouldShowFrame } = useDeviceDetection();
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+
+  useEffect(() => {
+    setHideGlobalFab(!!selectedPhoto);
+    return () => setHideGlobalFab(false);
+  }, [selectedPhoto, setHideGlobalFab]);
 
   return (
     <div className="flex flex-col bg-white min-h-screen">

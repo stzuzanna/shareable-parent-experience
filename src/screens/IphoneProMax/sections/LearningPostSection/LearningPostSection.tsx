@@ -6,6 +6,43 @@ import { Card, CardContent } from "../../../../components/ui/card";
 import { Input } from "../../../../components/ui/input";
 import { EmojiReactionPicker } from "../../../../components/EmojiReactionPicker/EmojiReactionPicker";
 import { MessageCircleIcon, LanguagesIcon } from "lucide-react";
+import { PostBookmarkButton } from "../../../../components/PostBookmarkButton/PostBookmarkButton";
+
+export type LearningContentType = "observations" | "assessments" | "resources";
+
+export const LEARNING_FILTER_AREAS = [
+  { id: "communication", label: "Communication" },
+  { id: "physical", label: "Physical development" },
+  { id: "social", label: "Social" },
+  { id: "mathematics", label: "Mathematics" },
+  { id: "literacy", label: "Literacy" },
+] as const;
+
+export type LearningFilterAreaId = (typeof LEARNING_FILTER_AREAS)[number]["id"];
+
+export const learningPostMatchesAreasFilter = (
+  developmentAreas: string[],
+  selectedIds: Set<string>,
+): boolean => {
+  if (selectedIds.size === 0) return true;
+
+  return [...selectedIds].some((id) => {
+    switch (id) {
+      case "communication":
+        return developmentAreas.some((a) => a.toLowerCase().includes("communication"));
+      case "physical":
+        return developmentAreas.includes("Physical development");
+      case "social":
+        return developmentAreas.some((a) => /social|emotional/i.test(a));
+      case "mathematics":
+        return developmentAreas.includes("Mathematics");
+      case "literacy":
+        return developmentAreas.includes("Literacy");
+      default:
+        return false;
+    }
+  });
+};
 
 export interface LearningPost {
   id: string;
@@ -15,6 +52,7 @@ export interface LearningPost {
   observation: string;
   image: string;
   developmentAreas: string[];
+  contentType: LearningContentType;
   baseLikes: number;
 }
 
@@ -27,6 +65,8 @@ interface LearningPostCardProps {
   onRemoveReaction: () => void;
   onAddComment: (comment: string) => void;
   comments: string[];
+  isSaved: boolean;
+  onToggleSaved: () => void;
 }
 
 const AREA_COLORS: Record<string, string> = {
@@ -43,7 +83,7 @@ const Pill = ({ label }: { label: string }) => {
   const cls = AREA_COLORS[label] ?? "bg-mfneutralsn-50 text-mfneutralsn-400";
   return (
     <span
-      className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium ${cls}`}
+      className={`inline-flex items-center px-2.5 py-1 rounded-full text-[14px] font-medium ${cls}`}
     >
       {label}
     </span>
@@ -59,6 +99,8 @@ export const LearningPostCard: React.FC<LearningPostCardProps> = ({
   onRemoveReaction,
   onAddComment,
   comments,
+  isSaved,
+  onToggleSaved,
 }) => {
   const [commentText, setCommentText] = React.useState('');
   const commentInputRef = React.useRef<HTMLInputElement | null>(null);
@@ -77,13 +119,13 @@ export const LearningPostCard: React.FC<LearningPostCardProps> = ({
     <Card className="relative w-full bg-white rounded-xl shadow-elevation-elevation-1">
       <CardContent className="p-0">
         <div className="flex flex-col items-start gap-4 px-4 py-0">
-          <div className="flex items-center gap-2 pt-4 pb-0 px-0 w-full">
-            <Avatar className="w-8 h-8">
+          <div className="flex items-start gap-2 pt-4 pb-0 px-0 w-full">
+            <Avatar className="w-8 h-8 flex-shrink-0">
               <AvatarImage src={`${BASE_PATH}frame-12.png`} alt="Profile" />
               <AvatarFallback>LE</AvatarFallback>
             </Avatar>
 
-            <div className="flex flex-col items-start justify-center gap-0.5">
+            <div className="flex flex-col items-start justify-center gap-0.5 flex-1 min-w-0">
               <div className="font-MF-body-text-body-emphasis font-[number:var(--MF-body-text-body-emphasis-font-weight)] text-mfneutralsn-400 text-[length:var(--MF-body-text-body-emphasis-font-size)] tracking-[var(--MF-body-text-body-emphasis-letter-spacing)] leading-[var(--MF-body-text-body-emphasis-line-height)] [font-style:var(--MF-body-text-body-emphasis-font-style)]">
                 {post.author}
               </div>
@@ -100,6 +142,8 @@ export const LearningPostCard: React.FC<LearningPostCardProps> = ({
                 </div>
               </div>
             </div>
+
+            <PostBookmarkButton isSaved={isSaved} onToggle={onToggleSaved} />
           </div>
 
           <div className="w-full font-modern-famly-body-text-body font-[number:var(--modern-famly-body-text-body-font-weight)] text-mfneutralsn-400 text-[length:var(--modern-famly-body-text-body-font-size)] tracking-[var(--modern-famly-body-text-body-letter-spacing)] leading-[var(--modern-famly-body-text-body-line-height)] [font-style:var(--modern-famly-body-text-body-font-style)]">
@@ -227,6 +271,7 @@ export const LEARNING_POSTS: LearningPost[] = [
       "Abby spent twenty minutes carefully stacking the wooden blocks today — she counted each one as she added it to the tower and made it to ten before it tumbled. She giggled and started again straight away.",
     image: 'https://images.pexels.com/photos/3933027/pexels-photo-3933027.jpeg?auto=compress&cs=tinysrgb&w=800',
     developmentAreas: ['Mathematics', 'Physical development'],
+    contentType: 'observations',
     baseLikes: 4,
   },
   {
@@ -238,6 +283,7 @@ export const LEARNING_POSTS: LearningPost[] = [
       "We read 'The Very Hungry Caterpillar' together and Abby pointed out the fruits and named the colours. She especially loved the strawberries and asked to read it again.",
     image: 'https://images.pexels.com/photos/8612967/pexels-photo-8612967.jpeg?auto=compress&cs=tinysrgb&w=800',
     developmentAreas: ['Literacy', 'Communication & language'],
+    contentType: 'observations',
     baseLikes: 6,
   },
   {
@@ -249,6 +295,7 @@ export const LEARNING_POSTS: LearningPost[] = [
       "Outside today Abby explored the sensory tray with leaves and pinecones. She sorted them by size and was very curious about the textures — describing them as 'crunchy' and 'soft'.",
     image: 'https://images.pexels.com/photos/3933025/pexels-photo-3933025.jpeg?auto=compress&cs=tinysrgb&w=800',
     developmentAreas: ['Understanding the world', 'Expressive arts & design'],
+    contentType: 'assessments',
     baseLikes: 3,
   },
   {
@@ -260,6 +307,7 @@ export const LEARNING_POSTS: LearningPost[] = [
       "Abby helped a friend who was upset by bringing them a soft toy and sitting beside them. A lovely moment of empathy from her today.",
     image: 'https://images.pexels.com/photos/8613313/pexels-photo-8613313.jpeg?auto=compress&cs=tinysrgb&w=800',
     developmentAreas: ['Personal, social & emotional'],
+    contentType: 'resources',
     baseLikes: 8,
   },
 ];

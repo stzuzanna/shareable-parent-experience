@@ -6,6 +6,7 @@ import { Card, CardContent } from "../../../../components/ui/card";
 import { Input } from "../../../../components/ui/input";
 import { EmojiReactionPicker } from "../../../../components/EmojiReactionPicker/EmojiReactionPicker";
 import { MessageCircleIcon, LanguagesIcon } from "lucide-react";
+import { PostBookmarkButton } from "../../../../components/PostBookmarkButton/PostBookmarkButton";
 
 interface PhotoPostSectionProps {
   isLiked: boolean;
@@ -15,6 +16,8 @@ interface PhotoPostSectionProps {
   onRemoveReaction: () => void;
   onAddComment: (comment: string) => void;
   comments: string[];
+  isSaved: boolean;
+  onToggleSaved: () => void;
 }
 
 export const PhotoPostSection: React.FC<PhotoPostSectionProps> = ({
@@ -24,7 +27,9 @@ export const PhotoPostSection: React.FC<PhotoPostSectionProps> = ({
   onReaction,
   onRemoveReaction,
   onAddComment,
-  comments
+  comments,
+  isSaved,
+  onToggleSaved,
 }) => {
   const [commentText, setCommentText] = React.useState('');
   const commentInputRef = React.useRef<HTMLInputElement | null>(null);
@@ -46,13 +51,13 @@ export const PhotoPostSection: React.FC<PhotoPostSectionProps> = ({
         <Card className="relative w-full bg-white rounded-xl shadow-elevation-elevation-1">
           <CardContent className="p-0">
             <div className="flex flex-col items-start gap-5 px-4 py-0">
-              <div className="flex items-center gap-2 pt-4 pb-0 px-0 w-full">
-                <Avatar className="w-8 h-8">
+              <div className="flex items-start gap-2 pt-4 pb-0 px-0 w-full">
+                <Avatar className="w-8 h-8 flex-shrink-0">
                   <AvatarImage src={`${BASE_PATH}frame-12.png`} alt="Profile" />
                   <AvatarFallback>LE</AvatarFallback>
                 </Avatar>
 
-                <div className="flex flex-col items-start justify-center gap-0.5">
+                <div className="flex flex-col items-start justify-center gap-0.5 flex-1 min-w-0">
                   <div className="font-MF-body-text-body-emphasis font-[number:var(--MF-body-text-body-emphasis-font-weight)] text-mfneutralsn-400 text-[length:var(--MF-body-text-body-emphasis-font-size)] tracking-[var(--MF-body-text-body-emphasis-letter-spacing)] leading-[var(--MF-body-text-body-emphasis-line-height)] [font-style:var(--MF-body-text-body-emphasis-font-style)]">
                     Little Explorers
                   </div>
@@ -69,6 +74,8 @@ export const PhotoPostSection: React.FC<PhotoPostSectionProps> = ({
                     </div>
                   </div>
                 </div>
+
+                <PostBookmarkButton isSaved={isSaved} onToggle={onToggleSaved} />
               </div>
 
               <div className="w-full font-modern-famly-body-text-body font-[number:var(--modern-famly-body-text-body-font-weight)] text-mfneutralsn-400 text-[length:var(--modern-famly-body-text-body-font-size)] tracking-[var(--modern-famly-body-text-body-letter-spacing)] leading-[var(--modern-famly-body-text-body-line-height)] [font-style:var(--modern-famly-body-text-body-font-style)] mb-4">

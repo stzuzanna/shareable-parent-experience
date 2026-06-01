@@ -1,8 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ChevronRightIcon, ArrowLeftIcon, HomeIcon, PhoneIcon, InfoIcon, CalendarIcon, BookOpenIcon, SunIcon, ThermometerIcon, MessageSquareIcon, PencilIcon, KeyRoundIcon, UserIcon, StethoscopeIcon, ShieldAlertIcon, StickyNoteIcon, IdCardIcon, CheckCircle2Icon, XCircleIcon, HelpCircleIcon } from "lucide-react";
+import { ChevronRightIcon, ArrowLeftIcon, HomeIcon, PhoneIcon, InfoIcon, CalendarIcon, BookOpenIcon, SunIcon, ThermometerIcon, MessageSquareIcon, PencilIcon, KeyRoundIcon, UserIcon, StethoscopeIcon, ShieldAlertIcon, StickyNoteIcon, IdCardIcon, CheckCircle2Icon, XCircleIcon, HelpCircleIcon, PlusIcon } from "lucide-react";
 import { useProfileVariant } from "../../../../hooks/useProfileVariant";
+import { useDeviceDetection } from "../../../../hooks/useDeviceDetection";
+import { setChildProfileSubpageActive } from "../../../../hooks/useChildProfileSubpage";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
+import { AddLeaveSheet } from "../../../../components/AddLeaveSheet/AddLeaveSheet";
 
 const KEY_PERSON_NAME = "Olivia Wilson";
 const KEY_PERSON_INITIALS = "OW";
@@ -31,7 +34,7 @@ const Divider = () => <div className="h-px bg-mfneutralsn-75 mx-4" />;
 const InfoRow = ({ label, sublabel }: { label: string; sublabel: string }) => (
   <div className="px-4 py-3">
     <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">{label}</p>
-    <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">{sublabel}</p>
+    <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">{sublabel}</p>
   </div>
 );
 
@@ -87,6 +90,7 @@ const SectionHeader = ({
   onSave,
   onCancel,
   editActive,
+  trailing,
 }: {
   title: string;
   onBack: () => void;
@@ -94,6 +98,7 @@ const SectionHeader = ({
   onSave?: () => void;
   onCancel?: () => void;
   editActive?: boolean;
+  trailing?: React.ReactNode;
 }) => (
   <div className="flex items-center gap-2 px-4 py-3">
     <button
@@ -107,27 +112,29 @@ const SectionHeader = ({
       <div className="flex items-center gap-2 flex-shrink-0">
         <button
           onClick={onCancel}
-          className="px-3 h-9 rounded-lg border border-mfneutralsn-200 bg-white text-[13px] font-medium text-mfneutralsn-500 active:bg-gray-50"
+          className="px-3 h-9 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] font-medium text-mfneutralsn-500 active:bg-gray-50"
         >
           Cancel
         </button>
         <button
           onClick={onSave}
-          className="px-3 h-9 rounded-lg bg-mfprimaryp-400 text-white text-[13px] font-medium"
+          className="px-3 h-9 rounded-lg bg-mfprimaryp-400 text-white text-[14px] font-medium"
         >
           Save
         </button>
       </div>
     ) : (
-      onEdit && (
+      trailing ??
+      (onEdit && (
         <button
           onClick={onEdit}
           aria-label={`Edit ${title}`}
-          className="px-3 h-9 rounded-full border border-mfneutralsn-200 bg-white text-[13px] font-medium text-mfneutralsn-500 active:bg-gray-50 flex-shrink-0"
+          className="flex items-center gap-1.5 px-3 h-9 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] font-medium text-mfneutralsn-500 active:bg-gray-50 flex-shrink-0"
         >
+          <PencilIcon className="w-3.5 h-3.5" />
           Edit
         </button>
-      )
+      ))
     )}
   </div>
 );
@@ -212,33 +219,19 @@ const SubsectionTitle = ({ children }: { children: React.ReactNode }) => (
   <p className="px-4 pt-5 pb-3 text-[16px] font-medium text-mfneutralsn-400">{children}</p>
 );
 
-const ChildcareDetail = () => (
-  <div className="flex flex-col pb-24">
-    <SubpagePersonRow
-      avatarSrc={KEY_PERSON_AVATAR}
-      avatarAlt={KEY_PERSON_NAME}
-      fallback={KEY_PERSON_INITIALS}
-      label={`Key person: ${KEY_PERSON_NAME}`}
-    />
-    <SubpageRow icon={<HomeIcon className="w-4 h-4" />} label="11 NW Street NY" />
-    <SubpageRow icon={<PhoneIcon className="w-4 h-4" />} label="+1 (245) 464-6464" />
-    <SubpageRow icon={<InfoIcon className="w-4 h-4" />} label="Gate code: 1243" />
-  </div>
-);
-
 const CareDetail = () => (
   <div className="flex flex-col pt-2 pb-24 gap-2 px-2">
     <div className="bg-white border border-mfprimaryp-100 rounded-xl p-4">
-      <p className="text-xs text-mfneutralsn-300 mb-1">Care plan</p>
+      <p className="text-[14px] text-mfneutralsn-300 mb-1">Care plan</p>
       <p className="text-sm font-semibold text-mfneutralsn-500">Monthly full time</p>
-      <p className="text-xs text-mfneutralsn-300 mt-0.5">$1,350/month · Aug 31 –</p>
+      <p className="text-[14px] text-mfneutralsn-300 mt-0.5">$1,350/month · Aug 31 –</p>
     </div>
     <div className="bg-white border border-mfprimaryp-100 rounded-xl p-4">
-      <p className="text-xs text-mfneutralsn-300 mb-3">Upcoming bookings</p>
+      <p className="text-[14px] text-mfneutralsn-300 mb-3">Upcoming bookings</p>
       <div className="flex items-center justify-between py-1">
         <p className="text-sm font-semibold text-mfneutralsn-500 flex-1">After School Care</p>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-mfneutralsn-300">Mar 7</span>
+          <span className="text-[14px] text-mfneutralsn-300">Mar 7</span>
           <span className="text-sm text-mfneutralsn-400">$50.00</span>
           <BookingStatusIcon status="pending" />
         </div>
@@ -247,7 +240,7 @@ const CareDetail = () => (
       <div className="flex items-center justify-between py-1">
         <p className="text-sm font-semibold text-mfneutralsn-500 flex-1">After School Care</p>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-mfneutralsn-300">Feb 1</span>
+          <span className="text-[14px] text-mfneutralsn-300">Feb 1</span>
           <span className="text-sm text-mfneutralsn-400">$50.00</span>
           <BookingStatusIcon status="paid" />
         </div>
@@ -257,35 +250,52 @@ const CareDetail = () => (
 );
 
 const PrimaryBadge = () => (
-  <span className="text-[11px] px-2 py-0.5 rounded-full border border-mfprimaryp-400 text-mfprimaryp-400">Primary</span>
+  <span className="text-[14px] px-2 py-0.5 rounded-full border border-mfprimaryp-400 text-mfprimaryp-400">Primary</span>
 );
 
 const SecondaryBadge = () => (
-  <span className="text-[11px] px-2 py-0.5 rounded-full border border-mfneutralsn-200 text-mfneutralsn-400">Secondary</span>
+  <span className="text-[14px] px-2 py-0.5 rounded-full border border-mfneutralsn-200 text-mfneutralsn-400">Secondary</span>
 );
 
-const LabelValueRow = ({ label, value }: { label: string; value: string }) => (
-  <div className="px-4 py-3 border-b border-mfneutralsn-75">
-    <p className="text-[12px] text-mfneutralsn-300 leading-tight">{label}</p>
-    <p className="text-[14px] text-mfneutralsn-500 leading-tight mt-1">{value}</p>
+const LabelValueRow = ({
+  label,
+  value,
+  compact = false,
+}: {
+  label: string;
+  value: string;
+  compact?: boolean;
+}) => (
+  <div className={compact ? "py-1" : "px-4 pt-2 pb-4"}>
+    <p className="text-[14px] text-mfneutralsn-300 leading-tight">{label}</p>
+    <p className={`text-[16px] text-mfneutralsn-500 leading-tight ${compact ? "mt-0.5" : "mt-1"}`}>
+      {value || "-"}
+    </p>
   </div>
 );
 
-const AddFieldRow = ({ label, onPress }: { label: string; onPress?: () => void }) => (
-  <button
-    onClick={onPress}
-    className="w-full px-4 py-3 flex items-center gap-2 border-b border-mfneutralsn-75 text-left active:bg-gray-50"
-  >
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-mfneutralsn-300 flex-shrink-0">
-      <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-    <span className="text-[14px] text-mfneutralsn-300">{label}</span>
-  </button>
+const MultilineLabelValueRow = ({ label, value }: { label: string; value: string }) => (
+  <div className="px-4 pt-2 pb-4">
+    <p className="text-[14px] text-mfneutralsn-300 leading-tight">{label}</p>
+    <p className="text-[16px] text-mfneutralsn-500 leading-snug whitespace-pre-line mt-1">{value || "-"}</p>
+  </div>
 );
 
-const FieldShell = ({ label, children }: { label: string; children: React.ReactNode }) => (
-  <div className="px-4 py-3 border-b border-mfneutralsn-75">
-    <p className="text-[12px] text-mfneutralsn-300 leading-tight mb-1.5">{label}</p>
+const FieldShell = ({
+  label,
+  children,
+  compact = false,
+}: {
+  label: string;
+  children: React.ReactNode;
+  compact?: boolean;
+}) => (
+  <div className={compact ? "py-1" : "px-4 pt-2 pb-4"}>
+    <p
+      className={`text-[14px] leading-tight ${compact ? "text-mfneutralsn-300 mb-1" : "font-medium text-mfneutralsn-500 mb-1.5"}`}
+    >
+      {label}
+    </p>
     {children}
   </div>
 );
@@ -329,6 +339,30 @@ const DateField = ({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       className={inputClass}
+    />
+  </FieldShell>
+);
+
+const TextAreaField = ({
+  label,
+  value,
+  onChange,
+  placeholder,
+  rows = 4,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  rows?: number;
+}) => (
+  <FieldShell label={label}>
+    <textarea
+      value={value}
+      placeholder={placeholder}
+      onChange={(e) => onChange(e.target.value)}
+      rows={rows}
+      className="w-full px-3 py-2 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] text-mfneutralsn-500 focus:outline-none focus:border-mfprimaryp-400 resize-none"
     />
   </FieldShell>
 );
@@ -423,12 +457,12 @@ const LanguagesField = ({
           available.length > 0 && (
             <button
               onClick={() => setAdding(true)}
-              className="flex items-center gap-2 text-[14px] text-mfprimaryp-400 py-1"
+              aria-label="Add language"
+              className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center text-mfneutralsn-500 active:bg-gray-50"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                 <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
-              Add language
             </button>
           )
         )}
@@ -451,7 +485,12 @@ const BasicInfoDetail = ({ editing }: { editing: boolean }) => {
   const [dateOfBirth, setDateOfBirth] = useState("2025-02-01");
   const [languages, setLanguages] = useState<string[]>(["English", "Spanish"]);
   const [gender, setGender] = useState("Boy");
-  const [optional, setOptional] = useState<Partial<Record<OptionalKey, string>>>({});
+  const [optional, setOptional] = useState<Record<OptionalKey, string>>({
+    nationality: "",
+    birthplace: "",
+    specialNotes: "",
+    sensitiveInfo: "",
+  });
 
   const formatDate = (iso: string) => {
     const d = new Date(iso);
@@ -459,102 +498,94 @@ const BasicInfoDetail = ({ editing }: { editing: boolean }) => {
     return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
   };
 
-  const showOptional = (k: OptionalKey) => setOptional((p) => ({ ...p, [k]: p[k] ?? "" }));
-  const setOptionalValue = (k: OptionalKey, v: string) => setOptional((p) => ({ ...p, [k]: v }));
-
   if (editing) {
     return (
-      <div className="flex flex-col pb-24">
+      <div className="flex flex-col pb-24 pt-2">
         <DateField label="Date of birth" value={dateOfBirth} onChange={setDateOfBirth} />
         <LanguagesField label="Languages" values={languages} onChange={setLanguages} />
         <SelectField label="Gender" value={gender} options={["Boy", "Girl", "Other", "Prefer not to say"]} onChange={setGender} />
-        {(Object.keys(OPTIONAL_LABELS) as OptionalKey[]).map((k) =>
-          optional[k] !== undefined ? (
-            <TextField
-              key={k}
-              label={OPTIONAL_LABELS[k]}
-              value={optional[k] ?? ""}
-              placeholder={`Enter ${OPTIONAL_LABELS[k].toLowerCase()}`}
-              onChange={(v) => setOptionalValue(k, v)}
-            />
-          ) : (
-            <AddFieldRow key={k} label={`Add ${OPTIONAL_LABELS[k].toLowerCase()}`} onPress={() => showOptional(k)} />
-          )
-        )}
+        {(Object.keys(OPTIONAL_LABELS) as OptionalKey[]).map((k) => (
+          <TextField
+            key={k}
+            label={OPTIONAL_LABELS[k]}
+            value={optional[k]}
+            onChange={(v) => setOptional((p) => ({ ...p, [k]: v }))}
+          />
+        ))}
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col pb-24">
+    <div className="flex flex-col pb-24 pt-2">
       <LabelValueRow label="Date of birth" value={formatDate(dateOfBirth)} />
-      <LabelValueRow label="Languages" value={languages.join(", ") || "—"} />
+      <LabelValueRow label="Languages" value={languages.join(", ")} />
       <LabelValueRow label="Gender" value={gender} />
-      {(Object.keys(OPTIONAL_LABELS) as OptionalKey[]).map((k) =>
-        optional[k] ? (
-          <LabelValueRow key={k} label={OPTIONAL_LABELS[k]} value={optional[k] as string} />
-        ) : (
-          <AddFieldRow key={k} label={`Add ${OPTIONAL_LABELS[k].toLowerCase()}`} />
-        )
-      )}
+      {(Object.keys(OPTIONAL_LABELS) as OptionalKey[]).map((k) => (
+        <LabelValueRow key={k} label={OPTIONAL_LABELS[k]} value={optional[k]} />
+      ))}
     </div>
   );
 };
 
 // ── Detail view: Health details ───────────────────────────────────────────────
 
-type HealthOptionalKey = "medication" | "immunization";
-const HEALTH_OPTIONAL_LABELS: Record<HealthOptionalKey, string> = {
-  medication: "Medication",
-  immunization: "Immunization record",
-};
-
 const HealthDetailsDetail = ({ editing }: { editing: boolean }) => {
-  const [doctorName, setDoctorName] = useState("Phil Cawlins");
-  const [doctorPhone, setDoctorPhone] = useState("+1 (555) 123-4567");
-  const [allergies, setAllergies] = useState("Lactose, Peanuts");
-  const [notes, setNotes] = useState("Tolerates penicillin");
-  const [optional, setOptional] = useState<Partial<Record<HealthOptionalKey, string>>>({});
+  const [allergy, setAllergy] = useState("Peanuts");
+  const [toleratesPenicillin, setToleratesPenicillin] = useState("Yes");
+  const [diet, setDiet] = useState("");
+  const [specialNotes, setSpecialNotes] = useState("Epi-pen available");
 
-  const showOptional = (k: HealthOptionalKey) => setOptional((p) => ({ ...p, [k]: p[k] ?? "" }));
-  const setOptionalValue = (k: HealthOptionalKey, v: string) => setOptional((p) => ({ ...p, [k]: v }));
+  const [doctorName, setDoctorName] = useState("Phillip O'Donnell");
+  const [doctorPhone, setDoctorPhone] = useState("070 3597 2396");
+  const [doctorAddress, setDoctorAddress] = useState("235 N. Greenbrier Street\nArlington\nVA 22203\nUS");
+
+  const [dentistName, setDentistName] = useState("");
+  const [dentistPhone, setDentistPhone] = useState("");
+  const [dentistAddress, setDentistAddress] = useState("");
 
   if (editing) {
     return (
-      <div className="flex flex-col pb-24">
-        <TextField label="Doctor's name" value={doctorName} onChange={setDoctorName} />
-        <TextField label="Doctor's phone" value={doctorPhone} onChange={setDoctorPhone} />
-        <TextField label="Allergies" value={allergies} onChange={setAllergies} placeholder="Comma separated" />
-        <TextField label="Additional notes" value={notes} onChange={setNotes} />
-        {(Object.keys(HEALTH_OPTIONAL_LABELS) as HealthOptionalKey[]).map((k) =>
-          optional[k] !== undefined ? (
-            <TextField
-              key={k}
-              label={HEALTH_OPTIONAL_LABELS[k]}
-              value={optional[k] ?? ""}
-              placeholder={`Enter ${HEALTH_OPTIONAL_LABELS[k].toLowerCase()}`}
-              onChange={(v) => setOptionalValue(k, v)}
-            />
-          ) : (
-            <AddFieldRow key={k} label={`Add ${HEALTH_OPTIONAL_LABELS[k].toLowerCase()}`} onPress={() => showOptional(k)} />
-          )
-        )}
+      <div className="flex flex-col pb-24 pt-2">
+        <TextField label="Allergy" value={allergy} onChange={setAllergy} placeholder="Comma separated" />
+        <SelectField
+          label="Tolerates penicillin"
+          value={toleratesPenicillin}
+          options={["Yes", "No", "Unknown"]}
+          onChange={setToleratesPenicillin}
+        />
+        <TextField label="Special dietary considerations" value={diet} onChange={setDiet} />
+        <TextField label="Special notes" value={specialNotes} onChange={setSpecialNotes} />
+
+        <SubsectionTitle>Doctor</SubsectionTitle>
+        <TextField label="Name" value={doctorName} onChange={setDoctorName} />
+        <TextField label="Phone" value={doctorPhone} onChange={setDoctorPhone} />
+        <TextAreaField label="Address" value={doctorAddress} onChange={setDoctorAddress} />
+
+        <SubsectionTitle>Dentist</SubsectionTitle>
+        <TextField label="Name" value={dentistName} onChange={setDentistName} />
+        <TextField label="Phone" value={dentistPhone} onChange={setDentistPhone} />
+        <TextAreaField label="Address" value={dentistAddress} onChange={setDentistAddress} />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col pb-24">
-      <LabelValueRow label="Doctor" value={`${doctorName} · ${doctorPhone}`} />
-      <LabelValueRow label="Allergies" value={allergies || "—"} />
-      <LabelValueRow label="Additional notes" value={notes || "—"} />
-      {(Object.keys(HEALTH_OPTIONAL_LABELS) as HealthOptionalKey[]).map((k) =>
-        optional[k] ? (
-          <LabelValueRow key={k} label={HEALTH_OPTIONAL_LABELS[k]} value={optional[k] as string} />
-        ) : (
-          <AddFieldRow key={k} label={`Add ${HEALTH_OPTIONAL_LABELS[k].toLowerCase()}`} />
-        )
-      )}
+    <div className="flex flex-col pb-24 pt-2">
+      <LabelValueRow label="Allergy" value={allergy} />
+      <LabelValueRow label="Tolerates penicillin" value={toleratesPenicillin} />
+      <LabelValueRow label="Special dietary considerations" value={diet} />
+      <LabelValueRow label="Special notes" value={specialNotes} />
+
+      <SubsectionTitle>Doctor</SubsectionTitle>
+      <LabelValueRow label="Name" value={doctorName} />
+      <LabelValueRow label="Phone" value={doctorPhone} />
+      <MultilineLabelValueRow label="Address" value={doctorAddress} />
+
+      <SubsectionTitle>Dentist</SubsectionTitle>
+      <LabelValueRow label="Name" value={dentistName} />
+      <LabelValueRow label="Phone" value={dentistPhone} />
+      <MultilineLabelValueRow label="Address" value={dentistAddress} />
     </div>
   );
 };
@@ -577,18 +608,20 @@ const CONTACTS: ContactDef[] = [
 
 type ContactExtras = { email?: string; phone?: string };
 
-const ContactEditCard = ({
+const ContactCard = ({
   contact,
   extras,
+  editing,
   onChange,
 }: {
   contact: ContactDef;
   extras: ContactExtras;
+  editing: boolean;
   onChange: (next: ContactExtras) => void;
 }) => {
   const Badge = contact.primary ? PrimaryBadge : SecondaryBadge;
   return (
-    <div className="border-b border-mfneutralsn-75 px-4 py-4 flex flex-col gap-3">
+    <div className="px-4 pt-4 pb-4 border-b border-mfneutralsn-75 last:border-b-0 flex flex-col gap-2">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <Avatar className="w-9 h-9 flex-shrink-0">
@@ -597,52 +630,36 @@ const ContactEditCard = ({
           </Avatar>
           <div className="min-w-0">
             <p className="text-[14px] font-medium text-mfneutralsn-500 truncate">{contact.name}</p>
-            <p className="text-[12px] text-mfneutralsn-300">{contact.role}</p>
+            <p className="text-[14px] text-mfneutralsn-300">{contact.role}</p>
           </div>
         </div>
         <Badge />
       </div>
 
-      {extras.email !== undefined ? (
-        <FieldShell label="Email">
-          <input
-            value={extras.email}
-            placeholder="name@example.com"
-            onChange={(e) => onChange({ ...extras, email: e.target.value })}
-            className={inputClass}
-          />
-        </FieldShell>
+      {editing ? (
+        <div className="flex flex-col gap-1">
+          <FieldShell compact label="Email">
+            <input
+              value={extras.email ?? ""}
+              placeholder="name@example.com"
+              onChange={(e) => onChange({ ...extras, email: e.target.value })}
+              className={inputClass}
+            />
+          </FieldShell>
+          <FieldShell compact label="Phone number">
+            <input
+              value={extras.phone ?? ""}
+              placeholder="+1 (555) 123-4567"
+              onChange={(e) => onChange({ ...extras, phone: e.target.value })}
+              className={inputClass}
+            />
+          </FieldShell>
+        </div>
       ) : (
-        <button
-          onClick={() => onChange({ ...extras, email: "" })}
-          className="flex items-center gap-2 text-[14px] text-mfprimaryp-400"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-          Add email
-        </button>
-      )}
-
-      {extras.phone !== undefined ? (
-        <FieldShell label="Phone number">
-          <input
-            value={extras.phone}
-            placeholder="+1 (555) 123-4567"
-            onChange={(e) => onChange({ ...extras, phone: e.target.value })}
-            className={inputClass}
-          />
-        </FieldShell>
-      ) : (
-        <button
-          onClick={() => onChange({ ...extras, phone: "" })}
-          className="flex items-center gap-2 text-[14px] text-mfprimaryp-400"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-          Add phone number
-        </button>
+        <div className="flex flex-col gap-0.5">
+          <LabelValueRow compact label="Email" value={extras.email ?? ""} />
+          <LabelValueRow compact label="Phone number" value={extras.phone ?? ""} />
+        </div>
       )}
     </div>
   );
@@ -657,32 +674,22 @@ const FamilyDetail = ({ editing }: { editing: boolean }) => {
   return (
     <div className="flex flex-col pb-24">
       <SubsectionTitle>Parents</SubsectionTitle>
-      {editing
-        ? CONTACTS.map((c) => (
-            <ContactEditCard
-              key={c.id}
-              contact={c}
-              extras={extras[c.id] ?? {}}
-              onChange={(next) => setExtras((prev) => ({ ...prev, [c.id]: next }))}
-            />
-          ))
-        : CONTACTS.map((c) => (
-            <SubpagePersonRow
-              key={c.id}
-              avatarSrc={c.avatar}
-              avatarAlt={c.name}
-              fallback={c.fallback}
-              label={`${c.name} · ${c.role}`}
-              badge={c.primary ? <PrimaryBadge /> : <SecondaryBadge />}
-            />
-          ))}
+      {CONTACTS.map((c) => (
+        <ContactCard
+          key={c.id}
+          contact={c}
+          extras={extras[c.id] ?? {}}
+          editing={editing}
+          onChange={(next) => setExtras((prev) => ({ ...prev, [c.id]: next }))}
+        />
+      ))}
 
       <SubsectionTitle>Siblings</SubsectionTitle>
-      <div className="px-4 py-4 border-b border-mfneutralsn-75">
-        <p className="text-[13px] text-mfneutralsn-300 mb-3 leading-snug">
+      <div className="px-4 py-4">
+        <p className="text-[14px] text-mfneutralsn-300 mb-3 leading-snug">
           Link a sibling so you can see both children in one place.
         </p>
-        <button className="flex items-center gap-2 h-9 px-3 rounded-lg border border-mfprimaryp-400 text-[13px] font-medium text-mfprimaryp-400 active:bg-mfprimaryp-50">
+        <button className="flex items-center gap-2 h-9 px-3 rounded-lg border border-mfprimaryp-400 text-[14px] font-medium text-mfprimaryp-400 active:bg-mfprimaryp-50">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
             <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>
@@ -695,16 +702,14 @@ const FamilyDetail = ({ editing }: { editing: boolean }) => {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-type Section = "childcare" | "care" | "family" | "basic" | "health" | "leave" | "closures" | "permissions" | null;
+type Section = "care" | "family" | "basic" | "health" | "leave" | "permissions" | null;
 
 const sectionTitles: Record<NonNullable<Section>, string> = {
-  childcare: "Childcare info",
   care: "Care",
   family: "Family",
   basic: "Basic info",
   health: "Health details",
   leave: "Leave",
-  closures: "Meadows closure days",
   permissions: "Permissions",
 };
 
@@ -712,7 +717,7 @@ const BookingRow = ({ name, date, amount, status }: { name: string; date: string
   <div className="px-4 py-2.5 flex items-center justify-between gap-2">
     <p className="text-sm font-semibold text-mfneutralsn-500 flex-1 min-w-0 truncate">{name}</p>
     <div className="flex items-center gap-2 flex-shrink-0">
-      <span className="text-xs text-mfneutralsn-300">{date}</span>
+      <span className="text-[14px] text-mfneutralsn-300">{date}</span>
       <span className="text-sm text-mfneutralsn-400">{amount}</span>
       <BookingStatusIcon status={status} />
     </div>
@@ -737,7 +742,7 @@ const SubpageRowDual = ({
       </div>
       <div className="min-w-0">
         <p className="text-[14px] text-mfneutralsn-400 truncate">{label}</p>
-        {sublabel && <p className="text-[12px] text-mfneutralsn-300 mt-0.5 truncate">{sublabel}</p>}
+        {sublabel && <p className="text-[14px] text-mfneutralsn-300 mt-0.5 truncate">{sublabel}</p>}
       </div>
     </div>
     {trailing && <div className="flex-shrink-0">{trailing}</div>}
@@ -745,74 +750,31 @@ const SubpageRowDual = ({
 );
 
 const LeaveDetail = () => (
-  <div className="flex flex-col pb-24">
-    <SubsectionTitle>Upcoming</SubsectionTitle>
-    <SubpageRowDual
-      icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />}
-      label="1 - 10 Jul 2026"
-    />
-    <SubpageRowDual
-      icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />}
-      label="22 - 24 Dec 2026"
-    />
+    <div className="flex flex-col pb-24">
+      <SubsectionTitle>Upcoming</SubsectionTitle>
+      <SubpageRowDual
+        icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />}
+        label="1 - 10 Jul 2026"
+      />
+      <SubpageRowDual
+        icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />}
+        label="22 - 24 Dec 2026"
+      />
 
-    <SubsectionTitle>Past</SubsectionTitle>
-    <SubpageRowDual
-      icon={<ThermometerIcon className="w-4 h-4 text-mfredr-400" />}
-      label="4 Mar 2026"
-    />
-    <SubpageRowDual
-      icon={<ThermometerIcon className="w-4 h-4 text-mfredr-400" />}
-      label="18 - 19 Feb 2026"
-    />
-    <SubpageRowDual
-      icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />}
-      label="23 Dec 2025 - 2 Jan 2026"
-    />
-  </div>
-);
-
-const ClosuresDetail = () => (
-  <div className="flex flex-col pb-24">
-    <SubsectionTitle>Upcoming closures</SubsectionTitle>
-    <SubpageRowDual
-      icon={<CalendarIcon className="w-4 h-4" />}
-      label="14 May 2026"
-      sublabel="Ascension Day"
-    />
-    <SubpageRowDual
-      icon={<CalendarIcon className="w-4 h-4" />}
-      label="25 May 2026"
-      sublabel="Memorial Day"
-    />
-    <SubpageRowDual
-      icon={<CalendarIcon className="w-4 h-4" />}
-      label="14 Jun - 14 Jul 2026"
-      sublabel="Summer holidays"
-    />
-    <SubpageRowDual
-      icon={<CalendarIcon className="w-4 h-4" />}
-      label="4 Jul 2026"
-      sublabel="Independence Day"
-    />
-    <SubpageRowDual
-      icon={<CalendarIcon className="w-4 h-4" />}
-      label="7 Sep 2026"
-      sublabel="Labor Day"
-    />
-
-    <SubsectionTitle>Past closures</SubsectionTitle>
-    <SubpageRowDual
-      icon={<CalendarIcon className="w-4 h-4" />}
-      label="25 Dec 2025 - 1 Jan 2026"
-      sublabel="Winter holidays"
-    />
-    <SubpageRowDual
-      icon={<CalendarIcon className="w-4 h-4" />}
-      label="27 Nov 2025"
-      sublabel="Thanksgiving"
-    />
-  </div>
+      <SubsectionTitle>Past</SubsectionTitle>
+      <SubpageRowDual
+        icon={<ThermometerIcon className="w-4 h-4 text-mfredr-400" />}
+        label="4 Mar 2026"
+      />
+      <SubpageRowDual
+        icon={<ThermometerIcon className="w-4 h-4 text-mfredr-400" />}
+        label="18 - 19 Feb 2026"
+      />
+      <SubpageRowDual
+        icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />}
+        label="23 Dec 2025 - 2 Jan 2026"
+      />
+    </div>
 );
 
 type PermissionStatus = "yes" | "no" | "pending";
@@ -837,9 +799,9 @@ const PermissionRow = ({ item }: { item: { label: string; status: PermissionStat
     <div className="flex-1 min-w-0">
       <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">{item.label}</p>
       {item.lastChanged ? (
-        <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight">Last changed {item.lastChanged}</p>
+        <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">Last changed {item.lastChanged}</p>
       ) : (
-        <p className="text-[12px] text-mfprimaryp-400 mt-1 leading-tight">Needs your response</p>
+        <p className="text-[14px] text-mfprimaryp-400 mt-1 leading-tight">Needs your response</p>
       )}
     </div>
   </div>
@@ -883,13 +845,13 @@ const PermissionsDetail = () => {
               <div className="flex items-center gap-1.5 flex-shrink-0">
                 <button
                   onClick={() => setAnswer(item.id, "yes")}
-                  className="px-3 py-1 text-xs font-medium rounded-md border border-gray-200 bg-white text-mfneutralsn-500 active:bg-gray-50"
+                  className="px-3 py-1 text-[14px] font-medium rounded-md border border-gray-200 bg-white text-mfneutralsn-500 active:bg-gray-50"
                 >
                   Yes
                 </button>
                 <button
                   onClick={() => setAnswer(item.id, "no")}
-                  className="px-3 py-1 text-xs font-medium rounded-md border border-gray-200 bg-white text-mfneutralsn-500 active:bg-gray-50"
+                  className="px-3 py-1 text-[14px] font-medium rounded-md border border-gray-200 bg-white text-mfneutralsn-500 active:bg-gray-50"
                 >
                   No
                 </button>
@@ -897,7 +859,7 @@ const PermissionsDetail = () => {
             ) : (
               <button
                 onClick={() => setEditingId(item.id)}
-                className="px-3 py-1 text-xs font-medium rounded-md border border-gray-200 bg-white text-mfneutralsn-400 active:bg-gray-50 flex-shrink-0"
+                className="px-3 py-1 text-[14px] font-medium rounded-md border border-gray-200 bg-white text-mfneutralsn-400 active:bg-gray-50 flex-shrink-0"
               >
                 Edit
               </button>
@@ -911,10 +873,12 @@ const PermissionsDetail = () => {
 
 export const OverviewContent = (): JSX.Element => {
   const variant = useProfileVariant();
+  const { shouldShowFrame } = useDeviceDetection();
   const navigate = useNavigate();
   const location = useLocation();
   const [section, setSection] = useState<Section>(null);
   const [editing, setEditing] = useState(false);
+  const [showLeaveSheet, setShowLeaveSheet] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -926,12 +890,18 @@ export const OverviewContent = (): JSX.Element => {
   }, [location.state, navigate]);
 
   // When entering/leaving a detail section, scroll the surrounding
-  // overflow container back to the top so the child profile header stays visible.
+  // overflow container back to the top and notify ChildProfile so it hides
+  // the tabs + child info row while a subpage is open.
   useEffect(() => {
     const scrollable = rootRef.current?.closest(".overflow-y-auto") as HTMLElement | null;
     scrollable?.scrollTo({ top: 0, behavior: "smooth" });
     setEditing(false);
+    setShowLeaveSheet(false);
+    setChildProfileSubpageActive(section !== null);
   }, [section]);
+
+  // Make sure the global flag is cleared if this view unmounts mid-subpage.
+  useEffect(() => () => setChildProfileSubpageActive(false), []);
 
   if (section !== null) {
     const editable = section === "basic" || section === "family" || section === "health";
@@ -947,15 +917,30 @@ export const OverviewContent = (): JSX.Element => {
           onSave={() => setEditing(false)}
           onCancel={() => setEditing(false)}
           editActive={editing}
+          trailing={
+            section === "leave" ? (
+              <button
+                type="button"
+                onClick={() => setShowLeaveSheet(true)}
+                className="flex items-center gap-1.5 px-3 h-9 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] font-medium text-mfneutralsn-500 active:bg-gray-50 flex-shrink-0"
+              >
+                <PlusIcon className="w-3.5 h-3.5" />
+                Add leave
+              </button>
+            ) : undefined
+          }
         />
-        {section === "childcare" && <ChildcareDetail />}
         {section === "care" && <CareDetail />}
         {section === "family" && <FamilyDetail editing={editing} />}
         {section === "basic" && <BasicInfoDetail editing={editing} />}
         {section === "health" && <HealthDetailsDetail editing={editing} />}
         {section === "leave" && <LeaveDetail />}
-        {section === "closures" && <ClosuresDetail />}
         {section === "permissions" && <PermissionsDetail />}
+        <AddLeaveSheet
+          isOpen={section === "leave" && showLeaveSheet}
+          onClose={() => setShowLeaveSheet(false)}
+          useAbsolute={shouldShowFrame}
+        />
       </div>
     );
   }
@@ -969,33 +954,6 @@ export const OverviewContent = (): JSX.Element => {
         <LeaveRow icon={<SunIcon className="w-[18px] h-[18px] text-mfyellowy-400" />} label="1 - 10 Jul 26" sublabel="Holiday · Opted out of meals" trailing="Upcoming" />
         <Divider />
         <LeaveRow icon={<ThermometerIcon className="w-[18px] h-[18px] text-mfredr-400" />} label="4 Mar 26" sublabel="Sick" trailing="Past" />
-      </Card>
-
-      {/* Childcare info */}
-      <Card>
-        <CardHeader title="Childcare info" onPress={() => setSection("childcare")} />
-        <Divider />
-        <SummaryPersonRow
-          avatarSrc={KEY_PERSON_AVATAR}
-          avatarAlt={KEY_PERSON_NAME}
-          fallback={KEY_PERSON_INITIALS}
-          label={`Key person: ${KEY_PERSON_NAME}`}
-          trailing={
-            <button
-              aria-label={`Message ${KEY_PERSON_NAME}`}
-              onClick={() => navigate(`/messages/chat/${KEY_PERSON_CHAT_ID}`)}
-              className="w-8 h-8 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center active:bg-gray-50"
-            >
-              <MessageSquareIcon className="w-4 h-4 text-mfneutralsn-400" />
-            </button>
-          }
-        />
-        <Divider />
-        <SummaryRow icon={<HomeIcon className="w-4 h-4" />} label="11 NW Street NY" />
-        <Divider />
-        <SummaryRow icon={<PhoneIcon className="w-4 h-4" />} label="+1 (245) 464-6464" />
-        <Divider />
-        <SummaryRow icon={<InfoIcon className="w-4 h-4" />} label="Gate code: 1243" />
       </Card>
 
       {/* Permissions */}
@@ -1016,7 +974,7 @@ export const OverviewContent = (): JSX.Element => {
           <Divider />
           <div className="px-4 py-3">
             <p className="text-sm font-medium text-mfneutralsn-500">Monthly full time</p>
-            <p className="text-xs text-mfneutralsn-300 mt-0.5">$1,350/month · Aug 31 –</p>
+            <p className="text-[14px] text-mfneutralsn-300 mt-0.5">$1,350/month · Aug 31 –</p>
           </div>
           <Divider />
           <BookingRow name="After School Care" date="Mar 7" amount="$50.00" status="pending" />
@@ -1024,17 +982,6 @@ export const OverviewContent = (): JSX.Element => {
           <BookingRow name="After School Care" date="Feb 1" amount="$50.00" status="paid" />
         </Card>
       )}
-
-      {/* Meadows closure days — both variants */}
-      <Card>
-        <CardHeader title="Meadows closure days" onPress={() => setSection("closures")} />
-        <Divider />
-        <InfoRow label="14 May 26" sublabel="Ascension Day" />
-        <Divider />
-        <InfoRow label="14 Jun - 14 Jul" sublabel="Summer holidays" />
-        <Divider />
-        <InfoRow label="14 Jul" sublabel="Independence Day" />
-      </Card>
 
       {/* Family */}
       <Card>
@@ -1048,10 +995,10 @@ export const OverviewContent = (): JSX.Element => {
             </Avatar>
             <div className="min-w-0">
               <p className="text-sm font-semibold text-mfneutralsn-500 truncate">Sarah Freedman</p>
-              <p className="text-xs text-mfneutralsn-300 mt-0.5">+1 (555) 123-4567 · Mother</p>
+              <p className="text-[14px] text-mfneutralsn-300 mt-0.5">+1 (555) 123-4567 · Mother</p>
             </div>
           </div>
-          <span className="text-xs px-2.5 py-0.5 rounded-full border border-mfprimaryp-400 text-mfprimaryp-400 flex-shrink-0">Primary</span>
+          <span className="text-[14px] px-2.5 py-0.5 rounded-full border border-mfprimaryp-400 text-mfprimaryp-400 flex-shrink-0">Primary</span>
         </div>
         <Divider />
         <div className="px-4 py-3 flex items-center justify-between gap-3">
@@ -1062,10 +1009,10 @@ export const OverviewContent = (): JSX.Element => {
             </Avatar>
             <div className="min-w-0">
               <p className="text-sm font-semibold text-mfneutralsn-500 truncate">Michael Freedman</p>
-              <p className="text-xs text-mfneutralsn-300 mt-0.5">+1 (555) 123-4567 · Father</p>
+              <p className="text-[14px] text-mfneutralsn-300 mt-0.5">+1 (555) 123-4567 · Father</p>
             </div>
           </div>
-          <span className="text-xs px-2.5 py-0.5 rounded-full border border-mfneutralsn-200 text-mfneutralsn-400 flex-shrink-0">Secondary</span>
+          <span className="text-[14px] px-2.5 py-0.5 rounded-full border border-mfneutralsn-200 text-mfneutralsn-400 flex-shrink-0">Secondary</span>
         </div>
       </Card>
 
@@ -1082,11 +1029,11 @@ export const OverviewContent = (): JSX.Element => {
       <Card>
         <CardHeader title="Health details" onPress={() => setSection("health")} />
         <Divider />
-        <SummaryRow icon={<StethoscopeIcon className="w-4 h-4" />} label="Doctor: Phil Cawlins" />
+        <SummaryRow icon={<ShieldAlertIcon className="w-4 h-4" />} label="Allergy: Peanuts" />
         <Divider />
-        <SummaryRow icon={<ShieldAlertIcon className="w-4 h-4" />} label="Allergies: Lactose, Peanuts" />
+        <SummaryRow icon={<StickyNoteIcon className="w-4 h-4" />} label="Epi-pen available" />
         <Divider />
-        <SummaryRow icon={<StickyNoteIcon className="w-4 h-4" />} label="Tolerates penicillin" />
+        <SummaryRow icon={<StethoscopeIcon className="w-4 h-4" />} label="Doctor: Phillip O'Donnell" />
       </Card>
     </div>
   );
@@ -1099,8 +1046,8 @@ const LeaveRow = ({ icon, label, sublabel, trailing }: { icon: React.ReactNode; 
     </div>
     <div className="flex-1 min-w-0">
       <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">{label}</p>
-      <p className="text-[12px] text-mfneutralsn-300 mt-1 leading-tight truncate">{sublabel}</p>
+      <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight truncate">{sublabel}</p>
     </div>
-    <span className="text-[12px] text-mfneutralsn-300 flex-shrink-0">{trailing}</span>
+    <span className="text-[14px] text-mfneutralsn-300 flex-shrink-0">{trailing}</span>
   </div>
 );
