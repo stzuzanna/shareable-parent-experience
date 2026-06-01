@@ -1,6 +1,6 @@
 import { BASE_PATH } from '../../../../constants';
-import React, { useState, useRef, useEffect } from "react";
-import { SearchIcon, SlidersHorizontalIcon, XIcon, ChevronDownIcon, BookmarkIcon, CheckIcon } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { SearchIcon, SlidersHorizontalIcon, XIcon, ChevronDownIcon, CheckIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDeviceDetection } from "../../../../hooks/useDeviceDetection";
 
@@ -28,12 +28,22 @@ interface PostFeedSectionProps {
 }
 
 const tabs = [
-  { id: 'activity', label: 'Activity' },
-  { id: 'photos', label: 'Photos' },
+  { id: 'home', label: 'Posts' },
+  { id: 'activity', label: 'Activities' },
   { id: 'learning', label: 'Learning' },
+  { id: 'photos', label: 'Photos' },
+  { id: 'saved', label: 'Saved' },
 ];
 
-const ActivityControls = ({
+const DROPDOWN_LABEL: Record<string, string> = {
+  home: 'All posts',
+  activity: 'All types',
+  learning: 'All areas',
+  photos: 'All dates',
+  saved: 'All types',
+};
+
+const ActivityDropdown = ({
   typeFilter,
   onTypeFilterChange,
 }: {
@@ -44,7 +54,6 @@ const ActivityControls = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const current = allActivityTypes.find((t) => t.id === typeFilter) ?? allActivityTypes[0];
 
-  // Close on outside click
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
@@ -57,75 +66,40 @@ const ActivityControls = ({
   }, [open]);
 
   return (
-    <>
-      {/* Dropdown trigger — relative wrapper keeps dropdown inside the frame */}
-      <div ref={containerRef} className="relative flex-shrink-0">
-        <button
-          onClick={() => setOpen((v) => !v)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border border-mfneutralsn-200 text-mfneutralsn-400 bg-transparent"
-        >
-          {current.label}
-          <ChevronDownIcon className="w-3.5 h-3.5" />
-        </button>
-
-        {open && (
-          <div className="absolute top-full left-0 mt-1.5 min-w-[160px] bg-white rounded-xl shadow-lg border border-gray-100 z-50">
-            {allActivityTypes.map((t) => (
-              <button
-                key={t.id}
-                onMouseDown={(e) => e.stopPropagation()}
-                onClick={() => { onTypeFilterChange(t.id); setOpen(false); }}
-                className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 first:rounded-t-xl last:rounded-b-xl ${
-                  typeFilter === t.id ? 'text-mfprimaryp-400 font-medium' : 'text-mfneutralsn-500'
-                }`}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <button className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-mfneutralsn-200">
-        <SlidersHorizontalIcon className="w-4 h-4 text-mfneutralsn-400" />
+    <div ref={containerRef} className="relative flex-shrink-0">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border border-mfneutralsn-200 text-mfneutralsn-400 bg-white"
+      >
+        {current.label}
+        <ChevronDownIcon className="w-3.5 h-3.5" />
       </button>
-    </>
+
+      {open && (
+        <div className="absolute top-full left-0 mt-1.5 min-w-[160px] bg-white rounded-xl shadow-lg border border-gray-100 z-50">
+          {allActivityTypes.map((t) => (
+            <button
+              key={t.id}
+              onMouseDown={(e) => e.stopPropagation()}
+              onClick={() => { onTypeFilterChange(t.id); setOpen(false); }}
+              className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 first:rounded-t-xl last:rounded-b-xl ${
+                typeFilter === t.id ? 'text-mfprimaryp-400 font-medium' : 'text-mfneutralsn-500'
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 
-const PhotosControls = () => (
-  <>
-    <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border border-mfneutralsn-200 text-mfneutralsn-400 bg-transparent flex-shrink-0">
-      All dates
-      <ChevronDownIcon className="w-3.5 h-3.5" />
-    </button>
-    <button className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-mfneutralsn-200">
-      <SlidersHorizontalIcon className="w-4 h-4 text-mfneutralsn-400" />
-    </button>
-  </>
-);
-
-const SavedControls = () => (
-  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border border-mfneutralsn-200 text-mfneutralsn-400 bg-transparent flex-shrink-0">
-    All types
+const StaticDropdown = ({ label }: { label: string }) => (
+  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border border-mfneutralsn-200 text-mfneutralsn-400 bg-white flex-shrink-0">
+    {label}
     <ChevronDownIcon className="w-3.5 h-3.5" />
   </button>
-);
-
-const LearningControls = ({ onOpenFilters }: { onOpenFilters: () => void }) => (
-  <>
-    <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border border-mfneutralsn-200 text-mfneutralsn-400 bg-transparent flex-shrink-0">
-      All areas
-      <ChevronDownIcon className="w-3.5 h-3.5" />
-    </button>
-    <button
-      onClick={onOpenFilters}
-      aria-label="Filters"
-      className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-mfneutralsn-200"
-    >
-      <SlidersHorizontalIcon className="w-4 h-4 text-mfneutralsn-400" />
-    </button>
-  </>
 );
 
 export const PostFeedSection = ({
@@ -135,8 +109,6 @@ export const PostFeedSection = ({
   onActivityTypeFilterChange = () => {},
 }: PostFeedSectionProps): JSX.Element => {
   const { shouldShowFrame } = useDeviceDetection();
-  const isFiltered = activeTab !== 'home';
-  const activeTabLabel = tabs.find(t => t.id === activeTab)?.label ?? (activeTab === 'saved' ? 'Saved' : undefined);
 
   const [showFilterSheet, setShowFilterSheet] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -161,23 +133,8 @@ export const PostFeedSection = ({
     setSenders(new Set());
   };
 
-  const renderActiveControls = () => {
-    if (activeTab === 'activity') {
-      return (
-        <ActivityControls
-          typeFilter={activityTypeFilter}
-          onTypeFilterChange={onActivityTypeFilterChange}
-        />
-      );
-    }
-    if (activeTab === 'photos') return <PhotosControls />;
-    if (activeTab === 'saved') return <SavedControls />;
-    if (activeTab === 'learning') return <LearningControls onOpenFilters={() => setShowFilterSheet(true)} />;
-    return null;
-  };
-
   return (
-    <header className={`flex flex-col w-full ${activeTab === 'home' ? 'bg-white' : 'bg-mfneutralsn-50'} overflow-visible ${!shouldShowFrame ? 'sticky top-0 z-50' : ''}`}>
+    <header className={`flex flex-col w-full bg-white overflow-visible ${!shouldShowFrame ? 'sticky top-0 z-50' : ''}`}>
       {/* Status bar */}
       <div className={`flex items-center justify-between px-5 pt-2 pb-1 ${!shouldShowFrame ? 'hidden' : ''}`}>
         <span className="[font-family:'Inter',Helvetica] font-semibold text-mfneutralsn-500 text-[15px] tracking-[-0.3px]">
@@ -187,65 +144,55 @@ export const PostFeedSection = ({
       </div>
 
       {/* Title row */}
-      <div className="flex items-center justify-between px-5 pt-3 pb-4">
+      <div className="flex items-center justify-between px-5 pt-3 pb-3">
         <h1 className="text-[20px] font-bold text-mfneutralsn-500 tracking-tight leading-tight">
           Home
         </h1>
         <SearchIcon className="w-5 h-5 text-mfneutralsn-400" />
       </div>
 
-      {/* Default pill row */}
-      {!isFiltered && (
-        <div className="flex items-center gap-2 px-4 pb-3 w-full">
-          <div className="flex items-center gap-2 flex-1 overflow-x-auto">
-            {tabs.map((tab) => (
+      {/* Underline tabs */}
+      <div className="bg-white border-b border-[#e2e2e9] px-4">
+        <div className="flex items-center justify-start overflow-x-auto no-scrollbar">
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
               <button
                 key={tab.id}
                 onClick={() => onTabChange(tab.id)}
-                className="flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border border-mfneutralsn-200 text-mfneutralsn-400 bg-transparent transition-all duration-150"
+                className={`flex h-12 items-center justify-center pr-4 first:pl-0 pl-4 -mb-px border-b-2 text-[16px] leading-tight whitespace-nowrap transition-colors flex-shrink-0 ${
+                  isActive
+                    ? "border-mfprimaryp-400 text-mfprimaryp-400 font-medium"
+                    : "border-transparent text-mfneutralsn-400 opacity-80 font-normal"
+                }`}
               >
                 {tab.label}
               </button>
-            ))}
-            <button
-              onClick={() => onTabChange('saved')}
-              aria-label="Saved"
-              className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-mfneutralsn-200"
-            >
-              <BookmarkIcon className="w-4 h-4 text-mfneutralsn-400" />
-            </button>
-          </div>
-          <button
-            aria-label="Filters"
-            onClick={() => setShowFilterSheet(true)}
-            className={`relative flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border bg-white ${
-              filtersActive ? 'border-mfprimaryp-400' : 'border-mfneutralsn-200'
-            }`}
-          >
-            <SlidersHorizontalIcon className={`w-4 h-4 ${filtersActive ? 'text-mfprimaryp-400' : 'text-mfneutralsn-400'}`} />
-            {filtersActive && (
-              <span className="absolute top-0.5 right-0.5 w-2 h-2 rounded-full bg-mfprimaryp-400" />
-            )}
-          </button>
+            );
+          })}
         </div>
-      )}
+      </div>
 
-      {/* Active pill row: ✕ | active pill | tab-specific controls */}
-      {isFiltered && (
-        <div className="flex items-center gap-2 px-4 pb-3 w-full">
-          <button
-            onClick={() => onTabChange('home')}
-            className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-mfneutralsn-200 bg-transparent"
-            aria-label="Close filter"
-          >
-            <XIcon className="w-4 h-4 text-mfneutralsn-500" />
-          </button>
-          <button className="flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border bg-mfprimaryp-400 text-white border-mfprimaryp-400">
-            {activeTabLabel}
-          </button>
-          {renderActiveControls()}
-        </div>
-      )}
+      {/* Filter row */}
+      <div className="flex items-center justify-between px-4 py-3 w-full bg-white">
+        {activeTab === 'activity' ? (
+          <ActivityDropdown typeFilter={activityTypeFilter} onTypeFilterChange={onActivityTypeFilterChange} />
+        ) : (
+          <StaticDropdown label={DROPDOWN_LABEL[activeTab] ?? 'All'} />
+        )}
+        <button
+          aria-label="Filters"
+          onClick={() => setShowFilterSheet(true)}
+          className={`relative flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-full border bg-white ${
+            filtersActive ? 'border-mfprimaryp-400' : 'border-mfneutralsn-200'
+          }`}
+        >
+          <SlidersHorizontalIcon className={`w-4 h-4 ${filtersActive ? 'text-mfprimaryp-400' : 'text-mfneutralsn-400'}`} />
+          {filtersActive && (
+            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-mfprimaryp-400" />
+          )}
+        </button>
+      </div>
 
       <AnimatePresence>
         {showFilterSheet && (
