@@ -261,6 +261,13 @@ const LabelValueRow = ({ label, value }: { label: string; value: string }) => (
   </div>
 );
 
+const MultilineLabelValueRow = ({ label, value }: { label: string; value: string }) => (
+  <div className="px-4 pt-2 pb-4">
+    <p className="text-[14px] text-mfneutralsn-300 leading-tight">{label}</p>
+    <p className="text-[16px] text-mfneutralsn-500 leading-snug whitespace-pre-line mt-1">{value || "-"}</p>
+  </div>
+);
+
 const FieldShell = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <div className="px-4 pt-2 pb-4">
     <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight mb-1.5">{label}</p>
@@ -307,6 +314,30 @@ const DateField = ({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       className={inputClass}
+    />
+  </FieldShell>
+);
+
+const TextAreaField = ({
+  label,
+  value,
+  onChange,
+  placeholder,
+  rows = 4,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  rows?: number;
+}) => (
+  <FieldShell label={label}>
+    <textarea
+      value={value}
+      placeholder={placeholder}
+      onChange={(e) => onChange(e.target.value)}
+      rows={rows}
+      className="w-full px-3 py-2 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] text-mfneutralsn-500 focus:outline-none focus:border-mfprimaryp-400 resize-none"
     />
   </FieldShell>
 );
@@ -474,50 +505,62 @@ const BasicInfoDetail = ({ editing }: { editing: boolean }) => {
 
 // ── Detail view: Health details ───────────────────────────────────────────────
 
-type HealthOptionalKey = "medication" | "immunization";
-const HEALTH_OPTIONAL_LABELS: Record<HealthOptionalKey, string> = {
-  medication: "Medication",
-  immunization: "Immunization record",
-};
-
 const HealthDetailsDetail = ({ editing }: { editing: boolean }) => {
-  const [doctorName, setDoctorName] = useState("Phil Cawlins");
-  const [doctorPhone, setDoctorPhone] = useState("+1 (555) 123-4567");
-  const [allergies, setAllergies] = useState("Lactose, Peanuts");
-  const [notes, setNotes] = useState("Tolerates penicillin");
-  const [optional, setOptional] = useState<Record<HealthOptionalKey, string>>({
-    medication: "",
-    immunization: "",
-  });
+  const [allergy, setAllergy] = useState("Peanuts");
+  const [toleratesPenicillin, setToleratesPenicillin] = useState("Yes");
+  const [diet, setDiet] = useState("");
+  const [specialNotes, setSpecialNotes] = useState("Epi-pen available");
+
+  const [doctorName, setDoctorName] = useState("Phillip O'Donnell");
+  const [doctorPhone, setDoctorPhone] = useState("070 3597 2396");
+  const [doctorAddress, setDoctorAddress] = useState("235 N. Greenbrier Street\nArlington\nVA 22203\nUS");
+
+  const [dentistName, setDentistName] = useState("");
+  const [dentistPhone, setDentistPhone] = useState("");
+  const [dentistAddress, setDentistAddress] = useState("");
 
   if (editing) {
     return (
       <div className="flex flex-col pb-24 pt-2">
-        <TextField label="Doctor's name" value={doctorName} onChange={setDoctorName} />
-        <TextField label="Doctor's phone" value={doctorPhone} onChange={setDoctorPhone} />
-        <TextField label="Allergies" value={allergies} onChange={setAllergies} placeholder="Comma separated" />
-        <TextField label="Additional notes" value={notes} onChange={setNotes} />
-        {(Object.keys(HEALTH_OPTIONAL_LABELS) as HealthOptionalKey[]).map((k) => (
-          <TextField
-            key={k}
-            label={HEALTH_OPTIONAL_LABELS[k]}
-            value={optional[k]}
-            onChange={(v) => setOptional((p) => ({ ...p, [k]: v }))}
-          />
-        ))}
+        <TextField label="Allergy" value={allergy} onChange={setAllergy} placeholder="Comma separated" />
+        <SelectField
+          label="Tolerates penicillin"
+          value={toleratesPenicillin}
+          options={["Yes", "No", "Unknown"]}
+          onChange={setToleratesPenicillin}
+        />
+        <TextField label="Special dietary considerations" value={diet} onChange={setDiet} />
+        <TextField label="Special notes" value={specialNotes} onChange={setSpecialNotes} />
+
+        <SubsectionTitle>Doctor</SubsectionTitle>
+        <TextField label="Name" value={doctorName} onChange={setDoctorName} />
+        <TextField label="Phone" value={doctorPhone} onChange={setDoctorPhone} />
+        <TextAreaField label="Address" value={doctorAddress} onChange={setDoctorAddress} />
+
+        <SubsectionTitle>Dentist</SubsectionTitle>
+        <TextField label="Name" value={dentistName} onChange={setDentistName} />
+        <TextField label="Phone" value={dentistPhone} onChange={setDentistPhone} />
+        <TextAreaField label="Address" value={dentistAddress} onChange={setDentistAddress} />
       </div>
     );
   }
 
   return (
     <div className="flex flex-col pb-24 pt-2">
-      <LabelValueRow label="Doctor's name" value={doctorName} />
-      <LabelValueRow label="Doctor's phone" value={doctorPhone} />
-      <LabelValueRow label="Allergies" value={allergies} />
-      <LabelValueRow label="Additional notes" value={notes} />
-      {(Object.keys(HEALTH_OPTIONAL_LABELS) as HealthOptionalKey[]).map((k) => (
-        <LabelValueRow key={k} label={HEALTH_OPTIONAL_LABELS[k]} value={optional[k]} />
-      ))}
+      <LabelValueRow label="Allergy" value={allergy} />
+      <LabelValueRow label="Tolerates penicillin" value={toleratesPenicillin} />
+      <LabelValueRow label="Special dietary considerations" value={diet} />
+      <LabelValueRow label="Special notes" value={specialNotes} />
+
+      <SubsectionTitle>Doctor</SubsectionTitle>
+      <LabelValueRow label="Name" value={doctorName} />
+      <LabelValueRow label="Phone" value={doctorPhone} />
+      <MultilineLabelValueRow label="Address" value={doctorAddress} />
+
+      <SubsectionTitle>Dentist</SubsectionTitle>
+      <LabelValueRow label="Name" value={dentistName} />
+      <LabelValueRow label="Phone" value={dentistPhone} />
+      <MultilineLabelValueRow label="Address" value={dentistAddress} />
     </div>
   );
 };
@@ -965,11 +1008,11 @@ export const OverviewContent = (): JSX.Element => {
       <Card>
         <CardHeader title="Health details" onPress={() => setSection("health")} />
         <Divider />
-        <SummaryRow icon={<StethoscopeIcon className="w-4 h-4" />} label="Doctor: Phil Cawlins" />
+        <SummaryRow icon={<ShieldAlertIcon className="w-4 h-4" />} label="Allergy: Peanuts" />
         <Divider />
-        <SummaryRow icon={<ShieldAlertIcon className="w-4 h-4" />} label="Allergies: Lactose, Peanuts" />
+        <SummaryRow icon={<StickyNoteIcon className="w-4 h-4" />} label="Epi-pen available" />
         <Divider />
-        <SummaryRow icon={<StickyNoteIcon className="w-4 h-4" />} label="Tolerates penicillin" />
+        <SummaryRow icon={<StethoscopeIcon className="w-4 h-4" />} label="Doctor: Phillip O'Donnell" />
       </Card>
     </div>
   );

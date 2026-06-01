@@ -26,6 +26,7 @@ import { BottomNav } from "../../components/BottomNav/BottomNav";
 import { Toast } from "../../components/Toast/Toast";
 import { Invoice } from "../../components/Invoice/Invoice";
 import { ChildcareInfo } from "./ChildcareInfo";
+import { PaymentSettings } from "./PaymentSettings";
 
 const OUTSTANDING_AMOUNT = "1024.88";
 
@@ -46,12 +47,21 @@ export const Menu = (): JSX.Element => {
   const { toasts, showToast, removeToast } = useToast();
   const [showInvoice, setShowInvoice] = useState(false);
   const [showChildcareInfo, setShowChildcareInfo] = useState(false);
+  const [showPaymentSettings, setShowPaymentSettings] = useState(false);
 
   if (showChildcareInfo) {
     return <ChildcareInfo onClose={() => setShowChildcareInfo(false)} />;
   }
+  if (showPaymentSettings) {
+    return <PaymentSettings onClose={() => setShowPaymentSettings(false)} />;
+  }
 
   const comingSoon = () => showToast("Coming soon", "info");
+
+  const onSettingsItem = (id: string) => {
+    if (id === "payment-settings") setShowPaymentSettings(true);
+    else comingSoon();
+  };
 
   return (
     <div className={`flex flex-col bg-white ${shouldShowFrame ? "h-full" : "min-h-screen"} ${!shouldShowFrame ? "touch:h-screen" : ""}`}>
@@ -170,7 +180,7 @@ export const Menu = (): JSX.Element => {
             {settingsItems.map(({ id, label, Icon }) => (
               <button
                 key={id}
-                onClick={comingSoon}
+                onClick={() => onSettingsItem(id)}
                 className="flex items-center justify-between h-12 hover:bg-gray-50"
               >
                 <div className="flex items-center gap-3">
