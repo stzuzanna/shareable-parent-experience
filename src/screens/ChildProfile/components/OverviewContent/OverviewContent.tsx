@@ -212,20 +212,6 @@ const SubsectionTitle = ({ children }: { children: React.ReactNode }) => (
   <p className="px-4 pt-5 pb-3 text-[16px] font-medium text-mfneutralsn-400">{children}</p>
 );
 
-const ChildcareDetail = () => (
-  <div className="flex flex-col pb-24">
-    <SubpagePersonRow
-      avatarSrc={KEY_PERSON_AVATAR}
-      avatarAlt={KEY_PERSON_NAME}
-      fallback={KEY_PERSON_INITIALS}
-      label={`Key person: ${KEY_PERSON_NAME}`}
-    />
-    <SubpageRow icon={<HomeIcon className="w-4 h-4" />} label="11 NW Street NY" />
-    <SubpageRow icon={<PhoneIcon className="w-4 h-4" />} label="+1 (245) 464-6464" />
-    <SubpageRow icon={<InfoIcon className="w-4 h-4" />} label="Gate code: 1243" />
-  </div>
-);
-
 const CareDetail = () => (
   <div className="flex flex-col pt-2 pb-24 gap-2 px-2">
     <div className="bg-white border border-mfprimaryp-100 rounded-xl p-4">
@@ -695,16 +681,14 @@ const FamilyDetail = ({ editing }: { editing: boolean }) => {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-type Section = "childcare" | "care" | "family" | "basic" | "health" | "leave" | "closures" | "permissions" | null;
+type Section = "care" | "family" | "basic" | "health" | "leave" | "permissions" | null;
 
 const sectionTitles: Record<NonNullable<Section>, string> = {
-  childcare: "Childcare info",
   care: "Care",
   family: "Family",
   basic: "Basic info",
   health: "Health details",
   leave: "Leave",
-  closures: "Meadows closure days",
   permissions: "Permissions",
 };
 
@@ -768,49 +752,6 @@ const LeaveDetail = () => (
     <SubpageRowDual
       icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />}
       label="23 Dec 2025 - 2 Jan 2026"
-    />
-  </div>
-);
-
-const ClosuresDetail = () => (
-  <div className="flex flex-col pb-24">
-    <SubsectionTitle>Upcoming closures</SubsectionTitle>
-    <SubpageRowDual
-      icon={<CalendarIcon className="w-4 h-4" />}
-      label="14 May 2026"
-      sublabel="Ascension Day"
-    />
-    <SubpageRowDual
-      icon={<CalendarIcon className="w-4 h-4" />}
-      label="25 May 2026"
-      sublabel="Memorial Day"
-    />
-    <SubpageRowDual
-      icon={<CalendarIcon className="w-4 h-4" />}
-      label="14 Jun - 14 Jul 2026"
-      sublabel="Summer holidays"
-    />
-    <SubpageRowDual
-      icon={<CalendarIcon className="w-4 h-4" />}
-      label="4 Jul 2026"
-      sublabel="Independence Day"
-    />
-    <SubpageRowDual
-      icon={<CalendarIcon className="w-4 h-4" />}
-      label="7 Sep 2026"
-      sublabel="Labor Day"
-    />
-
-    <SubsectionTitle>Past closures</SubsectionTitle>
-    <SubpageRowDual
-      icon={<CalendarIcon className="w-4 h-4" />}
-      label="25 Dec 2025 - 1 Jan 2026"
-      sublabel="Winter holidays"
-    />
-    <SubpageRowDual
-      icon={<CalendarIcon className="w-4 h-4" />}
-      label="27 Nov 2025"
-      sublabel="Thanksgiving"
     />
   </div>
 );
@@ -948,13 +889,11 @@ export const OverviewContent = (): JSX.Element => {
           onCancel={() => setEditing(false)}
           editActive={editing}
         />
-        {section === "childcare" && <ChildcareDetail />}
         {section === "care" && <CareDetail />}
         {section === "family" && <FamilyDetail editing={editing} />}
         {section === "basic" && <BasicInfoDetail editing={editing} />}
         {section === "health" && <HealthDetailsDetail editing={editing} />}
         {section === "leave" && <LeaveDetail />}
-        {section === "closures" && <ClosuresDetail />}
         {section === "permissions" && <PermissionsDetail />}
       </div>
     );
@@ -969,33 +908,6 @@ export const OverviewContent = (): JSX.Element => {
         <LeaveRow icon={<SunIcon className="w-[18px] h-[18px] text-mfyellowy-400" />} label="1 - 10 Jul 26" sublabel="Holiday · Opted out of meals" trailing="Upcoming" />
         <Divider />
         <LeaveRow icon={<ThermometerIcon className="w-[18px] h-[18px] text-mfredr-400" />} label="4 Mar 26" sublabel="Sick" trailing="Past" />
-      </Card>
-
-      {/* Childcare info */}
-      <Card>
-        <CardHeader title="Childcare info" onPress={() => setSection("childcare")} />
-        <Divider />
-        <SummaryPersonRow
-          avatarSrc={KEY_PERSON_AVATAR}
-          avatarAlt={KEY_PERSON_NAME}
-          fallback={KEY_PERSON_INITIALS}
-          label={`Key person: ${KEY_PERSON_NAME}`}
-          trailing={
-            <button
-              aria-label={`Message ${KEY_PERSON_NAME}`}
-              onClick={() => navigate(`/messages/chat/${KEY_PERSON_CHAT_ID}`)}
-              className="w-8 h-8 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center active:bg-gray-50"
-            >
-              <MessageSquareIcon className="w-4 h-4 text-mfneutralsn-400" />
-            </button>
-          }
-        />
-        <Divider />
-        <SummaryRow icon={<HomeIcon className="w-4 h-4" />} label="11 NW Street NY" />
-        <Divider />
-        <SummaryRow icon={<PhoneIcon className="w-4 h-4" />} label="+1 (245) 464-6464" />
-        <Divider />
-        <SummaryRow icon={<InfoIcon className="w-4 h-4" />} label="Gate code: 1243" />
       </Card>
 
       {/* Permissions */}
@@ -1024,17 +936,6 @@ export const OverviewContent = (): JSX.Element => {
           <BookingRow name="After School Care" date="Feb 1" amount="$50.00" status="paid" />
         </Card>
       )}
-
-      {/* Meadows closure days — both variants */}
-      <Card>
-        <CardHeader title="Meadows closure days" onPress={() => setSection("closures")} />
-        <Divider />
-        <InfoRow label="14 May 26" sublabel="Ascension Day" />
-        <Divider />
-        <InfoRow label="14 Jun - 14 Jul" sublabel="Summer holidays" />
-        <Divider />
-        <InfoRow label="14 Jul" sublabel="Independence Day" />
-      </Card>
 
       {/* Family */}
       <Card>
