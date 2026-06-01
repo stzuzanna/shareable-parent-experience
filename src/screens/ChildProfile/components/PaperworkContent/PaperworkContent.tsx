@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from "react";
-import { ChevronRightIcon, FilterIcon, XIcon, SearchIcon, CheckIcon } from "lucide-react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { ChevronRightIcon, FilterIcon, XIcon, SearchIcon, CheckIcon, ChevronDownIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 type FilterKey = "all" | "notes" | "forms" | "health";
@@ -36,7 +36,7 @@ const items: Item[] = [
 ];
 
 const filters: { id: FilterKey; label: string }[] = [
-  { id: "all", label: "All" },
+  { id: "all", label: "All types" },
   { id: "notes", label: "Notes" },
   { id: "forms", label: "Forms" },
   { id: "health", label: "Health" },
@@ -56,18 +56,60 @@ const Badge = ({ label, variant }: { label: string; variant: NonNullable<Item["b
   );
 };
 
-const Pill = ({ label, selected, onClick }: { label: string; selected?: boolean; onClick?: () => void }) => (
-  <button
-    onClick={onClick}
-    className={`flex-shrink-0 h-9 px-3.5 rounded-full text-[14px] leading-none border transition-colors ${
-      selected
-        ? "bg-mfprimaryp-400 text-white border-mfprimaryp-400"
-        : "bg-white text-mfneutralsn-500 border-mfneutralsn-200"
-    }`}
-  >
-    {label}
-  </button>
-);
+const TypeDropdown = ({
+  value,
+  onChange,
+}: {
+  value: FilterKey;
+  onChange: (v: FilterKey) => void;
+}) => {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const current = filters.find((f) => f.id === value) ?? filters[0];
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
+  return (
+    <div ref={containerRef} className="relative flex-shrink-0">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border border-mfneutralsn-200 text-mfneutralsn-400 bg-white"
+      >
+        {current.label}
+        <ChevronDownIcon className="w-3.5 h-3.5" />
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 mt-1.5 min-w-[160px] bg-white rounded-xl shadow-lg border border-gray-100 z-50">
+          {filters.map((f) => (
+            <button
+              key={f.id}
+              onMouseDown={(e) => e.stopPropagation()}
+              onClick={() => {
+                onChange(f.id);
+                setOpen(false);
+              }}
+              className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 first:rounded-t-xl last:rounded-b-xl ${
+                value === f.id ? "text-mfprimaryp-400 font-medium" : "text-mfneutralsn-500"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 type StatusKey = "Sign" | "Acknowledge" | "Signed" | "Completed";
 const ALL_STATUSES: StatusKey[] = ["Sign", "Acknowledge", "Signed", "Completed"];
@@ -93,7 +135,6 @@ export const PaperworkContent = (): JSX.Element => {
   const [dateTo, setDateTo] = useState("");
   const [statuses, setStatuses] = useState<Set<StatusKey>>(new Set());
 
-  const isFiltered = activeFilter !== "all";
   const advancedActive =
     query.trim() !== "" || dateFrom !== "" || dateTo !== "" || statuses.size > 0;
 
@@ -117,8 +158,6 @@ export const PaperworkContent = (): JSX.Element => {
     });
   }, [activeFilter, query, dateFrom, dateTo, statuses]);
 
-  const activeLabel = filters.find((f) => f.id === activeFilter)?.label ?? "All";
-
   const clearAdvanced = () => {
     setQuery("");
     setDateFrom("");
@@ -137,57 +176,21 @@ export const PaperworkContent = (): JSX.Element => {
 
   return (
     <div className="flex flex-col bg-white pb-24 pt-4">
-      {/* Filter pills */}
-      <div className="flex items-center gap-2 px-4 pb-6 bg-white">
-        {isFiltered ? (
-          <>
-            <button
-              onClick={() => setActiveFilter("all")}
-              aria-label="Clear filter"
-              className="flex-shrink-0 w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center"
-            >
-              <XIcon className="w-4 h-4 text-mfneutralsn-500" />
-            </button>
-            <Pill label={activeLabel} selected />
-            <button
-              aria-label="More filters"
-              onClick={() => setShowFilterSheet(true)}
-              className={`relative flex-shrink-0 w-9 h-9 ml-auto rounded-full border bg-white flex items-center justify-center ${
-                advancedActive ? "border-mfprimaryp-400" : "border-mfneutralsn-200"
-              }`}
-            >
-              <FilterIcon className={`w-4 h-4 ${advancedActive ? "text-mfprimaryp-400" : "text-mfneutralsn-400"}`} />
-              {advancedActive && (
-                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-mfprimaryp-400" />
-              )}
-            </button>
-          </>
-        ) : (
-          <>
-            <div className="flex items-center gap-2 flex-1 overflow-x-auto no-scrollbar">
-              {filters.map((f) => (
-                <Pill
-                  key={f.id}
-                  label={f.label}
-                  selected={activeFilter === f.id}
-                  onClick={() => setActiveFilter(f.id)}
-                />
-              ))}
-            </div>
-            <button
-              aria-label="More filters"
-              onClick={() => setShowFilterSheet(true)}
-              className={`relative flex-shrink-0 w-9 h-9 rounded-full border bg-white flex items-center justify-center ${
-                advancedActive ? "border-mfprimaryp-400" : "border-mfneutralsn-200"
-              }`}
-            >
-              <FilterIcon className={`w-4 h-4 ${advancedActive ? "text-mfprimaryp-400" : "text-mfneutralsn-400"}`} />
-              {advancedActive && (
-                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-mfprimaryp-400" />
-              )}
-            </button>
-          </>
-        )}
+      {/* Filter row */}
+      <div className="flex items-center justify-between gap-2 px-4 pb-6 bg-white">
+        <TypeDropdown value={activeFilter} onChange={setActiveFilter} />
+        <button
+          aria-label="More filters"
+          onClick={() => setShowFilterSheet(true)}
+          className={`relative flex-shrink-0 w-9 h-9 rounded-full border bg-white flex items-center justify-center ${
+            advancedActive ? "border-mfprimaryp-400" : "border-mfneutralsn-200"
+          }`}
+        >
+          <FilterIcon className={`w-4 h-4 ${advancedActive ? "text-mfprimaryp-400" : "text-mfneutralsn-400"}`} />
+          {advancedActive && (
+            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-mfprimaryp-400" />
+          )}
+        </button>
       </div>
 
       {/* Items */}

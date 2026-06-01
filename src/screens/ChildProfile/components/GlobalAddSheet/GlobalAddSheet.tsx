@@ -130,7 +130,7 @@ const VariantDots: React.FC = () => {
   const variant = useProfileVariant();
   const variants: { id: ProfileVariant; label: string }[] = [
     { id: "v1", label: "About / Health and safety / Documents" },
-    { id: "v2", label: "About / Bookings / Paperwork" },
+    { id: "v2", label: "About / Bookings / Documents" },
   ];
   return (
     <div className="flex flex-col items-center gap-2 pt-3">

@@ -2,7 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ChevronRightIcon, ArrowLeftIcon, HomeIcon, PhoneIcon, InfoIcon, CalendarIcon, BookOpenIcon, SunIcon, ThermometerIcon, MessageSquareIcon, PencilIcon, KeyRoundIcon, UserIcon, StethoscopeIcon, ShieldAlertIcon, StickyNoteIcon, IdCardIcon, CheckCircle2Icon, XCircleIcon, HelpCircleIcon } from "lucide-react";
 import { useProfileVariant } from "../../../../hooks/useProfileVariant";
+import { useDeviceDetection } from "../../../../hooks/useDeviceDetection";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
+import { AbsenceOverlay } from "../../../../components/AbsenceOverlay/AbsenceOverlay";
 
 const KEY_PERSON_NAME = "Olivia Wilson";
 const KEY_PERSON_INITIALS = "OW";
@@ -728,33 +730,57 @@ const SubpageRowDual = ({
   </div>
 );
 
-const LeaveDetail = () => (
-  <div className="flex flex-col pb-24">
-    <SubsectionTitle>Upcoming</SubsectionTitle>
-    <SubpageRowDual
-      icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />}
-      label="1 - 10 Jul 2026"
-    />
-    <SubpageRowDual
-      icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />}
-      label="22 - 24 Dec 2026"
-    />
+const LeaveDetail = () => {
+  const { shouldShowFrame } = useDeviceDetection();
+  const [showAbsence, setShowAbsence] = useState(false);
+  const overlayPos = shouldShowFrame ? "absolute" : "fixed";
 
-    <SubsectionTitle>Past</SubsectionTitle>
-    <SubpageRowDual
-      icon={<ThermometerIcon className="w-4 h-4 text-mfredr-400" />}
-      label="4 Mar 2026"
-    />
-    <SubpageRowDual
-      icon={<ThermometerIcon className="w-4 h-4 text-mfredr-400" />}
-      label="18 - 19 Feb 2026"
-    />
-    <SubpageRowDual
-      icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />}
-      label="23 Dec 2025 - 2 Jan 2026"
-    />
-  </div>
-);
+  return (
+    <div className="flex flex-col pb-24">
+      <div className="px-4 pt-2 pb-3">
+        <button
+          onClick={() => setShowAbsence(true)}
+          className="flex items-center gap-2 h-9 px-3 rounded-lg border border-mfprimaryp-400 text-[14px] font-medium text-mfprimaryp-400 active:bg-mfprimaryp-50"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+          Add leave
+        </button>
+      </div>
+
+      <SubsectionTitle>Upcoming</SubsectionTitle>
+      <SubpageRowDual
+        icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />}
+        label="1 - 10 Jul 2026"
+      />
+      <SubpageRowDual
+        icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />}
+        label="22 - 24 Dec 2026"
+      />
+
+      <SubsectionTitle>Past</SubsectionTitle>
+      <SubpageRowDual
+        icon={<ThermometerIcon className="w-4 h-4 text-mfredr-400" />}
+        label="4 Mar 2026"
+      />
+      <SubpageRowDual
+        icon={<ThermometerIcon className="w-4 h-4 text-mfredr-400" />}
+        label="18 - 19 Feb 2026"
+      />
+      <SubpageRowDual
+        icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />}
+        label="23 Dec 2025 - 2 Jan 2026"
+      />
+
+      {showAbsence && (
+        <div className={`${overlayPos} inset-0 z-[90]`}>
+          <AbsenceOverlay type="sick" onClose={() => setShowAbsence(false)} />
+        </div>
+      )}
+    </div>
+  );
+};
 
 type PermissionStatus = "yes" | "no" | "pending";
 

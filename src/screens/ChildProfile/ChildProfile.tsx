@@ -22,7 +22,7 @@ const V1_TABS: TabConfig[] = [
 const V2_TABS: TabConfig[] = [
   { id: "about", label: "About" },
   { id: "bookings", label: "Bookings" },
-  { id: "paperwork", label: "Paperwork" },
+  { id: "paperwork", label: "Documents" },
 ];
 
 export const ChildProfile = (): JSX.Element => {
