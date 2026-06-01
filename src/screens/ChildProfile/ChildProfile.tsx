@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { DesktopNudge } from "../../components/DesktopNudge";
 import { useDeviceDetection } from "../../hooks/useDeviceDetection";
 import { useProfileVariant } from "../../hooks/useProfileVariant";
+import { useChildProfileSubpageActive } from "../../hooks/useChildProfileSubpage";
 import { BottomNav } from "../../components/BottomNav/BottomNav";
 import { ChildProfileHeader } from "./components/ChildProfileHeader/ChildProfileHeader";
 import { ChildProfileInfo } from "./components/ChildProfileInfo/ChildProfileInfo";
@@ -28,6 +29,7 @@ const V2_TABS: TabConfig[] = [
 export const ChildProfile = (): JSX.Element => {
   const { shouldShowFrame } = useDeviceDetection();
   const variant = useProfileVariant();
+  const inSubpage = useChildProfileSubpageActive();
   const navigate = useNavigate();
 
   const tabs = variant === "v2" ? V2_TABS : V1_TABS;
@@ -57,8 +59,12 @@ export const ChildProfile = (): JSX.Element => {
     <div className={`relative flex flex-col bg-white ${shouldShowFrame ? 'h-full' : 'min-h-screen'} ${!shouldShowFrame ? 'touch:h-screen' : ''}`}>
       <ChildProfileHeader />
       <div className={`flex-1 overflow-y-auto ${!shouldShowFrame ? 'touch:pb-20' : ''}`}>
-        <ChildProfileInfo />
-        <ChildProfileTabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+        {!inSubpage && (
+          <>
+            <ChildProfileInfo />
+            <ChildProfileTabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+          </>
+        )}
         {renderTabContent()}
       </div>
 

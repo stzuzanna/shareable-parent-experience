@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ChevronRightIcon, ArrowLeftIcon, HomeIcon, PhoneIcon, InfoIcon, CalendarIcon, BookOpenIcon, SunIcon, ThermometerIcon, MessageSquareIcon, PencilIcon, KeyRoundIcon, UserIcon, StethoscopeIcon, ShieldAlertIcon, StickyNoteIcon, IdCardIcon, CheckCircle2Icon, XCircleIcon, HelpCircleIcon } from "lucide-react";
 import { useProfileVariant } from "../../../../hooks/useProfileVariant";
 import { useDeviceDetection } from "../../../../hooks/useDeviceDetection";
+import { setChildProfileSubpageActive } from "../../../../hooks/useChildProfileSubpage";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
 import { AbsenceOverlay } from "../../../../components/AbsenceOverlay/AbsenceOverlay";
 
@@ -125,8 +126,9 @@ const SectionHeader = ({
         <button
           onClick={onEdit}
           aria-label={`Edit ${title}`}
-          className="px-3 h-9 rounded-full border border-mfneutralsn-200 bg-white text-[13px] font-medium text-mfneutralsn-500 active:bg-gray-50 flex-shrink-0"
+          className="flex items-center gap-1.5 px-3 h-9 rounded-lg border border-mfneutralsn-200 bg-white text-[13px] font-medium text-mfneutralsn-500 active:bg-gray-50 flex-shrink-0"
         >
+          <PencilIcon className="w-3.5 h-3.5" />
           Edit
         </button>
       )
@@ -253,27 +255,15 @@ const SecondaryBadge = () => (
 );
 
 const LabelValueRow = ({ label, value }: { label: string; value: string }) => (
-  <div className="px-4 py-3 border-b border-mfneutralsn-75">
+  <div className="px-4 pt-2 pb-4">
     <p className="text-[14px] text-mfneutralsn-300 leading-tight">{label}</p>
-    <p className="text-[14px] text-mfneutralsn-500 leading-tight mt-1">{value}</p>
+    <p className="text-[16px] text-mfneutralsn-500 leading-tight mt-1">{value || "-"}</p>
   </div>
 );
 
-const AddFieldRow = ({ label, onPress }: { label: string; onPress?: () => void }) => (
-  <button
-    onClick={onPress}
-    className="w-full px-4 py-3 flex items-center gap-2 border-b border-mfneutralsn-75 text-left active:bg-gray-50"
-  >
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-mfneutralsn-300 flex-shrink-0">
-      <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-    <span className="text-[14px] text-mfneutralsn-300">{label}</span>
-  </button>
-);
-
 const FieldShell = ({ label, children }: { label: string; children: React.ReactNode }) => (
-  <div className="px-4 py-3 border-b border-mfneutralsn-75">
-    <p className="text-[14px] text-mfneutralsn-300 leading-tight mb-1.5">{label}</p>
+  <div className="px-4 pt-2 pb-4">
+    <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight mb-1.5">{label}</p>
     {children}
   </div>
 );
@@ -411,12 +401,12 @@ const LanguagesField = ({
           available.length > 0 && (
             <button
               onClick={() => setAdding(true)}
-              className="flex items-center gap-2 text-[14px] text-mfprimaryp-400 py-1"
+              aria-label="Add language"
+              className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center text-mfneutralsn-500 active:bg-gray-50"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                 <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
-              Add language
             </button>
           )
         )}
@@ -439,7 +429,12 @@ const BasicInfoDetail = ({ editing }: { editing: boolean }) => {
   const [dateOfBirth, setDateOfBirth] = useState("2025-02-01");
   const [languages, setLanguages] = useState<string[]>(["English", "Spanish"]);
   const [gender, setGender] = useState("Boy");
-  const [optional, setOptional] = useState<Partial<Record<OptionalKey, string>>>({});
+  const [optional, setOptional] = useState<Record<OptionalKey, string>>({
+    nationality: "",
+    birthplace: "",
+    specialNotes: "",
+    sensitiveInfo: "",
+  });
 
   const formatDate = (iso: string) => {
     const d = new Date(iso);
@@ -447,44 +442,32 @@ const BasicInfoDetail = ({ editing }: { editing: boolean }) => {
     return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
   };
 
-  const showOptional = (k: OptionalKey) => setOptional((p) => ({ ...p, [k]: p[k] ?? "" }));
-  const setOptionalValue = (k: OptionalKey, v: string) => setOptional((p) => ({ ...p, [k]: v }));
-
   if (editing) {
     return (
-      <div className="flex flex-col pb-24">
+      <div className="flex flex-col pb-24 pt-2">
         <DateField label="Date of birth" value={dateOfBirth} onChange={setDateOfBirth} />
         <LanguagesField label="Languages" values={languages} onChange={setLanguages} />
         <SelectField label="Gender" value={gender} options={["Boy", "Girl", "Other", "Prefer not to say"]} onChange={setGender} />
-        {(Object.keys(OPTIONAL_LABELS) as OptionalKey[]).map((k) =>
-          optional[k] !== undefined ? (
-            <TextField
-              key={k}
-              label={OPTIONAL_LABELS[k]}
-              value={optional[k] ?? ""}
-              placeholder={`Enter ${OPTIONAL_LABELS[k].toLowerCase()}`}
-              onChange={(v) => setOptionalValue(k, v)}
-            />
-          ) : (
-            <AddFieldRow key={k} label={`Add ${OPTIONAL_LABELS[k].toLowerCase()}`} onPress={() => showOptional(k)} />
-          )
-        )}
+        {(Object.keys(OPTIONAL_LABELS) as OptionalKey[]).map((k) => (
+          <TextField
+            key={k}
+            label={OPTIONAL_LABELS[k]}
+            value={optional[k]}
+            onChange={(v) => setOptional((p) => ({ ...p, [k]: v }))}
+          />
+        ))}
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col pb-24">
+    <div className="flex flex-col pb-24 pt-2">
       <LabelValueRow label="Date of birth" value={formatDate(dateOfBirth)} />
-      <LabelValueRow label="Languages" value={languages.join(", ") || "—"} />
+      <LabelValueRow label="Languages" value={languages.join(", ")} />
       <LabelValueRow label="Gender" value={gender} />
-      {(Object.keys(OPTIONAL_LABELS) as OptionalKey[]).map((k) =>
-        optional[k] ? (
-          <LabelValueRow key={k} label={OPTIONAL_LABELS[k]} value={optional[k] as string} />
-        ) : (
-          <AddFieldRow key={k} label={`Add ${OPTIONAL_LABELS[k].toLowerCase()}`} />
-        )
-      )}
+      {(Object.keys(OPTIONAL_LABELS) as OptionalKey[]).map((k) => (
+        <LabelValueRow key={k} label={OPTIONAL_LABELS[k]} value={optional[k]} />
+      ))}
     </div>
   );
 };
@@ -502,47 +485,39 @@ const HealthDetailsDetail = ({ editing }: { editing: boolean }) => {
   const [doctorPhone, setDoctorPhone] = useState("+1 (555) 123-4567");
   const [allergies, setAllergies] = useState("Lactose, Peanuts");
   const [notes, setNotes] = useState("Tolerates penicillin");
-  const [optional, setOptional] = useState<Partial<Record<HealthOptionalKey, string>>>({});
-
-  const showOptional = (k: HealthOptionalKey) => setOptional((p) => ({ ...p, [k]: p[k] ?? "" }));
-  const setOptionalValue = (k: HealthOptionalKey, v: string) => setOptional((p) => ({ ...p, [k]: v }));
+  const [optional, setOptional] = useState<Record<HealthOptionalKey, string>>({
+    medication: "",
+    immunization: "",
+  });
 
   if (editing) {
     return (
-      <div className="flex flex-col pb-24">
+      <div className="flex flex-col pb-24 pt-2">
         <TextField label="Doctor's name" value={doctorName} onChange={setDoctorName} />
         <TextField label="Doctor's phone" value={doctorPhone} onChange={setDoctorPhone} />
         <TextField label="Allergies" value={allergies} onChange={setAllergies} placeholder="Comma separated" />
         <TextField label="Additional notes" value={notes} onChange={setNotes} />
-        {(Object.keys(HEALTH_OPTIONAL_LABELS) as HealthOptionalKey[]).map((k) =>
-          optional[k] !== undefined ? (
-            <TextField
-              key={k}
-              label={HEALTH_OPTIONAL_LABELS[k]}
-              value={optional[k] ?? ""}
-              placeholder={`Enter ${HEALTH_OPTIONAL_LABELS[k].toLowerCase()}`}
-              onChange={(v) => setOptionalValue(k, v)}
-            />
-          ) : (
-            <AddFieldRow key={k} label={`Add ${HEALTH_OPTIONAL_LABELS[k].toLowerCase()}`} onPress={() => showOptional(k)} />
-          )
-        )}
+        {(Object.keys(HEALTH_OPTIONAL_LABELS) as HealthOptionalKey[]).map((k) => (
+          <TextField
+            key={k}
+            label={HEALTH_OPTIONAL_LABELS[k]}
+            value={optional[k]}
+            onChange={(v) => setOptional((p) => ({ ...p, [k]: v }))}
+          />
+        ))}
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col pb-24">
-      <LabelValueRow label="Doctor" value={`${doctorName} · ${doctorPhone}`} />
-      <LabelValueRow label="Allergies" value={allergies || "—"} />
-      <LabelValueRow label="Additional notes" value={notes || "—"} />
-      {(Object.keys(HEALTH_OPTIONAL_LABELS) as HealthOptionalKey[]).map((k) =>
-        optional[k] ? (
-          <LabelValueRow key={k} label={HEALTH_OPTIONAL_LABELS[k]} value={optional[k] as string} />
-        ) : (
-          <AddFieldRow key={k} label={`Add ${HEALTH_OPTIONAL_LABELS[k].toLowerCase()}`} />
-        )
-      )}
+    <div className="flex flex-col pb-24 pt-2">
+      <LabelValueRow label="Doctor's name" value={doctorName} />
+      <LabelValueRow label="Doctor's phone" value={doctorPhone} />
+      <LabelValueRow label="Allergies" value={allergies} />
+      <LabelValueRow label="Additional notes" value={notes} />
+      {(Object.keys(HEALTH_OPTIONAL_LABELS) as HealthOptionalKey[]).map((k) => (
+        <LabelValueRow key={k} label={HEALTH_OPTIONAL_LABELS[k]} value={optional[k]} />
+      ))}
     </div>
   );
 };
@@ -565,18 +540,20 @@ const CONTACTS: ContactDef[] = [
 
 type ContactExtras = { email?: string; phone?: string };
 
-const ContactEditCard = ({
+const ContactCard = ({
   contact,
   extras,
+  editing,
   onChange,
 }: {
   contact: ContactDef;
   extras: ContactExtras;
+  editing: boolean;
   onChange: (next: ContactExtras) => void;
 }) => {
   const Badge = contact.primary ? PrimaryBadge : SecondaryBadge;
   return (
-    <div className="border-b border-mfneutralsn-75 px-4 py-4 flex flex-col gap-3">
+    <div className="px-4 pt-4 pb-2 flex flex-col gap-3">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <Avatar className="w-9 h-9 flex-shrink-0">
@@ -591,46 +568,30 @@ const ContactEditCard = ({
         <Badge />
       </div>
 
-      {extras.email !== undefined ? (
-        <FieldShell label="Email">
-          <input
-            value={extras.email}
-            placeholder="name@example.com"
-            onChange={(e) => onChange({ ...extras, email: e.target.value })}
-            className={inputClass}
-          />
-        </FieldShell>
+      {editing ? (
+        <>
+          <FieldShell label="Email">
+            <input
+              value={extras.email ?? ""}
+              placeholder="name@example.com"
+              onChange={(e) => onChange({ ...extras, email: e.target.value })}
+              className={inputClass}
+            />
+          </FieldShell>
+          <FieldShell label="Phone number">
+            <input
+              value={extras.phone ?? ""}
+              placeholder="+1 (555) 123-4567"
+              onChange={(e) => onChange({ ...extras, phone: e.target.value })}
+              className={inputClass}
+            />
+          </FieldShell>
+        </>
       ) : (
-        <button
-          onClick={() => onChange({ ...extras, email: "" })}
-          className="flex items-center gap-2 text-[14px] text-mfprimaryp-400"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-          Add email
-        </button>
-      )}
-
-      {extras.phone !== undefined ? (
-        <FieldShell label="Phone number">
-          <input
-            value={extras.phone}
-            placeholder="+1 (555) 123-4567"
-            onChange={(e) => onChange({ ...extras, phone: e.target.value })}
-            className={inputClass}
-          />
-        </FieldShell>
-      ) : (
-        <button
-          onClick={() => onChange({ ...extras, phone: "" })}
-          className="flex items-center gap-2 text-[14px] text-mfprimaryp-400"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-          Add phone number
-        </button>
+        <>
+          <LabelValueRow label="Email" value={extras.email ?? ""} />
+          <LabelValueRow label="Phone number" value={extras.phone ?? ""} />
+        </>
       )}
     </div>
   );
@@ -645,28 +606,18 @@ const FamilyDetail = ({ editing }: { editing: boolean }) => {
   return (
     <div className="flex flex-col pb-24">
       <SubsectionTitle>Parents</SubsectionTitle>
-      {editing
-        ? CONTACTS.map((c) => (
-            <ContactEditCard
-              key={c.id}
-              contact={c}
-              extras={extras[c.id] ?? {}}
-              onChange={(next) => setExtras((prev) => ({ ...prev, [c.id]: next }))}
-            />
-          ))
-        : CONTACTS.map((c) => (
-            <SubpagePersonRow
-              key={c.id}
-              avatarSrc={c.avatar}
-              avatarAlt={c.name}
-              fallback={c.fallback}
-              label={`${c.name} · ${c.role}`}
-              badge={c.primary ? <PrimaryBadge /> : <SecondaryBadge />}
-            />
-          ))}
+      {CONTACTS.map((c) => (
+        <ContactCard
+          key={c.id}
+          contact={c}
+          extras={extras[c.id] ?? {}}
+          editing={editing}
+          onChange={(next) => setExtras((prev) => ({ ...prev, [c.id]: next }))}
+        />
+      ))}
 
       <SubsectionTitle>Siblings</SubsectionTitle>
-      <div className="px-4 py-4 border-b border-mfneutralsn-75">
+      <div className="px-4 py-4">
         <p className="text-[13px] text-mfneutralsn-300 mb-3 leading-snug">
           Link a sibling so you can see both children in one place.
         </p>
@@ -893,12 +844,17 @@ export const OverviewContent = (): JSX.Element => {
   }, [location.state, navigate]);
 
   // When entering/leaving a detail section, scroll the surrounding
-  // overflow container back to the top so the child profile header stays visible.
+  // overflow container back to the top and notify ChildProfile so it hides
+  // the tabs + child info row while a subpage is open.
   useEffect(() => {
     const scrollable = rootRef.current?.closest(".overflow-y-auto") as HTMLElement | null;
     scrollable?.scrollTo({ top: 0, behavior: "smooth" });
     setEditing(false);
+    setChildProfileSubpageActive(section !== null);
   }, [section]);
+
+  // Make sure the global flag is cleared if this view unmounts mid-subpage.
+  useEffect(() => () => setChildProfileSubpageActive(false), []);
 
   if (section !== null) {
     const editable = section === "basic" || section === "family" || section === "health";
