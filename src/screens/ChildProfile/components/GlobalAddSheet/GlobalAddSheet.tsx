@@ -12,7 +12,6 @@ import {
   PhoneIcon,
   MicIcon,
   ArrowRightIcon,
-  SettingsIcon,
 } from "lucide-react";
 import { useProfileVariant, setProfileVariant, type ProfileVariant } from "../../../../hooks/useProfileVariant";
 import {
@@ -82,18 +81,15 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
   const tabsVariant = useHomeTabsVariant();
   const isPills = tabsVariant === "pills";
   const [step, setStep] = useState<SheetStep>("actions");
-  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     if (!isOpen) {
       setStep("actions");
-      setShowSettings(false);
     }
   }, [isOpen]);
 
   const handleClose = () => {
     setStep("actions");
-    setShowSettings(false);
     onClose();
   };
 
@@ -141,31 +137,6 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
 
             {/* Floating pills cascading up from above the bottom nav, right-aligned. */}
             <div className={`${pos} bottom-28 right-4 z-[80] flex flex-col items-end gap-3 pointer-events-none`}>
-              {showSettings && (
-                <motion.div
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 8 }}
-                  transition={{ duration: 0.18 }}
-                  className="rounded-2xl bg-white shadow-elevation-elevation-4 p-3 flex flex-col gap-2 w-[260px] pointer-events-auto"
-                >
-                  <span className="text-[12px] uppercase tracking-wide text-mfneutralsn-300 px-1">
-                    Prototype settings
-                  </span>
-                  <HomeTabsToggle />
-                  <button
-                    onClick={() => {
-                      handleClose();
-                      onAction("feedback");
-                    }}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-mfprimaryp-400 bg-mfprimaryp-50 active:bg-mfprimaryp-100 text-left w-full"
-                  >
-                    <SmileIcon className="w-4 h-4 text-mfprimaryp-400 flex-shrink-0" />
-                    <span className="text-[14px] font-medium text-mfprimaryp-400">Let us know what you think</span>
-                  </button>
-                </motion.div>
-              )}
-
               {stackedPills.map((p, i) => {
                 const Icon = p.icon;
                 return (
@@ -185,20 +156,6 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
                   </motion.button>
                 );
               })}
-
-              {/* Prototype-settings button — small floating affordance so the
-                  home-tabs toggle stays reachable. Not part of the Figma list. */}
-              <motion.button
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 12 }}
-                transition={{ duration: 0.18, delay: 0.035 * stackedPills.length }}
-                onClick={() => setShowSettings((v) => !v)}
-                aria-label="Prototype settings"
-                className="pointer-events-auto flex items-center justify-center w-9 h-9 rounded-full bg-white/90 shadow-elevation-elevation-4 border border-mfneutralsn-75 active:bg-gray-50"
-              >
-                <SettingsIcon className="w-3.5 h-3.5 text-mfneutralsn-400" />
-              </motion.button>
             </div>
 
             {/* "Ask Sidekick for help" input bar, sitting just above the bottom nav. */}

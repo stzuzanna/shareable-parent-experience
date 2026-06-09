@@ -126,17 +126,17 @@ export const Menu = (): JSX.Element => {
               </div>
             </div>
 
-            {/* Payments section */}
+            {/* Payments section — lavender/blue background, matches Figma 1572-65711 */}
             <div className="space-y-3">
               <h2 className="text-[14px] text-mfneutralsn-400">Payments</h2>
-              <div className="bg-white border border-mfneutralsn-75 rounded-2xl p-4">
+              <div className="bg-brandblueb-50 rounded-2xl p-4">
                 <button onClick={() => navigate("/balance")} className="w-full text-left">
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
-                      <div className={`text-[24px] leading-none font-normal mb-1 ${isPaid ? "text-mfneutralsn-500" : "text-mfredr-400"}`}>
+                      <div className={`text-[28px] leading-none font-normal mb-2 ${isPaid ? "text-mfneutralsn-500" : "text-mfredr-400"}`}>
                         {isPaid ? "$0" : `$ -${OUTSTANDING_AMOUNT}`}
                       </div>
-                      <div className="text-[14px] text-mfneutralsn-300">
+                      <div className="text-[14px] text-mfneutralsn-500">
                         {isPaid ? "Everything's settled. You don't owe anything." : "You owe money to the centre."}
                       </div>
                     </div>
@@ -144,10 +144,10 @@ export const Menu = (): JSX.Element => {
                   </div>
                 </button>
 
-                {/* Always-visible latest invoice subcard */}
-                <div className="flex items-center gap-2 bg-mfneutralsn-50 rounded-lg px-3 py-2 mt-3">
-                  <div className="w-9 h-9 rounded-md bg-white border border-mfneutralsn-75 flex items-center justify-center flex-shrink-0">
-                    <FileTextIcon className="w-4 h-4 text-mfneutralsn-400" />
+                {/* Always-visible latest invoice subcard (white on the lavender card) */}
+                <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 mt-3">
+                  <div className="w-9 h-9 rounded-md bg-brandblueb-50 flex items-center justify-center flex-shrink-0">
+                    <FileTextIcon className="w-4 h-4 text-brandblueb-400" />
                   </div>
                   <div className="flex flex-col min-w-0">
                     <span className="text-[14px] text-mfneutralsn-300 leading-tight">
@@ -169,7 +169,7 @@ export const Menu = (): JSX.Element => {
             </div>
 
             {/* Sandbox section — inline childcare info */}
-            <div className="space-y-3">
+            <div className="space-y-3 pt-4 border-t border-mfneutralsn-75">
               <div className="flex items-center justify-between">
                 <h2 className="text-[14px] text-mfneutralsn-400">Sandbox</h2>
                 <button
@@ -199,7 +199,7 @@ export const Menu = (): JSX.Element => {
             </div>
 
             {/* Settings */}
-            <div className="space-y-2">
+            <div className="space-y-2 pt-4 border-t border-mfneutralsn-75">
               <h2 className="text-[14px] text-mfneutralsn-400">Settings</h2>
               <div className="flex flex-col">
                 {settingsList.map(({ id, label, Icon, onClick }) => (
@@ -219,7 +219,7 @@ export const Menu = (): JSX.Element => {
             </div>
 
             {/* Support */}
-            <div className="space-y-2">
+            <div className="space-y-2 pt-4 border-t border-mfneutralsn-75">
               <h2 className="text-[14px] text-mfneutralsn-400">Support</h2>
               <div className="flex flex-col">
                 {supportList.map(({ id, label, Icon, onClick }) => (
