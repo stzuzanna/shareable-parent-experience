@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ChevronDownIcon } from "lucide-react";
 import { DesktopNudge } from "../../components/DesktopNudge";
 import { useDeviceDetection } from "../../hooks/useDeviceDetection";
 import { useProfileVariant } from "../../hooks/useProfileVariant";
@@ -13,6 +14,38 @@ import { HealthAndSafetyContent } from "./components/HealthAndSafetyContent/Heal
 import { DocumentsContent } from "./components/DocumentsContent/DocumentsContent";
 import { BookingsContent } from "./components/BookingsContent/BookingsContent";
 import { PaperworkContent } from "./components/PaperworkContent/PaperworkContent";
+
+const PRIORITY_ITEMS = [
+  { id: "med", label: "Active medication - Zyrtec" },
+  { id: "holiday", label: "Upcoming holiday - Jun 21" },
+];
+
+const PrioritySection = (): JSX.Element => {
+  const [open, setOpen] = useState(true);
+  return (
+    <div className="mx-3 mt-2 mb-3 rounded-xl bg-[#fdf5f3] border border-[#f4e5e0] overflow-hidden">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center gap-2 px-4 py-3 text-left"
+      >
+        <ChevronDownIcon
+          className={`w-4 h-4 text-mfneutralsn-500 transition-transform ${open ? "" : "-rotate-90"}`}
+        />
+        <span className="text-[14px] font-medium text-mfneutralsn-500">Priority</span>
+      </button>
+      {open && (
+        <div className="px-4 pb-3 flex flex-col gap-2">
+          {PRIORITY_ITEMS.map((item) => (
+            <div key={item.id} className="flex items-center gap-3">
+              <span className="w-4 h-4 rounded border border-mfneutralsn-200 bg-white flex-shrink-0" />
+              <span className="text-[14px] text-mfneutralsn-500">{item.label}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const V1_TABS: TabConfig[] = [
   { id: "about", label: "About" },
@@ -62,6 +95,7 @@ export const ChildProfile = (): JSX.Element => {
         {!inSubpage && (
           <>
             <ChildProfileInfo />
+            <PrioritySection />
             <ChildProfileTabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
           </>
         )}
