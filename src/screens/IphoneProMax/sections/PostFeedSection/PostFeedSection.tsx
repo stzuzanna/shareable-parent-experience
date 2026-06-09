@@ -111,7 +111,7 @@ const ActivityDropdown = ({
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 mt-1.5 min-w-[160px] bg-white rounded-xl shadow-lg border border-gray-100 z-50">
+        <div className="absolute top-full left-0 mt-1.5 min-w-[160px] bg-white rounded-xl shadow-lg border border-gray-100 z-[55]">
           {allActivityTypes.map((t) => (
             <button
               key={t.id}
@@ -166,7 +166,7 @@ const FilterDropdown = ({
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 mt-1.5 min-w-[180px] bg-white rounded-xl shadow-lg border border-gray-100 z-50">
+        <div className="absolute top-full left-0 mt-1.5 min-w-[180px] bg-white rounded-xl shadow-lg border border-gray-100 z-[55]">
           {options.map((option) => (
             <button
               key={option.id}
@@ -307,7 +307,8 @@ export const PostFeedSection = ({
   const onToggleCurrentSender = activeTab === "activity" ? toggleActivitySender : toggleSender;
 
   return (
-    <header className={`flex flex-col w-full bg-white overflow-visible ${!shouldShowFrame ? 'sticky top-0 z-50' : ''}`}>
+    <>
+    <header className={`flex flex-col w-full bg-white overflow-visible relative z-[55] ${!shouldShowFrame ? 'sticky top-0' : ''}`}>
       {/* Status bar */}
       <div className={`flex items-center justify-between px-5 pt-2 pb-1 ${!shouldShowFrame ? 'hidden' : ''}`}>
         <span className="[font-family:'Inter',Helvetica] font-semibold text-mfneutralsn-500 text-[15px] tracking-[-0.3px]">
@@ -461,10 +462,11 @@ export const PostFeedSection = ({
           </div>
         </>
       )}
+    </header>
 
-      <AnimatePresence>
-        {showFilterSheet && (
-          <>
+    <AnimatePresence>
+      {showFilterSheet && (
+        <>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -642,10 +644,10 @@ export const PostFeedSection = ({
                   </button>
                 </div>
               </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </header>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+    </>
   );
 };
