@@ -136,9 +136,9 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
             />
 
             {/* Floating pills cascading up from above the bottom nav, right-aligned.
-                bottom-44 keeps the lowest pill clearly above the Sidekick input
-                (which sits at bottom-20, h-12 → top edge at ~32). */}
-            <div className={`${pos} bottom-44 right-4 z-[80] flex flex-col items-end gap-3 pointer-events-none`}>
+                bottom-36 = lowest pill sits ~16px above the Ask Sidekick input
+                (Sidekick at bottom-20 + h-12 → top edge at 128px). */}
+            <div className={`${pos} bottom-36 right-4 z-[80] flex flex-col items-end gap-3 pointer-events-none`}>
               {stackedPills.map((p, i) => {
                 const Icon = p.icon;
                 return (
@@ -181,6 +181,21 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
                 <ArrowRightIcon className="w-4 h-4" />
               </button>
             </motion.div>
+
+            {/* Floating GAB close (X) button — lifted above the backdrop so the
+                rest of the bottom nav stays dimmed but the close affordance
+                stays bright and tappable. Positioned to overlay the GAB
+                sparkle slot in BottomNav (right-2 bottom-2, w-14 h-14 with the
+                gradient outline). */}
+            <div className={`${pos} bottom-2 right-2 z-[85] rounded-2xl p-[1.5px] bg-gradient-to-br from-mfprimaryp-400 via-pink-300 to-cyan-300`}>
+              <button
+                onClick={handleClose}
+                aria-label="Close quick actions"
+                className="flex items-center justify-center w-14 h-14 rounded-[14px] bg-white"
+              >
+                <XIcon className="w-5 h-5 text-mfneutralsn-500" />
+              </button>
+            </div>
           </>
         )}
       </AnimatePresence>
