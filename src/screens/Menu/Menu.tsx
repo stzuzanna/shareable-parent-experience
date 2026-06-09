@@ -129,7 +129,7 @@ export const Menu = (): JSX.Element => {
             {/* Payments section — lavender/blue background, matches Figma 1572-65711 */}
             <div className="space-y-3">
               <h2 className="text-[14px] text-mfneutralsn-400">Payments</h2>
-              <div className="bg-brandblueb-50 rounded-2xl p-4">
+              <div className="rounded-2xl p-4" style={{ backgroundColor: "#EBF5FE" }}>
                 <button onClick={() => navigate("/balance")} className="w-full text-left">
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
@@ -146,7 +146,7 @@ export const Menu = (): JSX.Element => {
 
                 {/* Always-visible latest invoice subcard (white on the lavender card) */}
                 <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 mt-3">
-                  <div className="w-9 h-9 rounded-md bg-brandblueb-50 flex items-center justify-center flex-shrink-0">
+                  <div className="w-9 h-9 rounded-md flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#EBF5FE" }}>
                     <FileTextIcon className="w-4 h-4 text-brandblueb-400" />
                   </div>
                   <div className="flex flex-col min-w-0">
@@ -249,7 +249,7 @@ export const Menu = (): JSX.Element => {
           </div>
         </div>
 
-        <div className={!shouldShowFrame ? "sticky bottom-0 z-50" : ""}>
+        <div className={!shouldShowFrame ? "sticky bottom-0 z-[75]" : "relative z-[75]"}>
           <BottomNav />
         </div>
 
@@ -405,7 +405,7 @@ export const Menu = (): JSX.Element => {
         </div>
       </div>
 
-      <div className={!shouldShowFrame ? "sticky bottom-0 z-50" : ""}>
+      <div className={!shouldShowFrame ? "sticky bottom-0 z-[75]" : "relative z-[75]"}>
         <BottomNav />
       </div>
 
