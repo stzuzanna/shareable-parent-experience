@@ -318,7 +318,7 @@ export const PostFeedSection = ({
       </div>
 
       {/* Title row */}
-      <div className={`flex items-center justify-between px-5 pt-3 ${isPills ? 'pb-4' : 'pb-6'}`}>
+      <div className={`flex items-center justify-between px-5 pt-3 ${isPills ? 'pb-8' : 'pb-12'}`}>
         <h1 className="text-[20px] font-bold text-mfneutralsn-500 tracking-tight leading-tight">
           Home
         </h1>
