@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ChevronRightIcon, ArrowLeftIcon, BookOpenIcon, SunIcon, ThermometerIcon, StethoscopeIcon, StickyNoteIcon, CheckCircle2Icon, XCircleIcon, HelpCircleIcon, PlusIcon, LockIcon, LanguagesIcon, HeartIcon, MapPinIcon, AlertTriangleIcon, MailIcon, PhoneIcon, FileTextIcon } from "lucide-react";
+import { ChevronRightIcon, ArrowLeftIcon, SunIcon, ThermometerIcon, StethoscopeIcon, CheckCircle2Icon, XCircleIcon, HelpCircleIcon, PlusIcon, LockIcon, LanguagesIcon, HeartIcon, MapPinIcon, AlertTriangleIcon, MailIcon, PhoneIcon, FileTextIcon, IdCardIcon, InfoIcon } from "lucide-react";
 import { useProfileVariant } from "../../../../hooks/useProfileVariant";
 import { useDeviceDetection } from "../../../../hooks/useDeviceDetection";
 import { setChildProfileSubpageActive } from "../../../../hooks/useChildProfileSubpage";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
 import { AddLeaveSheet } from "../../../../components/AddLeaveSheet/AddLeaveSheet";
 import { EditFieldSheet, type EditFieldConfig } from "../../../../components/EditFieldSheet/EditFieldSheet";
+import { BASE_PATH } from "../../../../constants";
 
 // ── Editable field config ─────────────────────────────────────────────────────
 
@@ -50,8 +51,10 @@ const FATHER_AVATAR = "https://images.pexels.com/photos/2379004/pexels-photo-237
 
 // ── Shared primitives ─────────────────────────────────────────────────────────
 
+// Flat section wrapper (no rounded border) — sections are separated by a thin
+// horizontal line below each card, per Figma 1436-21679.
 const Card = ({ children }: { children: React.ReactNode }) => (
-  <div className="mx-[8.5px] rounded-2xl overflow-hidden border border-mfneutralsn-75 bg-white">
+  <div className="bg-white border-b border-mfneutralsn-75">
     {children}
   </div>
 );
@@ -146,23 +149,34 @@ const SummaryRow = ({
   </div>
 );
 
+// Per Figma 1545-22397, the subpage header is the minimised child profile:
+// back arrow (circular outlined) + small avatar + child name. The section
+// title moves into the body, just above the row list.
 const SectionHeader = ({
-  title,
   onBack,
   trailing,
 }: {
-  title: string;
+  title?: string;
   onBack: () => void;
   trailing?: React.ReactNode;
 }) => (
-  <div className="flex items-center gap-2 px-4 py-3">
+  <div className="flex items-center gap-3 px-4 py-3">
     <button
       onClick={onBack}
+      aria-label="Back"
       className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0"
     >
       <ArrowLeftIcon className="w-4 h-4 text-mfneutralsn-500" />
     </button>
-    <span className="text-base font-semibold text-mfneutralsn-500 flex-1">{title}</span>
+    <Avatar className="w-8 h-8 flex-shrink-0">
+      <AvatarImage
+        src={`${BASE_PATH}pexels-daisy-anderson-5581091-1.png`}
+        alt="Abby Freedman"
+        className="object-cover"
+      />
+      <AvatarFallback className="text-[12px]">AF</AvatarFallback>
+    </Avatar>
+    <span className="text-[16px] font-medium text-mfneutralsn-500 flex-1 truncate">Abby Freedman</span>
     {trailing}
   </div>
 );
@@ -196,12 +210,17 @@ const SubsectionTitle = ({ children }: { children: React.ReactNode }) => (
 );
 
 // Clickable row for subpages: label / value / chevron → opens EditFieldSheet
+// Clickable row for subpages: icon + value (or "Add X" placeholder) + chevron.
+// Per Figma 1545-22397 there's no label above the value, and the chevron only
+// appears when a value is set. Both states open EditFieldSheet on tap.
 const EditableRow = ({
+  icon,
   label,
   value,
   placeholder,
   onPress,
 }: {
+  icon: React.ReactNode;
   label: string;
   value: string;
   placeholder?: string;
@@ -209,17 +228,21 @@ const EditableRow = ({
 }) => (
   <button
     onClick={onPress}
-    className="w-full flex items-center justify-between gap-3 px-4 py-3 border-b border-mfneutralsn-75 text-left active:bg-gray-50"
+    className="w-full flex items-center gap-3 px-4 h-12 text-left active:bg-gray-50"
   >
-    <div className="flex-1 min-w-0">
-      <p className="text-[14px] text-mfneutralsn-300 leading-tight">{label}</p>
-      {value ? (
-        <p className="text-[16px] text-mfneutralsn-500 leading-tight mt-1 whitespace-pre-line">{value}</p>
-      ) : (
-        <p className="text-[16px] text-mfprimaryp-400 leading-tight mt-1">{placeholder ?? `Add ${label.toLowerCase()}`}</p>
-      )}
+    <div className="w-7 h-7 rounded-md bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0 text-mfneutralsn-400">
+      {icon}
     </div>
-    <ChevronRightIcon className="w-4 h-4 text-mfneutralsn-300 flex-shrink-0" />
+    {value ? (
+      <>
+        <p className="text-[14px] text-mfneutralsn-500 leading-tight flex-1 truncate">{value}</p>
+        <ChevronRightIcon className="w-4 h-4 text-mfneutralsn-300 flex-shrink-0" />
+      </>
+    ) : (
+      <p className="text-[14px] text-mfneutralsn-300 leading-tight flex-1 truncate">
+        {placeholder ?? `Add ${label.toLowerCase()}`}
+      </p>
+    )}
   </button>
 );
 
@@ -279,9 +302,25 @@ const BasicInfoDetail = ({
   openEdit: (config: EditFieldConfig & { key: FieldKey }) => void;
 }) => (
   <div className="flex flex-col pb-24 pt-2">
+    <p className="px-4 pb-2 text-[14px] font-medium text-mfneutralsn-500">Basic info</p>
     <EditableRow
+      icon={<IdCardIcon className="w-4 h-4" />}
+      label="Name"
+      value="Abby Freedman"
+      onPress={() =>
+        openEdit({
+          title: "Child name",
+          subtitle: "Your child's full name.",
+          type: "text",
+          value: "Abby Freedman",
+          key: { section: "basic", field: "name" },
+        })
+      }
+    />
+    <EditableRow
+      icon={<LockIcon className="w-4 h-4" />}
       label="Date of birth"
-      value={formatHumanDate(state.dateOfBirth)}
+      value={state.dateOfBirth ? `${formatHumanDate(state.dateOfBirth)} (1 year 4 months)` : ""}
       onPress={() =>
         openEdit({
           title: "Date of birth",
@@ -293,6 +332,7 @@ const BasicInfoDetail = ({
       }
     />
     <EditableRow
+      icon={<LanguagesIcon className="w-4 h-4" />}
       label="Languages"
       value={state.languages.join(", ")}
       onPress={() =>
@@ -307,6 +347,7 @@ const BasicInfoDetail = ({
       }
     />
     <EditableRow
+      icon={<MapPinIcon className="w-4 h-4" />}
       label="Gender"
       value={state.gender}
       onPress={() =>
@@ -321,9 +362,10 @@ const BasicInfoDetail = ({
       }
     />
     <EditableRow
-      label="Allergy info"
+      icon={<AlertTriangleIcon className="w-4 h-4" />}
+      label="Allergy"
       value={state.allergy}
-      placeholder="Add allergy info"
+      placeholder="Add allergy information"
       onPress={() =>
         openEdit({
           title: "Allergy info",
@@ -335,16 +377,47 @@ const BasicInfoDetail = ({
         })
       }
     />
-    {(Object.keys(OPTIONAL_LABELS) as OptionalKey[]).map((k) => (
+    <EditableRow
+      icon={<InfoIcon className="w-4 h-4" />}
+      label="Dietary preference"
+      value=""
+      placeholder="Add dietary preference"
+      onPress={() =>
+        openEdit({
+          title: "Dietary preference",
+          subtitle: "Any food restrictions or preferences the centre should follow.",
+          type: "textarea",
+          value: "",
+          key: { section: "basic", field: "specialNotes" },
+        })
+      }
+    />
+    <EditableRow
+      icon={<HeartIcon className="w-4 h-4" />}
+      label="Medical condition"
+      value=""
+      placeholder="Add medical condition"
+      onPress={() =>
+        openEdit({
+          title: "Medical condition",
+          subtitle: "Any medical conditions the centre should know about.",
+          type: "textarea",
+          value: "",
+          key: { section: "basic", field: "sensitiveInfo" },
+        })
+      }
+    />
+    {(["nationality", "birthplace"] as OptionalKey[]).map((k) => (
       <EditableRow
         key={k}
+        icon={<InfoIcon className="w-4 h-4" />}
         label={OPTIONAL_LABELS[k]}
         value={state[k]}
         onPress={() =>
           openEdit({
             title: OPTIONAL_LABELS[k],
             subtitle: `Optional. Update the ${OPTIONAL_LABELS[k].toLowerCase()} for your child.`,
-            type: k === "specialNotes" || k === "sensitiveInfo" ? "textarea" : "text",
+            type: "text",
             value: state[k],
             key: { section: "basic", field: k },
           })
@@ -379,7 +452,9 @@ const HealthDetailsDetail = ({
 
   return (
     <div className="flex flex-col pb-24 pt-2">
+      <p className="px-4 pb-2 text-[14px] font-medium text-mfneutralsn-500">Health details</p>
       <EditableRow
+        icon={<HelpCircleIcon className="w-4 h-4" />}
         label="Tolerates penicillin"
         value={state.toleratesPenicillin}
         onPress={() =>
@@ -391,6 +466,7 @@ const HealthDetailsDetail = ({
         }
       />
       <EditableRow
+        icon={<InfoIcon className="w-4 h-4" />}
         label="Special dietary considerations"
         value={state.diet}
         placeholder="Add dietary considerations"
@@ -402,6 +478,7 @@ const HealthDetailsDetail = ({
         }
       />
       <EditableRow
+        icon={<InfoIcon className="w-4 h-4" />}
         label="Special notes"
         value={state.specialNotes}
         placeholder="Add special notes"
@@ -415,20 +492,23 @@ const HealthDetailsDetail = ({
 
       <SubsectionTitle>Doctor</SubsectionTitle>
       <EditableRow
+        icon={<StethoscopeIcon className="w-4 h-4" />}
         label="Name"
         value={state.doctorName}
         placeholder="Add doctor name"
         onPress={() => open("Doctor name", "doctorName", { subtitle: "Your child's primary doctor." })}
       />
       <EditableRow
+        icon={<PhoneIcon className="w-4 h-4" />}
         label="Phone"
         value={state.doctorPhone}
         placeholder="Add doctor phone"
         onPress={() => open("Doctor phone", "doctorPhone", { subtitle: "Phone number for your doctor." })}
       />
       <EditableRow
+        icon={<MapPinIcon className="w-4 h-4" />}
         label="Address"
-        value={state.doctorAddress}
+        value={state.doctorAddress ? state.doctorAddress.replace(/\n/g, ", ") : ""}
         placeholder="Add doctor address"
         onPress={() =>
           open("Doctor address", "doctorAddress", {
@@ -440,18 +520,21 @@ const HealthDetailsDetail = ({
 
       <SubsectionTitle>Dentist</SubsectionTitle>
       <EditableRow
+        icon={<StethoscopeIcon className="w-4 h-4" />}
         label="Name"
         value={state.dentistName}
         placeholder="Add dentist name"
         onPress={() => open("Dentist name", "dentistName", { subtitle: "Your child's dentist." })}
       />
       <EditableRow
+        icon={<PhoneIcon className="w-4 h-4" />}
         label="Phone"
         value={state.dentistPhone}
         placeholder="Add dentist phone"
         onPress={() => open("Dentist phone", "dentistPhone", { subtitle: "Phone number for your dentist." })}
       />
       <EditableRow
+        icon={<MapPinIcon className="w-4 h-4" />}
         label="Address"
         value={state.dentistAddress}
         placeholder="Add dentist address"
@@ -511,6 +594,7 @@ const ContactCard = ({
       </div>
       <div className="-mx-4">
         <EditableRow
+          icon={<MailIcon className="w-4 h-4" />}
           label="Email"
           value={extras.email ?? ""}
           placeholder="Add email"
@@ -526,6 +610,7 @@ const ContactCard = ({
           }
         />
         <EditableRow
+          icon={<PhoneIcon className="w-4 h-4" />}
           label="Phone number"
           value={extras.phone ?? ""}
           placeholder="Add phone"
@@ -829,14 +914,20 @@ export const OverviewContent = (): JSX.Element => {
     }
   }, [location.state, navigate]);
 
-  // When entering/leaving a detail section, scroll the surrounding
-  // overflow container back to the top and notify ChildProfile so it hides
-  // the tabs + child info row while a subpage is open.
+  // When entering/leaving a detail section, notify ChildProfile (so it hides
+  // the tabs + child info row while a subpage is open) and then scroll the
+  // surrounding overflow container to the top. The scroll runs in a
+  // requestAnimationFrame so the parent has actually re-rendered with the
+  // hidden tabs by the time we set scrollTop — otherwise the scroll lands at
+  // the old scroll offset and the user sees the middle of the subpage.
   useEffect(() => {
-    const scrollable = rootRef.current?.closest(".overflow-y-auto") as HTMLElement | null;
-    scrollable?.scrollTo({ top: 0, behavior: "smooth" });
     setShowLeaveSheet(false);
     setChildProfileSubpageActive(section !== null);
+    const handle = requestAnimationFrame(() => {
+      const scrollable = rootRef.current?.closest(".overflow-y-auto") as HTMLElement | null;
+      if (scrollable) scrollable.scrollTop = 0;
+    });
+    return () => cancelAnimationFrame(handle);
   }, [section]);
 
   // Make sure the global flag is cleared if this view unmounts mid-subpage.
@@ -889,19 +980,14 @@ export const OverviewContent = (): JSX.Element => {
       <Card>
         <SectionCardHeader title="Permissions" onEdit={() => setSection("permissions")} />
         {LATEST_PERMISSIONS.map((p) => (
-          <React.Fragment key={p.id}>
-            <Divider />
-            <PermissionRow item={p} />
-          </React.Fragment>
+          <PermissionRow key={p.id} item={p} />
         ))}
-        <Divider />
         <ViewAllLink onPress={() => setSection("permissions")} />
       </Card>
 
       {/* Basic info */}
       <Card>
         <SectionCardHeader title="Basic info" onEdit={() => setSection("basic")} />
-        <Divider />
         <SummaryRow
           icon={<LockIcon className="w-4 h-4" />}
           label={`${formatHumanDate(basicInfo.dateOfBirth) || "1 Feb 2025"} (1 year 4 months)`}
@@ -910,32 +996,33 @@ export const OverviewContent = (): JSX.Element => {
           icon={<LanguagesIcon className="w-4 h-4" />}
           label={basicInfo.languages.join(", ") || "Add languages"}
         />
-        {basicInfo.allergy ? (
+        {/* "Add allergy info" CTA is always shown so it can be tapped directly
+            from the About tab even when one or more allergies are already set. */}
+        <button
+          onClick={() =>
+            openEdit({
+              title: "Allergy info",
+              subtitle: "List any allergies the centre should know about.",
+              type: "text",
+              value: basicInfo.allergy,
+              placeholder: "Comma separated",
+              key: { section: "basic", field: "allergy" },
+            })
+          }
+          className="w-full flex h-12 items-center gap-3 px-4 active:bg-gray-50"
+        >
+          <div className="w-6 h-6 rounded-md bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0 text-mfprimaryp-400">
+            <PlusIcon className="w-4 h-4" />
+          </div>
+          <p className="text-[14px] text-mfprimaryp-400 truncate">Add allergy info</p>
+        </button>
+        {basicInfo.allergy && (
           <div className="flex h-12 items-center gap-3 px-4">
             <div className="w-6 h-6 rounded-md bg-mfyellowy-50 flex items-center justify-center flex-shrink-0 text-mfyellowy-400">
               <AlertTriangleIcon className="w-4 h-4" />
             </div>
             <p className="text-[14px] text-mfneutralsn-500 truncate">{basicInfo.allergy}</p>
           </div>
-        ) : (
-          <button
-            onClick={() =>
-              openEdit({
-                title: "Allergy info",
-                subtitle: "List any allergies the centre should know about.",
-                type: "text",
-                value: basicInfo.allergy,
-                placeholder: "Comma separated",
-                key: { section: "basic", field: "allergy" },
-              })
-            }
-            className="w-full flex h-12 items-center gap-3 px-4 active:bg-gray-50"
-          >
-            <div className="w-6 h-6 rounded-md bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0 text-mfprimaryp-400">
-              <PlusIcon className="w-4 h-4" />
-            </div>
-            <p className="text-[14px] text-mfprimaryp-400 truncate">Add allergy info</p>
-          </button>
         )}
         <div className="flex h-12 items-center gap-3 px-4">
           <div className="w-6 h-6 rounded-md bg-brandblueb-50 flex items-center justify-center flex-shrink-0 text-brandblueb-400">
@@ -944,14 +1031,12 @@ export const OverviewContent = (): JSX.Element => {
           <p className="text-[14px] text-mfneutralsn-500 flex-1 truncate">Diabetes</p>
           <FileTextIcon className="w-4 h-4 text-mfneutralsn-300 flex-shrink-0" />
         </div>
-        <Divider />
         <ViewAllLink onPress={() => setSection("basic")} />
       </Card>
 
       {/* Family */}
       <Card>
         <SectionCardHeader title="Family" onEdit={() => setSection("family")} />
-        <Divider />
         <FamilyPreviewRow
           avatar={MOTHER_AVATAR}
           fallback="SF"
@@ -968,14 +1053,12 @@ export const OverviewContent = (): JSX.Element => {
           email={familyExtras.michael?.email}
           phone={familyExtras.michael?.phone}
         />
-        <Divider />
         <ViewAllLink onPress={() => setSection("family")} />
       </Card>
 
       {/* Health details */}
       <Card>
         <SectionCardHeader title="Health details" onEdit={() => setSection("health")} />
-        <Divider />
         <SummaryRow
           icon={<StethoscopeIcon className="w-4 h-4" />}
           label={health.doctorName || "Add doctor info"}
@@ -984,16 +1067,13 @@ export const OverviewContent = (): JSX.Element => {
           icon={<MapPinIcon className="w-4 h-4" />}
           label={health.doctorAddress ? health.doctorAddress.split("\n")[0] : "Add address"}
         />
-        <Divider />
         <ViewAllLink onPress={() => setSection("health")} />
       </Card>
 
       {/* Leave — kept available below the Figma-spec sections so the existing flow stays reachable */}
       <Card>
         <CardHeader title="Leave" onPress={() => setSection("leave")} />
-        <Divider />
         <LeaveRow icon={<SunIcon className="w-[18px] h-[18px] text-mfyellowy-400" />} label="1 - 10 Jul 26" sublabel="Holiday · Opted out of meals" trailing="Upcoming" />
-        <Divider />
         <LeaveRow icon={<ThermometerIcon className="w-[18px] h-[18px] text-mfredr-400" />} label="4 Mar 26" sublabel="Sick" trailing="Past" />
       </Card>
 
@@ -1001,14 +1081,12 @@ export const OverviewContent = (): JSX.Element => {
       {variant === "v1" && (
         <Card>
           <CardHeader title="Care" onPress={() => setSection("care")} />
-          <Divider />
           <div className="px-4 py-3">
             <p className="text-sm font-medium text-mfneutralsn-500">Monthly full time</p>
             <p className="text-[14px] text-mfneutralsn-300 mt-0.5">$1,350/month · Aug 31 –</p>
           </div>
           <Divider />
           <BookingRow name="After School Care" date="Mar 7" amount="$50.00" status="pending" />
-          <Divider />
           <BookingRow name="After School Care" date="Feb 1" amount="$50.00" status="paid" />
         </Card>
       )}
