@@ -32,6 +32,7 @@ import {
 } from "./sections/LearningPostSection/LearningPostSection";
 import { useGlobalUi } from "../../contexts/GlobalUiContext";
 import { useHomeTabsVariant } from "../../hooks/useHomeTabsVariant";
+import { ReelPreview, ReelViewer } from "../../components/Reel/Reel";
 
 const kindergartenPhotos = [
   { id: 1, url: "https://images.pexels.com/photos/8613089/pexels-photo-8613089.jpeg?auto=compress&cs=tinysrgb&w=800", date: "2026-05-18" },
@@ -60,6 +61,7 @@ export const IphoneProMax = (): JSX.Element => {
   const [learningAreasFilter, setLearningAreasFilter] = useState<Set<string>>(new Set());
   const [photoFilterDate, setPhotoFilterDate] = useState<string | null>(null);
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+  const [showReel, setShowReel] = useState(false);
 
   useEffect(() => {
     setHideGlobalFab(!!selectedPhoto);
@@ -309,6 +311,9 @@ export const IphoneProMax = (): JSX.Element => {
     return (
       <div className="flex-1 overflow-y-auto" ref={scrollContainerRef}>
         <div className="flex flex-col gap-4 p-4">
+          {/* Daily reel preview — opens a full-screen story-style viewer with
+              today's photos + captions. Shown above the to-dos. */}
+          <ReelPreview onOpen={() => setShowReel(true)} />
           <div ref={invoiceRef} className="min-w-0 overflow-visible">
             <TodosWidget
               isPaid={isPaid}
@@ -442,6 +447,12 @@ export const IphoneProMax = (): JSX.Element => {
       <div className={!shouldShowFrame ? 'sticky bottom-0 z-50' : ''}>
         <BottomNav />
       </div>
+
+      <ReelViewer
+        isOpen={showReel}
+        onClose={() => setShowReel(false)}
+        useAbsolute={shouldShowFrame}
+      />
     </div>
   );
 
