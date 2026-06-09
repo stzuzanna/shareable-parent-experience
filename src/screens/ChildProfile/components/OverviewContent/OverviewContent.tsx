@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ChevronRightIcon, ArrowLeftIcon, CalendarIcon, BookOpenIcon, SunIcon, ThermometerIcon, StethoscopeIcon, ShieldAlertIcon, StickyNoteIcon, CheckCircle2Icon, XCircleIcon, HelpCircleIcon, PlusIcon } from "lucide-react";
+import { ChevronRightIcon, ArrowLeftIcon, BookOpenIcon, SunIcon, ThermometerIcon, StethoscopeIcon, StickyNoteIcon, CheckCircle2Icon, XCircleIcon, HelpCircleIcon, PlusIcon, LockIcon, LanguagesIcon, HeartIcon, MapPinIcon, AlertTriangleIcon, MailIcon, PhoneIcon, FileTextIcon } from "lucide-react";
 import { useProfileVariant } from "../../../../hooks/useProfileVariant";
 import { useDeviceDetection } from "../../../../hooks/useDeviceDetection";
 import { setChildProfileSubpageActive } from "../../../../hooks/useChildProfileSubpage";
@@ -88,6 +88,40 @@ const ViewAllLink = ({ onPress }: { onPress: () => void }) => (
   >
     View all
   </button>
+);
+
+// Compact preview row used in the About → Family card.
+const FamilyPreviewRow = ({
+  avatar,
+  fallback,
+  name,
+  role,
+  email,
+  phone,
+}: {
+  avatar: string;
+  fallback: string;
+  name: string;
+  role: string;
+  email?: string;
+  phone?: string;
+}) => (
+  <div className="px-4 py-2.5 flex items-center justify-between gap-3">
+    <div className="flex items-center gap-3 min-w-0">
+      <Avatar className="w-9 h-9 flex-shrink-0">
+        <AvatarImage src={avatar} alt={name} />
+        <AvatarFallback>{fallback}</AvatarFallback>
+      </Avatar>
+      <div className="min-w-0">
+        <p className="text-sm font-semibold text-mfneutralsn-500 truncate">{name}</p>
+        <p className="text-[14px] text-mfneutralsn-300 mt-0.5 truncate">{role}</p>
+      </div>
+    </div>
+    <div className="flex items-center gap-2 flex-shrink-0 text-mfneutralsn-400">
+      {email && <MailIcon className="w-4 h-4" />}
+      {phone && <PhoneIcon className="w-4 h-4" />}
+    </div>
+  </div>
 );
 
 const Divider = () => <div className="h-px bg-mfneutralsn-75 mx-4" />;
@@ -623,10 +657,9 @@ const LeaveDetail = () => (
 
 type PermissionStatus = "yes" | "no" | "pending";
 
-const LATEST_PERMISSIONS: { id: string; label: string; status: PermissionStatus; lastChanged?: string }[] = [
-  { id: "photos", label: "Can your child be photographed?", status: "pending" },
-  { id: "field-trip", label: "Can go on a field trip", status: "yes", lastChanged: "01/02/2025" },
-  { id: "animals", label: "Can play with animals", status: "yes", lastChanged: "06/10/2024" },
+const LATEST_PERMISSIONS: { id: string; label: string; status: PermissionStatus; lastChanged?: string; changedBy?: string }[] = [
+  { id: "photos", label: "Can be in photos", status: "yes", lastChanged: "05/25/2026", changedBy: "Sofia Adams Growth" },
+  { id: "animals", label: "Can play with animals", status: "no", lastChanged: "05/25/2026", changedBy: "Sofia Adams Growth" },
 ];
 
 const PermissionStatusIcon = ({ status }: { status: PermissionStatus }) => {
@@ -635,7 +668,11 @@ const PermissionStatusIcon = ({ status }: { status: PermissionStatus }) => {
   return <HelpCircleIcon className="w-5 h-5 text-mfprimaryp-400" />;
 };
 
-const PermissionRow = ({ item }: { item: { label: string; status: PermissionStatus; lastChanged?: string } }) => (
+const PermissionRow = ({
+  item,
+}: {
+  item: { label: string; status: PermissionStatus; lastChanged?: string; changedBy?: string };
+}) => (
   <div className="px-4 py-3 flex items-start gap-3">
     <div className="pt-0.5 flex-shrink-0">
       <PermissionStatusIcon status={item.status} />
@@ -643,7 +680,9 @@ const PermissionRow = ({ item }: { item: { label: string; status: PermissionStat
     <div className="flex-1 min-w-0">
       <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">{item.label}</p>
       {item.lastChanged ? (
-        <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">Last changed {item.lastChanged}</p>
+        <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">
+          Last changed{item.changedBy ? ` by ${item.changedBy}` : ""} on {item.lastChanged}
+        </p>
       ) : (
         <p className="text-[14px] text-mfprimaryp-400 mt-1 leading-tight">Needs your response</p>
       )}
@@ -846,15 +885,6 @@ export const OverviewContent = (): JSX.Element => {
 
   return (
     <div ref={rootRef} className="flex flex-col bg-white pt-4 pb-24 gap-4">
-      {/* Leave — both variants */}
-      <Card>
-        <CardHeader title="Leave" onPress={() => setSection("leave")} />
-        <Divider />
-        <LeaveRow icon={<SunIcon className="w-[18px] h-[18px] text-mfyellowy-400" />} label="1 - 10 Jul 26" sublabel="Holiday · Opted out of meals" trailing="Upcoming" />
-        <Divider />
-        <LeaveRow icon={<ThermometerIcon className="w-[18px] h-[18px] text-mfredr-400" />} label="4 Mar 26" sublabel="Sick" trailing="Past" />
-      </Card>
-
       {/* Permissions */}
       <Card>
         <SectionCardHeader title="Permissions" onEdit={() => setSection("permissions")} />
@@ -866,6 +896,105 @@ export const OverviewContent = (): JSX.Element => {
         ))}
         <Divider />
         <ViewAllLink onPress={() => setSection("permissions")} />
+      </Card>
+
+      {/* Basic info */}
+      <Card>
+        <SectionCardHeader title="Basic info" onEdit={() => setSection("basic")} />
+        <Divider />
+        <SummaryRow
+          icon={<LockIcon className="w-4 h-4" />}
+          label={`${formatHumanDate(basicInfo.dateOfBirth) || "1 Feb 2025"} (1 year 4 months)`}
+        />
+        <SummaryRow
+          icon={<LanguagesIcon className="w-4 h-4" />}
+          label={basicInfo.languages.join(", ") || "Add languages"}
+        />
+        {basicInfo.allergy ? (
+          <div className="flex h-12 items-center gap-3 px-4">
+            <div className="w-6 h-6 rounded-md bg-mfyellowy-50 flex items-center justify-center flex-shrink-0 text-mfyellowy-400">
+              <AlertTriangleIcon className="w-4 h-4" />
+            </div>
+            <p className="text-[14px] text-mfneutralsn-500 truncate">{basicInfo.allergy}</p>
+          </div>
+        ) : (
+          <button
+            onClick={() =>
+              openEdit({
+                title: "Allergy info",
+                subtitle: "List any allergies the centre should know about.",
+                type: "text",
+                value: basicInfo.allergy,
+                placeholder: "Comma separated",
+                key: { section: "basic", field: "allergy" },
+              })
+            }
+            className="w-full flex h-12 items-center gap-3 px-4 active:bg-gray-50"
+          >
+            <div className="w-6 h-6 rounded-md bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0 text-mfprimaryp-400">
+              <PlusIcon className="w-4 h-4" />
+            </div>
+            <p className="text-[14px] text-mfprimaryp-400 truncate">Add allergy info</p>
+          </button>
+        )}
+        <div className="flex h-12 items-center gap-3 px-4">
+          <div className="w-6 h-6 rounded-md bg-brandblueb-50 flex items-center justify-center flex-shrink-0 text-brandblueb-400">
+            <HeartIcon className="w-4 h-4" />
+          </div>
+          <p className="text-[14px] text-mfneutralsn-500 flex-1 truncate">Diabetes</p>
+          <FileTextIcon className="w-4 h-4 text-mfneutralsn-300 flex-shrink-0" />
+        </div>
+        <Divider />
+        <ViewAllLink onPress={() => setSection("basic")} />
+      </Card>
+
+      {/* Family */}
+      <Card>
+        <SectionCardHeader title="Family" onEdit={() => setSection("family")} />
+        <Divider />
+        <FamilyPreviewRow
+          avatar={MOTHER_AVATAR}
+          fallback="SF"
+          name="Sarah Freedman"
+          role="Mother (Primary)"
+          email={familyExtras.sarah?.email}
+          phone={familyExtras.sarah?.phone}
+        />
+        <FamilyPreviewRow
+          avatar={FATHER_AVATAR}
+          fallback="MF"
+          name="Michael Freedman"
+          role="Father"
+          email={familyExtras.michael?.email}
+          phone={familyExtras.michael?.phone}
+        />
+        <Divider />
+        <ViewAllLink onPress={() => setSection("family")} />
+      </Card>
+
+      {/* Health details */}
+      <Card>
+        <SectionCardHeader title="Health details" onEdit={() => setSection("health")} />
+        <Divider />
+        <SummaryRow
+          icon={<StethoscopeIcon className="w-4 h-4" />}
+          label={health.doctorName || "Add doctor info"}
+        />
+        <SummaryRow
+          icon={<MapPinIcon className="w-4 h-4" />}
+          label={health.doctorAddress ? health.doctorAddress.split("\n")[0] : "Add address"}
+        />
+        <Divider />
+        <ViewAllLink onPress={() => setSection("health")} />
+      </Card>
+
+      {/* Leave — kept available below the Figma-spec sections so the existing flow stays reachable */}
+      <Card>
+        <CardHeader title="Leave" onPress={() => setSection("leave")} />
+        <Divider />
+        <LeaveRow icon={<SunIcon className="w-[18px] h-[18px] text-mfyellowy-400" />} label="1 - 10 Jul 26" sublabel="Holiday · Opted out of meals" trailing="Upcoming" />
+        <Divider />
+        <LeaveRow icon={<ThermometerIcon className="w-[18px] h-[18px] text-mfredr-400" />} label="4 Mar 26" sublabel="Sick" trailing="Past" />
       </Card>
 
       {/* Care — V1 only (V2 has bookings in its own tab) */}
@@ -883,89 +1012,6 @@ export const OverviewContent = (): JSX.Element => {
           <BookingRow name="After School Care" date="Feb 1" amount="$50.00" status="paid" />
         </Card>
       )}
-
-      {/* Family */}
-      <Card>
-        <SectionCardHeader title="Family" onEdit={() => setSection("family")} />
-        <Divider />
-        <div className="px-4 py-3 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <Avatar className="w-9 h-9 flex-shrink-0">
-              <AvatarImage src={MOTHER_AVATAR} alt="Sarah Freedman" />
-              <AvatarFallback>SF</AvatarFallback>
-            </Avatar>
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-mfneutralsn-500 truncate">Sarah Freedman</p>
-              <p className="text-[14px] text-mfneutralsn-300 mt-0.5">{familyExtras.sarah?.phone ?? ""} · Mother</p>
-            </div>
-          </div>
-          <span className="text-[14px] px-2.5 py-0.5 rounded-full border border-mfprimaryp-400 text-mfprimaryp-400 flex-shrink-0">Primary</span>
-        </div>
-        <Divider />
-        <div className="px-4 py-3 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <Avatar className="w-9 h-9 flex-shrink-0">
-              <AvatarImage src={FATHER_AVATAR} alt="Michael Freedman" />
-              <AvatarFallback>MF</AvatarFallback>
-            </Avatar>
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-mfneutralsn-500 truncate">Michael Freedman</p>
-              <p className="text-[14px] text-mfneutralsn-300 mt-0.5">{familyExtras.michael?.phone ?? ""} · Father</p>
-            </div>
-          </div>
-          <span className="text-[14px] px-2.5 py-0.5 rounded-full border border-mfneutralsn-200 text-mfneutralsn-400 flex-shrink-0">Secondary</span>
-        </div>
-        <Divider />
-        <ViewAllLink onPress={() => setSection("family")} />
-      </Card>
-
-      {/* Basic info */}
-      <Card>
-        <SectionCardHeader title="Basic info" onEdit={() => setSection("basic")} />
-        <Divider />
-        <SummaryRow icon={<CalendarIcon className="w-4 h-4" />} label={formatHumanDate(basicInfo.dateOfBirth) || "1 Feb 2025"} />
-        <Divider />
-        <SummaryRow icon={<BookOpenIcon className="w-4 h-4" />} label="Bunnies room" />
-        <Divider />
-        {/* Allergy: shown either as a value preview row (read) or as an "Add allergy info" CTA that opens the sheet directly. */}
-        {basicInfo.allergy ? (
-          <SummaryRow icon={<ShieldAlertIcon className="w-4 h-4" />} label={`Allergy: ${basicInfo.allergy}`} />
-        ) : (
-          <button
-            onClick={() =>
-              openEdit({
-                title: "Allergy info",
-                subtitle: "List any allergies the centre should know about.",
-                type: "text",
-                value: basicInfo.allergy,
-                placeholder: "Comma separated",
-                key: { section: "basic", field: "allergy" },
-              })
-            }
-            className="w-full flex h-12 items-center justify-between gap-3 px-4 active:bg-gray-50"
-          >
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-6 h-6 rounded-md bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0 text-mfneutralsn-400">
-                <PlusIcon className="w-4 h-4" />
-              </div>
-              <p className="text-[14px] text-mfprimaryp-400 truncate">Add allergy info</p>
-            </div>
-          </button>
-        )}
-        <Divider />
-        <ViewAllLink onPress={() => setSection("basic")} />
-      </Card>
-
-      {/* Health details */}
-      <Card>
-        <SectionCardHeader title="Health details" onEdit={() => setSection("health")} />
-        <Divider />
-        <SummaryRow icon={<StickyNoteIcon className="w-4 h-4" />} label={health.specialNotes || "Add special notes"} />
-        <Divider />
-        <SummaryRow icon={<StethoscopeIcon className="w-4 h-4" />} label={health.doctorName ? `Doctor: ${health.doctorName}` : "Add doctor info"} />
-        <Divider />
-        <ViewAllLink onPress={() => setSection("health")} />
-      </Card>
 
       <EditFieldSheet
         isOpen={editingField !== null}
