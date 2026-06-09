@@ -111,7 +111,7 @@ const ActivityDropdown = ({
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 mt-1.5 min-w-[160px] bg-white rounded-xl shadow-lg border border-gray-100 z-50">
+        <div className="absolute top-full left-0 mt-1.5 min-w-[160px] bg-white rounded-xl shadow-lg border border-gray-100 z-[55]">
           {allActivityTypes.map((t) => (
             <button
               key={t.id}
@@ -166,7 +166,7 @@ const FilterDropdown = ({
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 mt-1.5 min-w-[180px] bg-white rounded-xl shadow-lg border border-gray-100 z-50">
+        <div className="absolute top-full left-0 mt-1.5 min-w-[180px] bg-white rounded-xl shadow-lg border border-gray-100 z-[55]">
           {options.map((option) => (
             <button
               key={option.id}
@@ -307,7 +307,8 @@ export const PostFeedSection = ({
   const onToggleCurrentSender = activeTab === "activity" ? toggleActivitySender : toggleSender;
 
   return (
-    <header className={`flex flex-col w-full bg-white overflow-visible ${!shouldShowFrame ? 'sticky top-0 z-50' : ''}`}>
+    <>
+    <header className={`flex flex-col w-full bg-white overflow-visible relative z-[55] ${!shouldShowFrame ? 'sticky top-0' : ''}`}>
       {/* Status bar */}
       <div className={`flex items-center justify-between px-5 pt-2 pb-1 ${!shouldShowFrame ? 'hidden' : ''}`}>
         <span className="[font-family:'Inter',Helvetica] font-semibold text-mfneutralsn-500 text-[15px] tracking-[-0.3px]">
@@ -317,7 +318,7 @@ export const PostFeedSection = ({
       </div>
 
       {/* Title row */}
-      <div className={`flex items-center justify-between px-5 pt-3 ${isPills ? 'pb-4' : 'pb-6'}`}>
+      <div className={`flex items-center justify-between px-5 pt-3 ${isPills ? 'pb-8' : 'pb-12'}`}>
         <h1 className="text-[20px] font-bold text-mfneutralsn-500 tracking-tight leading-tight">
           Home
         </h1>
@@ -340,9 +341,9 @@ export const PostFeedSection = ({
       {isPills ? (
         <div className="bg-white px-4 pb-3">
           <div className="flex items-center gap-2 w-full">
-            <div className="flex items-center gap-2 flex-1 overflow-x-auto no-scrollbar">
-              {activeTab === 'home' ? (
-                pillsTabs.map((tab) => (
+            {activeTab === 'home' ? (
+              <div className="flex items-center gap-2 flex-1 overflow-x-auto no-scrollbar">
+                {pillsTabs.map((tab) => (
                   <button
                     key={tab.id}
                     onClick={() => onTabChange(tab.id)}
@@ -350,33 +351,34 @@ export const PostFeedSection = ({
                   >
                     {tab.label}
                   </button>
-                ))
-              ) : (
-                <>
-                  <button
-                    onClick={() => onTabChange('home')}
-                    aria-label="Close filter"
-                    className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-mfneutralsn-200 bg-white"
-                  >
-                    <XIcon className="w-4 h-4 text-mfneutralsn-500" />
-                  </button>
-                  <button className="flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium bg-mfprimaryp-400 border border-mfprimaryp-400 text-white">
-                    {pillsTabs.find((t) => t.id === activeTab)?.label ?? activeTab}
-                  </button>
-                  {activeTab === 'activity' && (
-                    <ActivityDropdown typeFilter={activityTypeFilter} onTypeFilterChange={onActivityTypeFilterChange} />
-                  )}
-                  {activeTab === 'photos' && (
-                    <PhotosCalendarPicker
-                      selectedDate={photoFilterDate}
-                      onSelectDate={onPhotoFilterDateChange}
-                      datesWithPhotos={photoDatesWithContent}
-                      popoverAlign="left"
-                    />
-                  )}
-                </>
-              )}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <>
+                <button
+                  onClick={() => onTabChange('home')}
+                  aria-label="Close filter"
+                  className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-mfneutralsn-200 bg-white"
+                >
+                  <XIcon className="w-4 h-4 text-mfneutralsn-500" />
+                </button>
+                <button className="flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium bg-mfprimaryp-400 border border-mfprimaryp-400 text-white">
+                  {pillsTabs.find((t) => t.id === activeTab)?.label ?? activeTab}
+                </button>
+                {activeTab === 'activity' && (
+                  <ActivityDropdown typeFilter={activityTypeFilter} onTypeFilterChange={onActivityTypeFilterChange} />
+                )}
+                {activeTab === 'photos' && (
+                  <PhotosCalendarPicker
+                    selectedDate={photoFilterDate}
+                    onSelectDate={onPhotoFilterDateChange}
+                    datesWithPhotos={photoDatesWithContent}
+                    popoverAlign="left"
+                  />
+                )}
+                <div className="flex-1" />
+              </>
+            )}
             <button
               aria-label="Filters"
               onClick={() => setShowFilterSheet(true)}
@@ -461,10 +463,11 @@ export const PostFeedSection = ({
           </div>
         </>
       )}
+    </header>
 
-      <AnimatePresence>
-        {showFilterSheet && (
-          <>
+    <AnimatePresence>
+      {showFilterSheet && (
+        <>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -642,10 +645,10 @@ export const PostFeedSection = ({
                   </button>
                 </div>
               </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </header>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+    </>
   );
 };
