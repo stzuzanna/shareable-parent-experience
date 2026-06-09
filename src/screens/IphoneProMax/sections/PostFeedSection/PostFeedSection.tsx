@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { SearchIcon, SlidersHorizontalIcon, XIcon, ChevronDownIcon, CheckIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDeviceDetection } from "../../../../hooks/useDeviceDetection";
+import { useHomeTabsVariant } from "../../../../hooks/useHomeTabsVariant";
 import { PhotosCalendarPicker } from "../PhotosCalendarPicker";
 import { DateRangeCalendar, DateRangePickerFields } from "../DateRangeCalendar";
 import { LEARNING_FILTER_AREAS } from "../LearningPostSection/LearningPostSection";
@@ -203,6 +204,7 @@ export const PostFeedSection = ({
   photoDatesWithContent = [],
 }: PostFeedSectionProps): JSX.Element => {
   const { shouldShowFrame } = useDeviceDetection();
+  const tabsVariant = useHomeTabsVariant();
 
   const [showFilterSheet, setShowFilterSheet] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -312,27 +314,50 @@ export const PostFeedSection = ({
         <SearchIcon className="w-5 h-5 text-mfneutralsn-400" />
       </div>
 
-      {/* Underline tabs */}
-      <div className="bg-white border-b border-[#e2e2e9] px-4">
-        <div className="flex items-center justify-start overflow-x-auto no-scrollbar">
-          {tabs.map((tab) => {
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => onTabChange(tab.id)}
-                className={`flex h-12 items-center justify-center pr-4 first:pl-0 pl-4 -mb-px border-b-2 text-[16px] leading-tight whitespace-nowrap transition-colors flex-shrink-0 ${
-                  isActive
-                    ? "border-mfprimaryp-400 text-mfprimaryp-400 font-medium"
-                    : "border-transparent text-mfneutralsn-400 opacity-80 font-normal"
-                }`}
-              >
-                {tab.label}
-              </button>
-            );
-          })}
+      {/* Tabs — underline or pills variant */}
+      {tabsVariant === "pills" ? (
+        <div className="bg-white px-4 pb-1">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+            {tabs.map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => onTabChange(tab.id)}
+                  className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border transition-all duration-150 ${
+                    isActive
+                      ? "bg-mfprimaryp-400 border-mfprimaryp-400 text-white"
+                      : "bg-transparent border-mfneutralsn-200 text-mfneutralsn-400"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="bg-white border-b border-[#e2e2e9] px-4">
+          <div className="flex items-center justify-start overflow-x-auto no-scrollbar">
+            {tabs.map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => onTabChange(tab.id)}
+                  className={`flex h-12 items-center justify-center pr-4 first:pl-0 pl-4 -mb-px border-b-2 text-[16px] leading-tight whitespace-nowrap transition-colors flex-shrink-0 ${
+                    isActive
+                      ? "border-mfprimaryp-400 text-mfprimaryp-400 font-medium"
+                      : "border-transparent text-mfneutralsn-400 opacity-80 font-normal"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Filter row */}
       <div

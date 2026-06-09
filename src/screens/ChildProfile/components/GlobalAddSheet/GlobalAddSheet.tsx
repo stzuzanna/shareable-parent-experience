@@ -11,6 +11,11 @@ import {
   CheckIcon,
 } from "lucide-react";
 import { useProfileVariant, setProfileVariant, type ProfileVariant } from "../../../../hooks/useProfileVariant";
+import {
+  useHomeTabsVariant,
+  setHomeTabsVariant,
+  type HomeTabsVariant,
+} from "../../../../hooks/useHomeTabsVariant";
 import { AddLeaveFormContent } from "../../../../components/AddLeaveSheet/AddLeaveSheet";
 import { RequestCareFormContent } from "../../../../components/RequestCareSheet/RequestCareFormContent";
 import { MealBookingsFormContent } from "../../../../components/MealBookingsSheet/MealBookingsFormContent";
@@ -147,6 +152,8 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
                       <div className="flex-1 h-px bg-mfneutralsn-75" />
                     </div>
 
+                    <HomeTabsToggle />
+
                     <button
                       className="flex items-center gap-3 px-4 py-3.5 rounded-xl border border-mfprimaryp-400 bg-mfprimaryp-50 active:bg-mfprimaryp-100 transition-colors text-left w-full"
                       onClick={() => {
@@ -190,6 +197,37 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
         </>
       )}
     </AnimatePresence>
+  );
+};
+
+const HomeTabsToggle: React.FC = () => {
+  const variant = useHomeTabsVariant();
+  const options: { id: HomeTabsVariant; label: string }[] = [
+    { id: "underline", label: "Underline tabs" },
+    { id: "pills", label: "Pills" },
+  ];
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="text-[14px] text-mfneutralsn-400">Home tabs style</span>
+      <div className="flex items-center gap-1 p-1 rounded-full bg-mfneutralsn-75 self-start">
+        {options.map((opt) => {
+          const isActive = variant === opt.id;
+          return (
+            <button
+              key={opt.id}
+              onClick={() => setHomeTabsVariant(opt.id)}
+              className={`px-4 py-1.5 rounded-full text-[14px] font-medium transition-colors ${
+                isActive
+                  ? "bg-white text-mfprimaryp-400 shadow-sm"
+                  : "bg-transparent text-mfneutralsn-400"
+              }`}
+            >
+              {opt.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 };
 
