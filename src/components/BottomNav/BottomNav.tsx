@@ -24,9 +24,12 @@ export const BottomNav = (): JSX.Element => {
 
   if (isPills) {
     return (
-      <div className="flex items-center justify-center gap-2 mx-2 mb-2">
-        {/* Main nav cluster: Home / child / messages / parent */}
-        <div className="flex items-center justify-between gap-1 px-3 py-2 bg-mfneutralsn-50 rounded-2xl border border-gray-100 flex-1">
+      // Glass-style 12px breathing room above the nav so the GAB sparkle (and
+      // the rest of the nav) doesn't touch content scrolling behind it.
+      <div className="pt-3 bg-white/70 backdrop-blur-md">
+        <div className="flex items-center justify-center gap-2 mx-2 mb-2">
+          {/* Main nav cluster: Home / child / messages / parent */}
+          <div className="flex items-center justify-between gap-1 px-3 py-2 bg-mfneutralsn-50 rounded-2xl border border-gray-100 flex-1">
           <button
             onClick={() => navigate("/")}
             className={`${baseBtn} ${isActive("/") ? activeBtn : ""}`}
@@ -80,6 +83,7 @@ export const BottomNav = (): JSX.Element => {
               <SparklesIcon className="w-5 h-5 text-mfprimaryp-400" />
             )}
           </button>
+        </div>
         </div>
       </div>
     );
