@@ -1,8 +1,10 @@
 import { BASE_PATH } from '../../../../constants';
 import React, { useEffect, useRef, useState } from "react";
-import { SearchIcon, SlidersHorizontalIcon, XIcon, ChevronDownIcon, CheckIcon } from "lucide-react";
+import { SearchIcon, SlidersHorizontalIcon, XIcon, ChevronDownIcon, CheckIcon, BellIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { useDeviceDetection } from "../../../../hooks/useDeviceDetection";
+import { useHomeTabsVariant } from "../../../../hooks/useHomeTabsVariant";
 import { PhotosCalendarPicker } from "../PhotosCalendarPicker";
 import { DateRangeCalendar, DateRangePickerFields } from "../DateRangeCalendar";
 import { LEARNING_FILTER_AREAS } from "../LearningPostSection/LearningPostSection";
@@ -63,6 +65,13 @@ const tabs = [
   { id: 'learning', label: 'Learning' },
   { id: 'photos', label: 'Photos' },
   { id: 'saved', label: 'Saved' },
+];
+
+// Pills variant only exposes Activity and Photos — newsfeed (with learning merged)
+// is the implicit default when no pill is selected.
+const pillsTabs = [
+  { id: 'activity', label: 'Activity' },
+  { id: 'photos', label: 'Photos' },
 ];
 
 const DROPDOWN_LABEL: Record<string, string> = {
@@ -203,6 +212,9 @@ export const PostFeedSection = ({
   photoDatesWithContent = [],
 }: PostFeedSectionProps): JSX.Element => {
   const { shouldShowFrame } = useDeviceDetection();
+  const tabsVariant = useHomeTabsVariant();
+  const navigate = useNavigate();
+  const isPills = tabsVariant === "pills";
 
   const [showFilterSheet, setShowFilterSheet] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -305,80 +317,150 @@ export const PostFeedSection = ({
       </div>
 
       {/* Title row */}
-      <div className="flex items-center justify-between px-5 pt-3 pb-6">
+      <div className={`flex items-center justify-between px-5 pt-3 ${isPills ? 'pb-4' : 'pb-6'}`}>
         <h1 className="text-[20px] font-bold text-mfneutralsn-500 tracking-tight leading-tight">
           Home
         </h1>
-        <SearchIcon className="w-5 h-5 text-mfneutralsn-400" />
-      </div>
-
-      {/* Underline tabs */}
-      <div className="bg-white border-b border-[#e2e2e9] px-4">
-        <div className="flex items-center justify-start overflow-x-auto no-scrollbar">
-          {tabs.map((tab) => {
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => onTabChange(tab.id)}
-                className={`flex h-12 items-center justify-center pr-4 first:pl-0 pl-4 -mb-px border-b-2 text-[16px] leading-tight whitespace-nowrap transition-colors flex-shrink-0 ${
-                  isActive
-                    ? "border-mfprimaryp-400 text-mfprimaryp-400 font-medium"
-                    : "border-transparent text-mfneutralsn-400 opacity-80 font-normal"
-                }`}
-              >
-                {tab.label}
-              </button>
-            );
-          })}
+        <div className="flex items-center gap-4">
+          {isPills && (
+            <button
+              onClick={() => navigate('/notifications')}
+              aria-label="Notifications"
+              className="relative"
+            >
+              <BellIcon className="w-5 h-5 text-mfneutralsn-400" />
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full" />
+            </button>
+          )}
+          <SearchIcon className="w-5 h-5 text-mfneutralsn-400" />
         </div>
       </div>
 
-      {/* Filter row */}
-      <div
-        className={`flex items-center px-4 py-3 w-full bg-white ${
-          activeTab === 'photos' ? 'justify-end' : 'justify-between'
-        }`}
-      >
-        {activeTab === 'activity' ? (
-          <ActivityDropdown typeFilter={activityTypeFilter} onTypeFilterChange={onActivityTypeFilterChange} />
-        ) : activeTab === 'home' ? (
-          <FilterDropdown
-            options={postSourceOptions}
-            value={postSourceFilter}
-            onChange={(id) => onPostSourceFilterChange(id as PostSourceFilter)}
-          />
-        ) : activeTab === 'learning' ? (
-          <FilterDropdown
-            options={learningTypeOptions}
-            value={learningTypeFilter}
-            onChange={(id) => onLearningTypeFilterChange(id as LearningTypeFilter)}
-          />
-        ) : activeTab === 'photos' ? null : (
-          <StaticDropdown label={DROPDOWN_LABEL[activeTab] ?? 'All'} />
-        )}
-        {activeTab === 'photos' ? (
-          <PhotosCalendarPicker
-            selectedDate={photoFilterDate}
-            onSelectDate={onPhotoFilterDateChange}
-            datesWithPhotos={photoDatesWithContent}
-            popoverAlign="right"
-          />
-        ) : (
-          <button
-            aria-label="Filters"
-            onClick={() => setShowFilterSheet(true)}
-            className={`relative flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-full border bg-white ${
-              filtersActive ? 'border-mfprimaryp-400' : 'border-mfneutralsn-200'
+      {/* Tabs — underline or pills variant */}
+      {isPills ? (
+        <div className="bg-white px-4 pb-3">
+          <div className="flex items-center gap-2 w-full">
+            <div className="flex items-center gap-2 flex-1 overflow-x-auto no-scrollbar">
+              {activeTab === 'home' ? (
+                pillsTabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => onTabChange(tab.id)}
+                    className="flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border border-mfneutralsn-200 text-mfneutralsn-400 bg-transparent"
+                  >
+                    {tab.label}
+                  </button>
+                ))
+              ) : (
+                <>
+                  <button
+                    onClick={() => onTabChange('home')}
+                    aria-label="Close filter"
+                    className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-mfneutralsn-200 bg-white"
+                  >
+                    <XIcon className="w-4 h-4 text-mfneutralsn-500" />
+                  </button>
+                  <button className="flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium bg-mfprimaryp-400 border border-mfprimaryp-400 text-white">
+                    {pillsTabs.find((t) => t.id === activeTab)?.label ?? activeTab}
+                  </button>
+                  {activeTab === 'activity' && (
+                    <ActivityDropdown typeFilter={activityTypeFilter} onTypeFilterChange={onActivityTypeFilterChange} />
+                  )}
+                  {activeTab === 'photos' && (
+                    <PhotosCalendarPicker
+                      selectedDate={photoFilterDate}
+                      onSelectDate={onPhotoFilterDateChange}
+                      datesWithPhotos={photoDatesWithContent}
+                      popoverAlign="left"
+                    />
+                  )}
+                </>
+              )}
+            </div>
+            <button
+              aria-label="Filters"
+              onClick={() => setShowFilterSheet(true)}
+              className={`relative flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-full border bg-white ${
+                filtersActive ? 'border-mfprimaryp-400' : 'border-mfneutralsn-200'
+              }`}
+            >
+              <SlidersHorizontalIcon className={`w-4 h-4 ${filtersActive ? 'text-mfprimaryp-400' : 'text-mfneutralsn-400'}`} />
+              {filtersActive && (
+                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-mfprimaryp-400" />
+              )}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="bg-white border-b border-[#e2e2e9] px-4">
+            <div className="flex items-center justify-start overflow-x-auto no-scrollbar">
+              {tabs.map((tab) => {
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => onTabChange(tab.id)}
+                    className={`flex h-12 items-center justify-center pr-4 first:pl-0 pl-4 -mb-px border-b-2 text-[16px] leading-tight whitespace-nowrap transition-colors flex-shrink-0 ${
+                      isActive
+                        ? "border-mfprimaryp-400 text-mfprimaryp-400 font-medium"
+                        : "border-transparent text-mfneutralsn-400 opacity-80 font-normal"
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Filter row (underline variant only) */}
+          <div
+            className={`flex items-center px-4 py-3 w-full bg-white ${
+              activeTab === 'photos' ? 'justify-end' : 'justify-between'
             }`}
           >
-            <SlidersHorizontalIcon className={`w-4 h-4 ${filtersActive ? 'text-mfprimaryp-400' : 'text-mfneutralsn-400'}`} />
-            {filtersActive && (
-              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-mfprimaryp-400" />
+            {activeTab === 'activity' ? (
+              <ActivityDropdown typeFilter={activityTypeFilter} onTypeFilterChange={onActivityTypeFilterChange} />
+            ) : activeTab === 'home' ? (
+              <FilterDropdown
+                options={postSourceOptions}
+                value={postSourceFilter}
+                onChange={(id) => onPostSourceFilterChange(id as PostSourceFilter)}
+              />
+            ) : activeTab === 'learning' ? (
+              <FilterDropdown
+                options={learningTypeOptions}
+                value={learningTypeFilter}
+                onChange={(id) => onLearningTypeFilterChange(id as LearningTypeFilter)}
+              />
+            ) : activeTab === 'photos' ? null : (
+              <StaticDropdown label={DROPDOWN_LABEL[activeTab] ?? 'All'} />
             )}
-          </button>
-        )}
-      </div>
+            {activeTab === 'photos' ? (
+              <PhotosCalendarPicker
+                selectedDate={photoFilterDate}
+                onSelectDate={onPhotoFilterDateChange}
+                datesWithPhotos={photoDatesWithContent}
+                popoverAlign="right"
+              />
+            ) : (
+              <button
+                aria-label="Filters"
+                onClick={() => setShowFilterSheet(true)}
+                className={`relative flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-full border bg-white ${
+                  filtersActive ? 'border-mfprimaryp-400' : 'border-mfneutralsn-200'
+                }`}
+              >
+                <SlidersHorizontalIcon className={`w-4 h-4 ${filtersActive ? 'text-mfprimaryp-400' : 'text-mfneutralsn-400'}`} />
+                {filtersActive && (
+                  <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-mfprimaryp-400" />
+                )}
+              </button>
+            )}
+          </div>
+        </>
+      )}
 
       <AnimatePresence>
         {showFilterSheet && (

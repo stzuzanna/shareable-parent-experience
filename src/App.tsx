@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { BASE_PATH } from './constants';
 import { useDeviceDetection } from './hooks/useDeviceDetection';
+import { useHomeTabsVariant } from './hooks/useHomeTabsVariant';
 import { DeviceFrame } from './components/DeviceFrame/DeviceFrame';
 import { PlusIcon } from 'lucide-react';
 import { IphoneProMax } from './screens/IphoneProMax/IphoneProMax';
@@ -22,12 +23,18 @@ import { GlobalUiProvider, useGlobalUi } from './contexts/GlobalUiContext';
 function AppRoutes() {
   const navigate = useNavigate();
   const { showToast } = useAppToast();
-  const { hideGlobalFab } = useGlobalUi();
+  const { hideGlobalFab, registerAddSheetOpener } = useGlobalUi();
   const { shouldShowFrame } = useDeviceDetection();
+  const tabsVariant = useHomeTabsVariant();
   const overlayPos = shouldShowFrame ? 'absolute' : 'fixed';
 
   const [showAddSheet, setShowAddSheet] = useState(false);
   const [showFeedbackSheet, setShowFeedbackSheet] = useState(false);
+
+  useEffect(() => {
+    registerAddSheetOpener(() => setShowAddSheet(true));
+    return () => registerAddSheetOpener(null);
+  }, [registerAddSheetOpener]);
 
   const handleAddAction = (actionId: string) => {
     switch (actionId) {
@@ -73,7 +80,7 @@ function AppRoutes() {
         <Route path="/notifications" element={<Notifications />} />
       </Routes>
 
-      {!hideGlobalFab && (
+      {!hideGlobalFab && tabsVariant !== 'pills' && (
         <button
           onClick={() => setShowAddSheet(true)}
           className={`${overlayPos} bottom-24 right-4 w-14 h-14 rounded-full bg-mfprimaryp-400 shadow-elevation-elevation-4 flex items-center justify-center z-[60] active:scale-95 transition-transform`}
