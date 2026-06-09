@@ -1,21 +1,26 @@
 import React from "react";
-import { HomeIcon, MessageSquareIcon, BellIcon } from "lucide-react";
+import { HomeIcon, MessageSquareIcon, BellIcon, SparklesIcon } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { BASE_PATH } from "../../constants";
+import { useHomeTabsVariant } from "../../hooks/useHomeTabsVariant";
+import { useGlobalUi } from "../../contexts/GlobalUiContext";
 
-// Active state: white rounded square with subtle gray border (Figma: bg-white border-[#e2e2e9] rounded-[8px])
 const activeBtn = "bg-white border border-[#e2e2e9]";
 const baseBtn = "no-zoom flex items-center justify-center w-10 h-10 rounded-[10px] transition-all";
 
 export const BottomNav = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
+  const tabsVariant = useHomeTabsVariant();
+  const { openAddSheet } = useGlobalUi();
 
   const isActive = (path: string) => location.pathname === path;
 
   const iconColor = (path: string) =>
     isActive(path) ? "text-mfneutralsn-500" : "text-mfneutralsn-300";
+
+  const isPills = tabsVariant === "pills";
 
   return (
     <div className="flex items-center justify-between px-3 py-2 bg-mfneutralsn-50 rounded-2xl mx-2 mb-2 border border-gray-100">
@@ -27,7 +32,7 @@ export const BottomNav = (): JSX.Element => {
         <HomeIcon className={`w-6 h-6 ${iconColor("/")}`} />
       </button>
 
-      {/* Child profile — avatar, no active bg (avatar is its own indicator) */}
+      {/* Child profile — avatar */}
       <button
         onClick={() => navigate("/child-profile")}
         className={`${baseBtn} ${isActive("/child-profile") ? activeBtn : ""}`}
@@ -50,29 +55,56 @@ export const BottomNav = (): JSX.Element => {
         <MessageSquareIcon className={`w-6 h-6 ${iconColor("/messages")}`} />
       </button>
 
-      {/* Notifications — with red dot badge */}
-      <button
-        onClick={() => navigate("/notifications")}
-        className={`${baseBtn} ${isActive("/notifications") ? activeBtn : ""} relative`}
-      >
-        <BellIcon className={`w-6 h-6 ${iconColor("/notifications")}`} />
-        <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
-      </button>
+      {/* In pills variant, notifications move to top bar — show account avatar here instead.
+          In underline variant, keep the bell + notifications badge. */}
+      {isPills ? (
+        <button
+          onClick={() => navigate("/menu")}
+          className={`${baseBtn} ${isActive("/menu") ? activeBtn : ""}`}
+        >
+          <Avatar className="w-8 h-8">
+            <AvatarImage
+              src={`${BASE_PATH}avatar-2.png`}
+              alt="Account"
+              className="object-cover"
+            />
+            <AvatarFallback>AP</AvatarFallback>
+          </Avatar>
+        </button>
+      ) : (
+        <button
+          onClick={() => navigate("/notifications")}
+          className={`${baseBtn} ${isActive("/notifications") ? activeBtn : ""} relative`}
+        >
+          <BellIcon className={`w-6 h-6 ${iconColor("/notifications")}`} />
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
+        </button>
+      )}
 
-      {/* Account — user avatar */}
-      <button
-        onClick={() => navigate("/menu")}
-        className={`${baseBtn} ${isActive("/menu") ? activeBtn : ""}`}
-      >
-        <Avatar className="w-8 h-8">
-          <AvatarImage
-            src={`${BASE_PATH}avatar-2.png`}
-            alt="Account"
-            className="object-cover"
-          />
-          <AvatarFallback>AP</AvatarFallback>
-        </Avatar>
-      </button>
+      {/* Rightmost slot: GAB sparkle in pills variant, account avatar in underline variant */}
+      {isPills ? (
+        <button
+          onClick={openAddSheet}
+          aria-label="Open quick actions"
+          className={`${baseBtn} border border-mfprimaryp-400 bg-white`}
+        >
+          <SparklesIcon className="w-5 h-5 text-mfprimaryp-400" />
+        </button>
+      ) : (
+        <button
+          onClick={() => navigate("/menu")}
+          className={`${baseBtn} ${isActive("/menu") ? activeBtn : ""}`}
+        >
+          <Avatar className="w-8 h-8">
+            <AvatarImage
+              src={`${BASE_PATH}avatar-2.png`}
+              alt="Account"
+              className="object-cover"
+            />
+            <AvatarFallback>AP</AvatarFallback>
+          </Avatar>
+        </button>
+      )}
     </div>
   );
 };

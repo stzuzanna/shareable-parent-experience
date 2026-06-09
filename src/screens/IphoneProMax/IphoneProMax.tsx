@@ -31,6 +31,7 @@ import {
   learningPostMatchesAreasFilter,
 } from "./sections/LearningPostSection/LearningPostSection";
 import { useGlobalUi } from "../../contexts/GlobalUiContext";
+import { useHomeTabsVariant } from "../../hooks/useHomeTabsVariant";
 
 const kindergartenPhotos = [
   { id: 1, url: "https://images.pexels.com/photos/8613089/pexels-photo-8613089.jpeg?auto=compress&cs=tinysrgb&w=800", date: "2026-05-18" },
@@ -46,6 +47,8 @@ const photoDatesWithContent = [...new Set(kindergartenPhotos.map((p) => p.date))
 export const IphoneProMax = (): JSX.Element => {
   const { setHideGlobalFab } = useGlobalUi();
   const { shouldShowFrame } = useDeviceDetection();
+  const tabsVariant = useHomeTabsVariant();
+  const isPills = tabsVariant === "pills";
   const { toggleLike, addReaction, removeReaction, addComment, addPollVote, isLiked, getReaction, getComments, getPollVotes } = useInteractivity();
   const { savedPostIds, toggleSaved, isSaved } = useSavedPosts();
   const [isPaid, setIsPaid] = useState(false);
@@ -368,6 +371,27 @@ export const IphoneProMax = (): JSX.Element => {
               />
             </div>
           )}
+          {isPills && LEARNING_POSTS
+            .filter((post) => {
+              if (learningTypeFilter !== 'all' && post.contentType !== learningTypeFilter) return false;
+              if (!learningPostMatchesAreasFilter(post.developmentAreas, learningAreasFilter)) return false;
+              return true;
+            })
+            .map((post) => (
+              <LearningPostCard
+                key={post.id}
+                post={post}
+                isLiked={isLiked(post.id)}
+                selectedReaction={getReaction(post.id)}
+                onToggleLike={() => toggleLike(post.id)}
+                onReaction={(emoji) => addReaction(post.id, emoji)}
+                onRemoveReaction={() => removeReaction(post.id)}
+                onAddComment={(comment) => addComment(post.id, comment)}
+                comments={getComments(post.id)}
+                isSaved={isSaved(post.id)}
+                onToggleSaved={() => toggleSaved(post.id)}
+              />
+            ))}
         </div>
       </div>
     );
