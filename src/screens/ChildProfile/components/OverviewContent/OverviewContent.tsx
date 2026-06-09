@@ -1,16 +1,50 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ChevronRightIcon, ArrowLeftIcon, HomeIcon, PhoneIcon, InfoIcon, CalendarIcon, BookOpenIcon, SunIcon, ThermometerIcon, MessageSquareIcon, PencilIcon, KeyRoundIcon, UserIcon, StethoscopeIcon, ShieldAlertIcon, StickyNoteIcon, IdCardIcon, CheckCircle2Icon, XCircleIcon, HelpCircleIcon, PlusIcon } from "lucide-react";
+import { ChevronRightIcon, ArrowLeftIcon, CalendarIcon, BookOpenIcon, SunIcon, ThermometerIcon, StethoscopeIcon, ShieldAlertIcon, StickyNoteIcon, CheckCircle2Icon, XCircleIcon, HelpCircleIcon, PlusIcon } from "lucide-react";
 import { useProfileVariant } from "../../../../hooks/useProfileVariant";
 import { useDeviceDetection } from "../../../../hooks/useDeviceDetection";
 import { setChildProfileSubpageActive } from "../../../../hooks/useChildProfileSubpage";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
 import { AddLeaveSheet } from "../../../../components/AddLeaveSheet/AddLeaveSheet";
+import { EditFieldSheet, type EditFieldConfig } from "../../../../components/EditFieldSheet/EditFieldSheet";
 
-const KEY_PERSON_NAME = "Olivia Wilson";
-const KEY_PERSON_INITIALS = "OW";
-const KEY_PERSON_CHAT_ID = 1;
-const KEY_PERSON_AVATAR = "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=400";
+// ── Editable field config ─────────────────────────────────────────────────────
+
+interface FieldKey { section: "basic" | "health" | "family"; field: string }
+type EditingField = (EditFieldConfig & { key: FieldKey }) | null;
+
+interface BasicInfoState {
+  dateOfBirth: string;
+  languages: string[]; // comma-separated when edited
+  gender: string;
+  allergy: string;
+  nationality: string;
+  birthplace: string;
+  specialNotes: string;
+  sensitiveInfo: string;
+}
+
+interface HealthState {
+  toleratesPenicillin: string;
+  diet: string;
+  specialNotes: string;
+  doctorName: string;
+  doctorPhone: string;
+  doctorAddress: string;
+  dentistName: string;
+  dentistPhone: string;
+  dentistAddress: string;
+}
+
+const LANGUAGE_OPTIONS_ARR = ["English", "Spanish", "French", "German", "Italian", "Portuguese", "Mandarin", "Arabic", "Polish", "Turkish"];
+
+const formatHumanDate = (iso: string): string => {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+};
+
 const MOTHER_AVATAR = "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=400";
 const FATHER_AVATAR = "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=400";
 
@@ -29,14 +63,34 @@ const CardHeader = ({ title, onPress }: { title: string; onPress?: () => void })
   </button>
 );
 
-const Divider = () => <div className="h-px bg-mfneutralsn-75 mx-4" />;
-
-const InfoRow = ({ label, sublabel }: { label: string; sublabel: string }) => (
-  <div className="px-4 py-3">
-    <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">{label}</p>
-    <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">{sublabel}</p>
+// New About card header: title (bigger) + Edit link on the right.
+const SectionCardHeader = ({
+  title,
+  onEdit,
+}: {
+  title: string;
+  onEdit?: () => void;
+}) => (
+  <div className="w-full flex items-center justify-between px-4 pt-4 pb-2">
+    <span className="text-[16px] font-semibold text-mfneutralsn-500">{title}</span>
+    {onEdit && (
+      <button onClick={onEdit} className="text-[14px] font-medium text-mfprimaryp-400">
+        Edit
+      </button>
+    )}
   </div>
 );
+
+const ViewAllLink = ({ onPress }: { onPress: () => void }) => (
+  <button
+    onClick={onPress}
+    className="w-full text-left px-4 py-3 text-[14px] font-medium text-mfprimaryp-400"
+  >
+    View all
+  </button>
+);
+
+const Divider = () => <div className="h-px bg-mfneutralsn-75 mx-4" />;
 
 const SummaryRow = ({
   icon,
@@ -58,46 +112,13 @@ const SummaryRow = ({
   </div>
 );
 
-const SummaryPersonRow = ({
-  avatarSrc,
-  avatarAlt,
-  fallback,
-  label,
-  trailing,
-}: {
-  avatarSrc: string;
-  avatarAlt: string;
-  fallback: string;
-  label: string;
-  trailing?: React.ReactNode;
-}) => (
-  <div className="flex h-12 items-center justify-between gap-3 px-4 w-full">
-    <div className="flex items-center gap-3 min-w-0">
-      <Avatar className="w-6 h-6 flex-shrink-0">
-        <AvatarImage src={avatarSrc} alt={avatarAlt} />
-        <AvatarFallback className="text-[10px]">{fallback}</AvatarFallback>
-      </Avatar>
-      <p className="text-[14px] text-mfneutralsn-400 truncate">{label}</p>
-    </div>
-    {trailing && <div className="flex-shrink-0">{trailing}</div>}
-  </div>
-);
-
 const SectionHeader = ({
   title,
   onBack,
-  onEdit,
-  onSave,
-  onCancel,
-  editActive,
   trailing,
 }: {
   title: string;
   onBack: () => void;
-  onEdit?: () => void;
-  onSave?: () => void;
-  onCancel?: () => void;
-  editActive?: boolean;
   trailing?: React.ReactNode;
 }) => (
   <div className="flex items-center gap-2 px-4 py-3">
@@ -108,34 +129,7 @@ const SectionHeader = ({
       <ArrowLeftIcon className="w-4 h-4 text-mfneutralsn-500" />
     </button>
     <span className="text-base font-semibold text-mfneutralsn-500 flex-1">{title}</span>
-    {editActive ? (
-      <div className="flex items-center gap-2 flex-shrink-0">
-        <button
-          onClick={onCancel}
-          className="px-3 h-9 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] font-medium text-mfneutralsn-500 active:bg-gray-50"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={onSave}
-          className="px-3 h-9 rounded-lg bg-mfprimaryp-400 text-white text-[14px] font-medium"
-        >
-          Save
-        </button>
-      </div>
-    ) : (
-      trailing ??
-      (onEdit && (
-        <button
-          onClick={onEdit}
-          aria-label={`Edit ${title}`}
-          className="flex items-center gap-1.5 px-3 h-9 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] font-medium text-mfneutralsn-500 active:bg-gray-50 flex-shrink-0"
-        >
-          <PencilIcon className="w-3.5 h-3.5" />
-          Edit
-        </button>
-      ))
-    )}
+    {trailing}
   </div>
 );
 
@@ -163,60 +157,36 @@ const BookingStatusIcon = ({ status }: { status: "pending" | "paid" }) => {
 
 // ── Detail views ──────────────────────────────────────────────────────────────
 
-const SubpageRow = ({
-  icon,
-  label,
-  onPress,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  onPress?: () => void;
-}) => (
-  <button
-    onClick={onPress}
-    className="flex h-12 items-center justify-between gap-3 px-4 w-full border-b border-mfneutralsn-75 text-left active:bg-gray-50"
-  >
-    <div className="flex items-center gap-3 min-w-0">
-      <div className="w-6 h-6 rounded-md bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0 text-mfneutralsn-400">
-        {icon}
-      </div>
-      <p className="text-[14px] text-mfneutralsn-400 truncate">{label}</p>
-    </div>
-  </button>
-);
-
-const SubpagePersonRow = ({
-  avatarSrc,
-  avatarAlt,
-  fallback,
-  label,
-  badge,
-  onPress,
-}: {
-  avatarSrc: string;
-  avatarAlt: string;
-  fallback: string;
-  label: string;
-  badge?: React.ReactNode;
-  onPress?: () => void;
-}) => (
-  <button
-    onClick={onPress}
-    className="flex h-12 items-center justify-between gap-3 px-4 w-full border-b border-mfneutralsn-75 text-left active:bg-gray-50"
-  >
-    <div className="flex items-center gap-3 min-w-0">
-      <Avatar className="w-6 h-6 flex-shrink-0">
-        <AvatarImage src={avatarSrc} alt={avatarAlt} />
-        <AvatarFallback className="text-[10px]">{fallback}</AvatarFallback>
-      </Avatar>
-      <p className="text-[14px] text-mfneutralsn-400 truncate">{label}</p>
-    </div>
-    {badge && <div className="flex-shrink-0">{badge}</div>}
-  </button>
-);
-
 const SubsectionTitle = ({ children }: { children: React.ReactNode }) => (
   <p className="px-4 pt-5 pb-3 text-[16px] font-medium text-mfneutralsn-400">{children}</p>
+);
+
+// Clickable row for subpages: label / value / chevron → opens EditFieldSheet
+const EditableRow = ({
+  label,
+  value,
+  placeholder,
+  onPress,
+}: {
+  label: string;
+  value: string;
+  placeholder?: string;
+  onPress: () => void;
+}) => (
+  <button
+    onClick={onPress}
+    className="w-full flex items-center justify-between gap-3 px-4 py-3 border-b border-mfneutralsn-75 text-left active:bg-gray-50"
+  >
+    <div className="flex-1 min-w-0">
+      <p className="text-[14px] text-mfneutralsn-300 leading-tight">{label}</p>
+      {value ? (
+        <p className="text-[16px] text-mfneutralsn-500 leading-tight mt-1 whitespace-pre-line">{value}</p>
+      ) : (
+        <p className="text-[16px] text-mfprimaryp-400 leading-tight mt-1">{placeholder ?? `Add ${label.toLowerCase()}`}</p>
+      )}
+    </div>
+    <ChevronRightIcon className="w-4 h-4 text-mfneutralsn-300 flex-shrink-0" />
+  </button>
 );
 
 const CareDetail = () => (
@@ -257,220 +227,6 @@ const SecondaryBadge = () => (
   <span className="text-[14px] px-2 py-0.5 rounded-full border border-mfneutralsn-200 text-mfneutralsn-400">Secondary</span>
 );
 
-const LabelValueRow = ({
-  label,
-  value,
-  compact = false,
-}: {
-  label: string;
-  value: string;
-  compact?: boolean;
-}) => (
-  <div className={compact ? "py-1" : "px-4 pt-2 pb-4"}>
-    <p className="text-[14px] text-mfneutralsn-300 leading-tight">{label}</p>
-    <p className={`text-[16px] text-mfneutralsn-500 leading-tight ${compact ? "mt-0.5" : "mt-1"}`}>
-      {value || "-"}
-    </p>
-  </div>
-);
-
-const MultilineLabelValueRow = ({ label, value }: { label: string; value: string }) => (
-  <div className="px-4 pt-2 pb-4">
-    <p className="text-[14px] text-mfneutralsn-300 leading-tight">{label}</p>
-    <p className="text-[16px] text-mfneutralsn-500 leading-snug whitespace-pre-line mt-1">{value || "-"}</p>
-  </div>
-);
-
-const FieldShell = ({
-  label,
-  children,
-  compact = false,
-}: {
-  label: string;
-  children: React.ReactNode;
-  compact?: boolean;
-}) => (
-  <div className={compact ? "py-1" : "px-4 pt-2 pb-4"}>
-    <p
-      className={`text-[14px] leading-tight ${compact ? "text-mfneutralsn-300 mb-1" : "font-medium text-mfneutralsn-500 mb-1.5"}`}
-    >
-      {label}
-    </p>
-    {children}
-  </div>
-);
-
-const inputClass =
-  "w-full h-10 px-3 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] text-mfneutralsn-500 focus:outline-none focus:border-mfprimaryp-400";
-
-const TextField = ({
-  label,
-  value,
-  onChange,
-  placeholder,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  placeholder?: string;
-}) => (
-  <FieldShell label={label}>
-    <input
-      value={value}
-      placeholder={placeholder}
-      onChange={(e) => onChange(e.target.value)}
-      className={inputClass}
-    />
-  </FieldShell>
-);
-
-const DateField = ({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-}) => (
-  <FieldShell label={label}>
-    <input
-      type="date"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className={inputClass}
-    />
-  </FieldShell>
-);
-
-const TextAreaField = ({
-  label,
-  value,
-  onChange,
-  placeholder,
-  rows = 4,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  placeholder?: string;
-  rows?: number;
-}) => (
-  <FieldShell label={label}>
-    <textarea
-      value={value}
-      placeholder={placeholder}
-      onChange={(e) => onChange(e.target.value)}
-      rows={rows}
-      className="w-full px-3 py-2 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] text-mfneutralsn-500 focus:outline-none focus:border-mfprimaryp-400 resize-none"
-    />
-  </FieldShell>
-);
-
-const SelectField = ({
-  label,
-  value,
-  options,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  options: string[];
-  onChange: (v: string) => void;
-}) => (
-  <FieldShell label={label}>
-    <select value={value} onChange={(e) => onChange(e.target.value)} className={inputClass}>
-      {options.map((o) => (
-        <option key={o} value={o}>
-          {o}
-        </option>
-      ))}
-    </select>
-  </FieldShell>
-);
-
-const LANGUAGE_OPTIONS = ["English", "Spanish", "French", "German", "Italian", "Portuguese", "Mandarin", "Arabic", "Polish", "Turkish"];
-
-const LanguagesField = ({
-  label,
-  values,
-  onChange,
-}: {
-  label: string;
-  values: string[];
-  onChange: (v: string[]) => void;
-}) => {
-  const [adding, setAdding] = useState(false);
-  const available = LANGUAGE_OPTIONS.filter((l) => !values.includes(l));
-
-  return (
-    <FieldShell label={label}>
-      <div className="flex flex-col gap-2">
-        {values.map((lang, i) => (
-          <div key={i} className="flex items-center gap-2">
-            <select
-              value={lang}
-              onChange={(e) => {
-                const next = [...values];
-                next[i] = e.target.value;
-                onChange(next);
-              }}
-              className={inputClass}
-            >
-              <option value={lang}>{lang}</option>
-              {LANGUAGE_OPTIONS.filter((l) => !values.includes(l) || l === lang).map((o) => (
-                <option key={o} value={o}>
-                  {o}
-                </option>
-              ))}
-            </select>
-            <button
-              onClick={() => onChange(values.filter((_, idx) => idx !== i))}
-              aria-label={`Remove ${lang}`}
-              className="w-9 h-9 rounded-lg border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0 text-mfneutralsn-400 active:bg-gray-50"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-            </button>
-          </div>
-        ))}
-        {adding ? (
-          <select
-            autoFocus
-            onChange={(e) => {
-              if (e.target.value) {
-                onChange([...values, e.target.value]);
-                setAdding(false);
-              }
-            }}
-            className={inputClass}
-          >
-            <option value="">Choose a language…</option>
-            {available.map((o) => (
-              <option key={o} value={o}>
-                {o}
-              </option>
-            ))}
-          </select>
-        ) : (
-          available.length > 0 && (
-            <button
-              onClick={() => setAdding(true)}
-              aria-label="Add language"
-              className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center text-mfneutralsn-500 active:bg-gray-50"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-            </button>
-          )
-        )}
-      </div>
-    </FieldShell>
-  );
-};
-
 // ── Detail view: Basic info ───────────────────────────────────────────────────
 
 type OptionalKey = "nationality" | "birthplace" | "specialNotes" | "sensitiveInfo";
@@ -481,111 +237,197 @@ const OPTIONAL_LABELS: Record<OptionalKey, string> = {
   sensitiveInfo: "Sensitive info",
 };
 
-const BasicInfoDetail = ({ editing }: { editing: boolean }) => {
-  const [dateOfBirth, setDateOfBirth] = useState("2025-02-01");
-  const [languages, setLanguages] = useState<string[]>(["English", "Spanish"]);
-  const [gender, setGender] = useState("Boy");
-  const [optional, setOptional] = useState<Record<OptionalKey, string>>({
-    nationality: "",
-    birthplace: "",
-    specialNotes: "",
-    sensitiveInfo: "",
-  });
-
-  const formatDate = (iso: string) => {
-    const d = new Date(iso);
-    if (Number.isNaN(d.getTime())) return iso;
-    return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
-  };
-
-  if (editing) {
-    return (
-      <div className="flex flex-col pb-24 pt-2">
-        <DateField label="Date of birth" value={dateOfBirth} onChange={setDateOfBirth} />
-        <LanguagesField label="Languages" values={languages} onChange={setLanguages} />
-        <SelectField label="Gender" value={gender} options={["Boy", "Girl", "Other", "Prefer not to say"]} onChange={setGender} />
-        {(Object.keys(OPTIONAL_LABELS) as OptionalKey[]).map((k) => (
-          <TextField
-            key={k}
-            label={OPTIONAL_LABELS[k]}
-            value={optional[k]}
-            onChange={(v) => setOptional((p) => ({ ...p, [k]: v }))}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col pb-24 pt-2">
-      <LabelValueRow label="Date of birth" value={formatDate(dateOfBirth)} />
-      <LabelValueRow label="Languages" value={languages.join(", ")} />
-      <LabelValueRow label="Gender" value={gender} />
-      {(Object.keys(OPTIONAL_LABELS) as OptionalKey[]).map((k) => (
-        <LabelValueRow key={k} label={OPTIONAL_LABELS[k]} value={optional[k]} />
-      ))}
-    </div>
-  );
-};
+const BasicInfoDetail = ({
+  state,
+  openEdit,
+}: {
+  state: BasicInfoState;
+  openEdit: (config: EditFieldConfig & { key: FieldKey }) => void;
+}) => (
+  <div className="flex flex-col pb-24 pt-2">
+    <EditableRow
+      label="Date of birth"
+      value={formatHumanDate(state.dateOfBirth)}
+      onPress={() =>
+        openEdit({
+          title: "Date of birth",
+          subtitle: "Used to determine the room your child belongs to.",
+          type: "date",
+          value: state.dateOfBirth,
+          key: { section: "basic", field: "dateOfBirth" },
+        })
+      }
+    />
+    <EditableRow
+      label="Languages"
+      value={state.languages.join(", ")}
+      onPress={() =>
+        openEdit({
+          title: "Languages",
+          subtitle: "Comma separated list of languages spoken at home.",
+          type: "text",
+          value: state.languages.join(", "),
+          placeholder: "English, Spanish",
+          key: { section: "basic", field: "languages" },
+        })
+      }
+    />
+    <EditableRow
+      label="Gender"
+      value={state.gender}
+      onPress={() =>
+        openEdit({
+          title: "Gender",
+          subtitle: "How your child identifies.",
+          type: "select",
+          value: state.gender,
+          options: ["Boy", "Girl", "Other", "Prefer not to say"],
+          key: { section: "basic", field: "gender" },
+        })
+      }
+    />
+    <EditableRow
+      label="Allergy info"
+      value={state.allergy}
+      placeholder="Add allergy info"
+      onPress={() =>
+        openEdit({
+          title: "Allergy info",
+          subtitle: "List any allergies the centre should know about.",
+          type: "text",
+          value: state.allergy,
+          placeholder: "Comma separated",
+          key: { section: "basic", field: "allergy" },
+        })
+      }
+    />
+    {(Object.keys(OPTIONAL_LABELS) as OptionalKey[]).map((k) => (
+      <EditableRow
+        key={k}
+        label={OPTIONAL_LABELS[k]}
+        value={state[k]}
+        onPress={() =>
+          openEdit({
+            title: OPTIONAL_LABELS[k],
+            subtitle: `Optional. Update the ${OPTIONAL_LABELS[k].toLowerCase()} for your child.`,
+            type: k === "specialNotes" || k === "sensitiveInfo" ? "textarea" : "text",
+            value: state[k],
+            key: { section: "basic", field: k },
+          })
+        }
+      />
+    ))}
+  </div>
+);
 
 // ── Detail view: Health details ───────────────────────────────────────────────
 
-const HealthDetailsDetail = ({ editing }: { editing: boolean }) => {
-  const [allergy, setAllergy] = useState("Peanuts");
-  const [toleratesPenicillin, setToleratesPenicillin] = useState("Yes");
-  const [diet, setDiet] = useState("");
-  const [specialNotes, setSpecialNotes] = useState("Epi-pen available");
-
-  const [doctorName, setDoctorName] = useState("Phillip O'Donnell");
-  const [doctorPhone, setDoctorPhone] = useState("070 3597 2396");
-  const [doctorAddress, setDoctorAddress] = useState("235 N. Greenbrier Street\nArlington\nVA 22203\nUS");
-
-  const [dentistName, setDentistName] = useState("");
-  const [dentistPhone, setDentistPhone] = useState("");
-  const [dentistAddress, setDentistAddress] = useState("");
-
-  if (editing) {
-    return (
-      <div className="flex flex-col pb-24 pt-2">
-        <TextField label="Allergy" value={allergy} onChange={setAllergy} placeholder="Comma separated" />
-        <SelectField
-          label="Tolerates penicillin"
-          value={toleratesPenicillin}
-          options={["Yes", "No", "Unknown"]}
-          onChange={setToleratesPenicillin}
-        />
-        <TextField label="Special dietary considerations" value={diet} onChange={setDiet} />
-        <TextField label="Special notes" value={specialNotes} onChange={setSpecialNotes} />
-
-        <SubsectionTitle>Doctor</SubsectionTitle>
-        <TextField label="Name" value={doctorName} onChange={setDoctorName} />
-        <TextField label="Phone" value={doctorPhone} onChange={setDoctorPhone} />
-        <TextAreaField label="Address" value={doctorAddress} onChange={setDoctorAddress} />
-
-        <SubsectionTitle>Dentist</SubsectionTitle>
-        <TextField label="Name" value={dentistName} onChange={setDentistName} />
-        <TextField label="Phone" value={dentistPhone} onChange={setDentistPhone} />
-        <TextAreaField label="Address" value={dentistAddress} onChange={setDentistAddress} />
-      </div>
-    );
-  }
+const HealthDetailsDetail = ({
+  state,
+  openEdit,
+}: {
+  state: HealthState;
+  openEdit: (config: EditFieldConfig & { key: FieldKey }) => void;
+}) => {
+  const open = (
+    title: string,
+    field: keyof HealthState,
+    extras: Partial<EditFieldConfig> = {},
+  ) =>
+    openEdit({
+      title,
+      subtitle: `Update the ${title.toLowerCase()} for your child.`,
+      type: "text",
+      value: state[field],
+      key: { section: "health", field },
+      ...extras,
+    });
 
   return (
     <div className="flex flex-col pb-24 pt-2">
-      <LabelValueRow label="Allergy" value={allergy} />
-      <LabelValueRow label="Tolerates penicillin" value={toleratesPenicillin} />
-      <LabelValueRow label="Special dietary considerations" value={diet} />
-      <LabelValueRow label="Special notes" value={specialNotes} />
+      <EditableRow
+        label="Tolerates penicillin"
+        value={state.toleratesPenicillin}
+        onPress={() =>
+          open("Tolerates penicillin", "toleratesPenicillin", {
+            type: "select",
+            options: ["Yes", "No", "Unknown"],
+            subtitle: "Whether your child can take penicillin-based medication.",
+          })
+        }
+      />
+      <EditableRow
+        label="Special dietary considerations"
+        value={state.diet}
+        placeholder="Add dietary considerations"
+        onPress={() =>
+          open("Special dietary considerations", "diet", {
+            type: "textarea",
+            subtitle: "Any food restrictions or preferences the centre should follow.",
+          })
+        }
+      />
+      <EditableRow
+        label="Special notes"
+        value={state.specialNotes}
+        placeholder="Add special notes"
+        onPress={() =>
+          open("Special notes", "specialNotes", {
+            type: "textarea",
+            subtitle: "Anything else the centre should know about your child's health.",
+          })
+        }
+      />
 
       <SubsectionTitle>Doctor</SubsectionTitle>
-      <LabelValueRow label="Name" value={doctorName} />
-      <LabelValueRow label="Phone" value={doctorPhone} />
-      <MultilineLabelValueRow label="Address" value={doctorAddress} />
+      <EditableRow
+        label="Name"
+        value={state.doctorName}
+        placeholder="Add doctor name"
+        onPress={() => open("Doctor name", "doctorName", { subtitle: "Your child's primary doctor." })}
+      />
+      <EditableRow
+        label="Phone"
+        value={state.doctorPhone}
+        placeholder="Add doctor phone"
+        onPress={() => open("Doctor phone", "doctorPhone", { subtitle: "Phone number for your doctor." })}
+      />
+      <EditableRow
+        label="Address"
+        value={state.doctorAddress}
+        placeholder="Add doctor address"
+        onPress={() =>
+          open("Doctor address", "doctorAddress", {
+            type: "textarea",
+            subtitle: "Street address of your doctor's surgery.",
+          })
+        }
+      />
 
       <SubsectionTitle>Dentist</SubsectionTitle>
-      <LabelValueRow label="Name" value={dentistName} />
-      <LabelValueRow label="Phone" value={dentistPhone} />
-      <MultilineLabelValueRow label="Address" value={dentistAddress} />
+      <EditableRow
+        label="Name"
+        value={state.dentistName}
+        placeholder="Add dentist name"
+        onPress={() => open("Dentist name", "dentistName", { subtitle: "Your child's dentist." })}
+      />
+      <EditableRow
+        label="Phone"
+        value={state.dentistPhone}
+        placeholder="Add dentist phone"
+        onPress={() => open("Dentist phone", "dentistPhone", { subtitle: "Phone number for your dentist." })}
+      />
+      <EditableRow
+        label="Address"
+        value={state.dentistAddress}
+        placeholder="Add dentist address"
+        onPress={() =>
+          open("Dentist address", "dentistAddress", {
+            type: "textarea",
+            subtitle: "Street address of your dentist's office.",
+          })
+        }
+      />
     </div>
   );
 };
@@ -611,17 +453,15 @@ type ContactExtras = { email?: string; phone?: string };
 const ContactCard = ({
   contact,
   extras,
-  editing,
-  onChange,
+  openEdit,
 }: {
   contact: ContactDef;
   extras: ContactExtras;
-  editing: boolean;
-  onChange: (next: ContactExtras) => void;
+  openEdit: (config: EditFieldConfig & { key: FieldKey }) => void;
 }) => {
   const Badge = contact.primary ? PrimaryBadge : SecondaryBadge;
   return (
-    <div className="px-4 pt-4 pb-4 border-b border-mfneutralsn-75 last:border-b-0 flex flex-col gap-2">
+    <div className="px-4 pt-4 pb-1 border-b border-mfneutralsn-75 last:border-b-0 flex flex-col gap-2">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <Avatar className="w-9 h-9 flex-shrink-0">
@@ -635,70 +475,74 @@ const ContactCard = ({
         </div>
         <Badge />
       </div>
-
-      {editing ? (
-        <div className="flex flex-col gap-1">
-          <FieldShell compact label="Email">
-            <input
-              value={extras.email ?? ""}
-              placeholder="name@example.com"
-              onChange={(e) => onChange({ ...extras, email: e.target.value })}
-              className={inputClass}
-            />
-          </FieldShell>
-          <FieldShell compact label="Phone number">
-            <input
-              value={extras.phone ?? ""}
-              placeholder="+1 (555) 123-4567"
-              onChange={(e) => onChange({ ...extras, phone: e.target.value })}
-              className={inputClass}
-            />
-          </FieldShell>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-0.5">
-          <LabelValueRow compact label="Email" value={extras.email ?? ""} />
-          <LabelValueRow compact label="Phone number" value={extras.phone ?? ""} />
-        </div>
-      )}
-    </div>
-  );
-};
-
-const FamilyDetail = ({ editing }: { editing: boolean }) => {
-  const [extras, setExtras] = useState<Record<string, ContactExtras>>({
-    sarah: { phone: "+1 (555) 123-4567" },
-    michael: { phone: "+1 (555) 123-4567" },
-  });
-
-  return (
-    <div className="flex flex-col pb-24">
-      <SubsectionTitle>Parents</SubsectionTitle>
-      {CONTACTS.map((c) => (
-        <ContactCard
-          key={c.id}
-          contact={c}
-          extras={extras[c.id] ?? {}}
-          editing={editing}
-          onChange={(next) => setExtras((prev) => ({ ...prev, [c.id]: next }))}
+      <div className="-mx-4">
+        <EditableRow
+          label="Email"
+          value={extras.email ?? ""}
+          placeholder="Add email"
+          onPress={() =>
+            openEdit({
+              title: `${contact.name} — Email`,
+              subtitle: `Email address we can reach ${contact.role.toLowerCase()} on.`,
+              type: "text",
+              value: extras.email ?? "",
+              placeholder: "name@example.com",
+              key: { section: "family", field: `${contact.id}:email` },
+            })
+          }
         />
-      ))}
-
-      <SubsectionTitle>Siblings</SubsectionTitle>
-      <div className="px-4 py-4">
-        <p className="text-[14px] text-mfneutralsn-300 mb-3 leading-snug">
-          Link a sibling so you can see both children in one place.
-        </p>
-        <button className="flex items-center gap-2 h-9 px-3 rounded-lg border border-mfprimaryp-400 text-[14px] font-medium text-mfprimaryp-400 active:bg-mfprimaryp-50">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-          Link siblings
-        </button>
+        <EditableRow
+          label="Phone number"
+          value={extras.phone ?? ""}
+          placeholder="Add phone"
+          onPress={() =>
+            openEdit({
+              title: `${contact.name} — Phone`,
+              subtitle: `Phone number we can reach ${contact.role.toLowerCase()} on.`,
+              type: "text",
+              value: extras.phone ?? "",
+              placeholder: "+1 (555) 123-4567",
+              key: { section: "family", field: `${contact.id}:phone` },
+            })
+          }
+        />
       </div>
     </div>
   );
 };
+
+const FamilyDetail = ({
+  extras,
+  openEdit,
+}: {
+  extras: Record<string, ContactExtras>;
+  openEdit: (config: EditFieldConfig & { key: FieldKey }) => void;
+}) => (
+  <div className="flex flex-col pb-24">
+    <SubsectionTitle>Parents</SubsectionTitle>
+    {CONTACTS.map((c) => (
+      <ContactCard
+        key={c.id}
+        contact={c}
+        extras={extras[c.id] ?? {}}
+        openEdit={openEdit}
+      />
+    ))}
+
+    <SubsectionTitle>Siblings</SubsectionTitle>
+    <div className="px-4 py-4">
+      <p className="text-[14px] text-mfneutralsn-300 mb-3 leading-snug">
+        Link a sibling so you can see both children in one place.
+      </p>
+      <button className="flex items-center gap-2 h-9 px-3 rounded-lg border border-mfprimaryp-400 text-[14px] font-medium text-mfprimaryp-400 active:bg-mfprimaryp-50">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+        Link siblings
+      </button>
+    </div>
+  </div>
+);
 
 // ── Main component ────────────────────────────────────────────────────────────
 
@@ -877,9 +721,66 @@ export const OverviewContent = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
   const [section, setSection] = useState<Section>(null);
-  const [editing, setEditing] = useState(false);
   const [showLeaveSheet, setShowLeaveSheet] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+
+  const [basicInfo, setBasicInfo] = useState<BasicInfoState>({
+    dateOfBirth: "2025-02-01",
+    languages: ["English", "Spanish"],
+    gender: "Boy",
+    allergy: "Peanuts",
+    nationality: "",
+    birthplace: "",
+    specialNotes: "",
+    sensitiveInfo: "",
+  });
+
+  const [health, setHealth] = useState<HealthState>({
+    toleratesPenicillin: "Yes",
+    diet: "",
+    specialNotes: "Epi-pen available",
+    doctorName: "Phillip O'Donnell",
+    doctorPhone: "070 3597 2396",
+    doctorAddress: "235 N. Greenbrier Street\nArlington\nVA 22203\nUS",
+    dentistName: "",
+    dentistPhone: "",
+    dentistAddress: "",
+  });
+
+  const [familyExtras, setFamilyExtras] = useState<Record<string, ContactExtras>>({
+    sarah: { phone: "+1 (555) 123-4567" },
+    michael: { phone: "+1 (555) 123-4567" },
+  });
+
+  const [editingField, setEditingField] = useState<EditingField>(null);
+
+  const openEdit = (config: EditFieldConfig & { key: FieldKey }) =>
+    setEditingField(config);
+
+  const handleSaveField = (value: string) => {
+    if (!editingField) return;
+    const { section: target, field } = editingField.key;
+    if (target === "basic") {
+      if (field === "languages") {
+        const parsed = value
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean)
+          .filter((lang) => LANGUAGE_OPTIONS_ARR.includes(lang) || lang.length > 0);
+        setBasicInfo((prev) => ({ ...prev, languages: parsed }));
+      } else {
+        setBasicInfo((prev) => ({ ...prev, [field]: value }));
+      }
+    } else if (target === "health") {
+      setHealth((prev) => ({ ...prev, [field]: value }));
+    } else if (target === "family") {
+      const [contactId, contactField] = field.split(":");
+      setFamilyExtras((prev) => ({
+        ...prev,
+        [contactId]: { ...prev[contactId], [contactField]: value },
+      }));
+    }
+  };
 
   useEffect(() => {
     const aboutSection = (location.state as { aboutSection?: Section } | null)?.aboutSection;
@@ -895,7 +796,6 @@ export const OverviewContent = (): JSX.Element => {
   useEffect(() => {
     const scrollable = rootRef.current?.closest(".overflow-y-auto") as HTMLElement | null;
     scrollable?.scrollTo({ top: 0, behavior: "smooth" });
-    setEditing(false);
     setShowLeaveSheet(false);
     setChildProfileSubpageActive(section !== null);
   }, [section]);
@@ -904,19 +804,11 @@ export const OverviewContent = (): JSX.Element => {
   useEffect(() => () => setChildProfileSubpageActive(false), []);
 
   if (section !== null) {
-    const editable = section === "basic" || section === "family" || section === "health";
     return (
       <div ref={rootRef} className="flex flex-col bg-white min-h-full">
         <SectionHeader
           title={sectionTitles[section]}
-          onBack={() => {
-            setEditing(false);
-            setSection(null);
-          }}
-          onEdit={editable ? () => setEditing(true) : undefined}
-          onSave={() => setEditing(false)}
-          onCancel={() => setEditing(false)}
-          editActive={editing}
+          onBack={() => setSection(null)}
           trailing={
             section === "leave" ? (
               <button
@@ -931,14 +823,21 @@ export const OverviewContent = (): JSX.Element => {
           }
         />
         {section === "care" && <CareDetail />}
-        {section === "family" && <FamilyDetail editing={editing} />}
-        {section === "basic" && <BasicInfoDetail editing={editing} />}
-        {section === "health" && <HealthDetailsDetail editing={editing} />}
+        {section === "family" && <FamilyDetail extras={familyExtras} openEdit={openEdit} />}
+        {section === "basic" && <BasicInfoDetail state={basicInfo} openEdit={openEdit} />}
+        {section === "health" && <HealthDetailsDetail state={health} openEdit={openEdit} />}
         {section === "leave" && <LeaveDetail />}
         {section === "permissions" && <PermissionsDetail />}
         <AddLeaveSheet
           isOpen={section === "leave" && showLeaveSheet}
           onClose={() => setShowLeaveSheet(false)}
+          useAbsolute={shouldShowFrame}
+        />
+        <EditFieldSheet
+          isOpen={editingField !== null}
+          field={editingField}
+          onClose={() => setEditingField(null)}
+          onSave={handleSaveField}
           useAbsolute={shouldShowFrame}
         />
       </div>
@@ -958,13 +857,15 @@ export const OverviewContent = (): JSX.Element => {
 
       {/* Permissions */}
       <Card>
-        <CardHeader title="Permissions" onPress={() => setSection("permissions")} />
-        {LATEST_PERMISSIONS.map((p, i) => (
+        <SectionCardHeader title="Permissions" onEdit={() => setSection("permissions")} />
+        {LATEST_PERMISSIONS.map((p) => (
           <React.Fragment key={p.id}>
             <Divider />
             <PermissionRow item={p} />
           </React.Fragment>
         ))}
+        <Divider />
+        <ViewAllLink onPress={() => setSection("permissions")} />
       </Card>
 
       {/* Care — V1 only (V2 has bookings in its own tab) */}
@@ -985,7 +886,7 @@ export const OverviewContent = (): JSX.Element => {
 
       {/* Family */}
       <Card>
-        <CardHeader title="Family" onPress={() => setSection("family")} />
+        <SectionCardHeader title="Family" onEdit={() => setSection("family")} />
         <Divider />
         <div className="px-4 py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
@@ -995,7 +896,7 @@ export const OverviewContent = (): JSX.Element => {
             </Avatar>
             <div className="min-w-0">
               <p className="text-sm font-semibold text-mfneutralsn-500 truncate">Sarah Freedman</p>
-              <p className="text-[14px] text-mfneutralsn-300 mt-0.5">+1 (555) 123-4567 · Mother</p>
+              <p className="text-[14px] text-mfneutralsn-300 mt-0.5">{familyExtras.sarah?.phone ?? ""} · Mother</p>
             </div>
           </div>
           <span className="text-[14px] px-2.5 py-0.5 rounded-full border border-mfprimaryp-400 text-mfprimaryp-400 flex-shrink-0">Primary</span>
@@ -1009,32 +910,70 @@ export const OverviewContent = (): JSX.Element => {
             </Avatar>
             <div className="min-w-0">
               <p className="text-sm font-semibold text-mfneutralsn-500 truncate">Michael Freedman</p>
-              <p className="text-[14px] text-mfneutralsn-300 mt-0.5">+1 (555) 123-4567 · Father</p>
+              <p className="text-[14px] text-mfneutralsn-300 mt-0.5">{familyExtras.michael?.phone ?? ""} · Father</p>
             </div>
           </div>
           <span className="text-[14px] px-2.5 py-0.5 rounded-full border border-mfneutralsn-200 text-mfneutralsn-400 flex-shrink-0">Secondary</span>
         </div>
+        <Divider />
+        <ViewAllLink onPress={() => setSection("family")} />
       </Card>
 
       {/* Basic info */}
       <Card>
-        <CardHeader title="Basic info" onPress={() => setSection("basic")} />
+        <SectionCardHeader title="Basic info" onEdit={() => setSection("basic")} />
         <Divider />
-        <SummaryRow icon={<CalendarIcon className="w-4 h-4" />} label="1 Feb 2025" />
+        <SummaryRow icon={<CalendarIcon className="w-4 h-4" />} label={formatHumanDate(basicInfo.dateOfBirth) || "1 Feb 2025"} />
         <Divider />
         <SummaryRow icon={<BookOpenIcon className="w-4 h-4" />} label="Bunnies room" />
+        <Divider />
+        {/* Allergy: shown either as a value preview row (read) or as an "Add allergy info" CTA that opens the sheet directly. */}
+        {basicInfo.allergy ? (
+          <SummaryRow icon={<ShieldAlertIcon className="w-4 h-4" />} label={`Allergy: ${basicInfo.allergy}`} />
+        ) : (
+          <button
+            onClick={() =>
+              openEdit({
+                title: "Allergy info",
+                subtitle: "List any allergies the centre should know about.",
+                type: "text",
+                value: basicInfo.allergy,
+                placeholder: "Comma separated",
+                key: { section: "basic", field: "allergy" },
+              })
+            }
+            className="w-full flex h-12 items-center justify-between gap-3 px-4 active:bg-gray-50"
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-6 h-6 rounded-md bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0 text-mfneutralsn-400">
+                <PlusIcon className="w-4 h-4" />
+              </div>
+              <p className="text-[14px] text-mfprimaryp-400 truncate">Add allergy info</p>
+            </div>
+          </button>
+        )}
+        <Divider />
+        <ViewAllLink onPress={() => setSection("basic")} />
       </Card>
 
       {/* Health details */}
       <Card>
-        <CardHeader title="Health details" onPress={() => setSection("health")} />
+        <SectionCardHeader title="Health details" onEdit={() => setSection("health")} />
         <Divider />
-        <SummaryRow icon={<ShieldAlertIcon className="w-4 h-4" />} label="Allergy: Peanuts" />
+        <SummaryRow icon={<StickyNoteIcon className="w-4 h-4" />} label={health.specialNotes || "Add special notes"} />
         <Divider />
-        <SummaryRow icon={<StickyNoteIcon className="w-4 h-4" />} label="Epi-pen available" />
+        <SummaryRow icon={<StethoscopeIcon className="w-4 h-4" />} label={health.doctorName ? `Doctor: ${health.doctorName}` : "Add doctor info"} />
         <Divider />
-        <SummaryRow icon={<StethoscopeIcon className="w-4 h-4" />} label="Doctor: Phillip O'Donnell" />
+        <ViewAllLink onPress={() => setSection("health")} />
       </Card>
+
+      <EditFieldSheet
+        isOpen={editingField !== null}
+        field={editingField}
+        onClose={() => setEditingField(null)}
+        onSave={handleSaveField}
+        useAbsolute={shouldShowFrame}
+      />
     </div>
   );
 };
