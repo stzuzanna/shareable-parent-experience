@@ -135,8 +135,10 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
               onClick={handleClose}
             />
 
-            {/* Floating pills cascading up from above the bottom nav, right-aligned. */}
-            <div className={`${pos} bottom-28 right-4 z-[80] flex flex-col items-end gap-3 pointer-events-none`}>
+            {/* Floating pills cascading up from above the bottom nav, right-aligned.
+                bottom-44 keeps the lowest pill clearly above the Sidekick input
+                (which sits at bottom-20, h-12 → top edge at ~32). */}
+            <div className={`${pos} bottom-44 right-4 z-[80] flex flex-col items-end gap-3 pointer-events-none`}>
               {stackedPills.map((p, i) => {
                 const Icon = p.icon;
                 return (

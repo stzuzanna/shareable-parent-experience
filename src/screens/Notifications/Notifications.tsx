@@ -140,7 +140,7 @@ export const Notifications = (): JSX.Element => {
         </div>
       </div>
 
-      <div className={!shouldShowFrame ? 'sticky bottom-0 z-50' : ''}>
+      <div className={!shouldShowFrame ? 'sticky bottom-0 z-[75]' : 'relative z-[75]'}>
         <BottomNav />
       </div>
     </div>

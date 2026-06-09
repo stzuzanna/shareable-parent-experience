@@ -80,7 +80,7 @@ export const AccountSettings: React.FC<AccountSettingsProps> = ({ onClose }): JS
         </div>
       </div>
 
-      <div className={!shouldShowFrame ? "sticky bottom-0 z-50" : ""}>
+      <div className={!shouldShowFrame ? "sticky bottom-0 z-[75]" : "relative z-[75]"}>
         <BottomNav />
       </div>
     </div>
