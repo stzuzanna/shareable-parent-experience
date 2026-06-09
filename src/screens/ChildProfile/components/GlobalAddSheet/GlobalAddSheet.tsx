@@ -9,6 +9,10 @@ import {
   XIcon,
   KeyRoundIcon,
   CheckIcon,
+  PhoneIcon,
+  MicIcon,
+  ArrowRightIcon,
+  SettingsIcon,
 } from "lucide-react";
 import { useProfileVariant, setProfileVariant, type ProfileVariant } from "../../../../hooks/useProfileVariant";
 import {
@@ -39,6 +43,27 @@ const actions: Action[] = [
   { id: "message", icon: MessageSquareIcon, label: "Send message to key person" },
 ];
 
+// Pills variant — matches Figma 1578-69490: top→bottom Request care, Show check in pin,
+// Opt in and out of meals, Check out, Send message, Call childcare, Add leave. Each pill
+// renders with its label on the left and a coloured circular icon on the right.
+interface PillAction {
+  id: string;
+  icon: React.ElementType;
+  label: string;
+  iconBg: string;
+  iconColor: string;
+}
+
+const pillActions: PillAction[] = [
+  { id: "request-care", icon: CalendarIcon, label: "Request care", iconBg: "bg-mfprimaryp-50", iconColor: "text-mfprimaryp-400" },
+  { id: "checkin-pin", icon: KeyRoundIcon, label: "Show check in pin", iconBg: "bg-mfprimaryp-50", iconColor: "text-mfprimaryp-400" },
+  { id: "meals", icon: UtensilsIcon, label: "Opt in and out of meals", iconBg: "bg-mfyellowy-50", iconColor: "text-mfyellowy-400" },
+  { id: "check-out", icon: CheckIcon, label: "Check out", iconBg: "bg-red-50", iconColor: "text-red-500" },
+  { id: "message", icon: MessageSquareIcon, label: "Send message", iconBg: "bg-mfprimaryp-50", iconColor: "text-mfprimaryp-400" },
+  { id: "call-childcare", icon: PhoneIcon, label: "Call childcare", iconBg: "bg-green-50", iconColor: "text-green-600" },
+  { id: "add-leave", icon: CalendarX2Icon, label: "Add leave", iconBg: "bg-mfprimaryp-50", iconColor: "text-mfprimaryp-400" },
+];
+
 interface GlobalAddSheetProps {
   isOpen: boolean;
   onClose: () => void;
@@ -54,18 +79,154 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
   useAbsolute = false,
 }) => {
   const pos = useAbsolute ? "absolute" : "fixed";
+  const tabsVariant = useHomeTabsVariant();
+  const isPills = tabsVariant === "pills";
   const [step, setStep] = useState<SheetStep>("actions");
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     if (!isOpen) {
       setStep("actions");
+      setShowSettings(false);
     }
   }, [isOpen]);
 
   const handleClose = () => {
     setStep("actions");
+    setShowSettings(false);
     onClose();
   };
+
+  const handleActionClick = (actionId: string) => {
+    if (actionId === "add-leave") {
+      setStep("add-leave");
+      return;
+    }
+    if (actionId === "request-care") {
+      setStep("request-care");
+      return;
+    }
+    if (actionId === "meals") {
+      setStep("meals");
+      return;
+    }
+    if (actionId === "checkin-pin") {
+      setStep("checkin-pin");
+      return;
+    }
+    handleClose();
+    onAction(actionId);
+  };
+
+  // Floating-pills variant: when in pills home-tabs mode AND on the actions step,
+  // render the actions as floating pills cascading from above the GAB sparkle
+  // button rather than as a bottom sheet. Sub-form steps (add-leave, request-care…)
+  // still fall through to the bottom-sheet flow below.
+  if (isPills && step === "actions") {
+    // Pills stacked bottom-to-top in the Figma; we reverse so the natural visual
+    // top-to-bottom order (Request care → Add leave) matches the list above.
+    const stackedPills = [...pillActions].reverse();
+    return (
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className={`${pos} inset-0 bg-[rgba(78,22,156,0.5)] backdrop-blur-[2px] z-[70]`}
+              onClick={handleClose}
+            />
+
+            {/* Floating pills cascading up from above the bottom nav, right-aligned. */}
+            <div className={`${pos} bottom-28 right-4 z-[80] flex flex-col items-end gap-3 pointer-events-none`}>
+              {showSettings && (
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 8 }}
+                  transition={{ duration: 0.18 }}
+                  className="rounded-2xl bg-white shadow-elevation-elevation-4 p-3 flex flex-col gap-2 w-[260px] pointer-events-auto"
+                >
+                  <span className="text-[12px] uppercase tracking-wide text-mfneutralsn-300 px-1">
+                    Prototype settings
+                  </span>
+                  <HomeTabsToggle />
+                  <button
+                    onClick={() => {
+                      handleClose();
+                      onAction("feedback");
+                    }}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-mfprimaryp-400 bg-mfprimaryp-50 active:bg-mfprimaryp-100 text-left w-full"
+                  >
+                    <SmileIcon className="w-4 h-4 text-mfprimaryp-400 flex-shrink-0" />
+                    <span className="text-[14px] font-medium text-mfprimaryp-400">Let us know what you think</span>
+                  </button>
+                </motion.div>
+              )}
+
+              {stackedPills.map((p, i) => {
+                const Icon = p.icon;
+                return (
+                  <motion.button
+                    key={p.id}
+                    initial={{ opacity: 0, y: 16, scale: 0.92 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 12, scale: 0.95 }}
+                    transition={{ duration: 0.22, delay: 0.035 * i, type: "spring", damping: 22, stiffness: 320 }}
+                    onClick={() => handleActionClick(p.id)}
+                    className="pointer-events-auto flex items-center gap-3 pl-4 pr-1.5 h-11 rounded-full bg-white shadow-elevation-elevation-4 border border-mfneutralsn-75 active:bg-gray-50"
+                  >
+                    <span className="text-[14px] font-medium text-mfneutralsn-500 whitespace-nowrap">{p.label}</span>
+                    <span className={`flex items-center justify-center w-8 h-8 rounded-full ${p.iconBg}`}>
+                      <Icon className={`w-4 h-4 ${p.iconColor}`} />
+                    </span>
+                  </motion.button>
+                );
+              })}
+
+              {/* Prototype-settings button — small floating affordance so the
+                  home-tabs toggle stays reachable. Not part of the Figma list. */}
+              <motion.button
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 12 }}
+                transition={{ duration: 0.18, delay: 0.035 * stackedPills.length }}
+                onClick={() => setShowSettings((v) => !v)}
+                aria-label="Prototype settings"
+                className="pointer-events-auto flex items-center justify-center w-9 h-9 rounded-full bg-white/90 shadow-elevation-elevation-4 border border-mfneutralsn-75 active:bg-gray-50"
+              >
+                <SettingsIcon className="w-3.5 h-3.5 text-mfneutralsn-400" />
+              </motion.button>
+            </div>
+
+            {/* "Ask Sidekick for help" input bar, sitting just above the bottom nav. */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              transition={{ duration: 0.2, delay: 0.08 }}
+              className={`${pos} bottom-20 left-3 right-3 z-[80] flex items-center gap-2 h-12 px-3 rounded-full bg-white shadow-elevation-elevation-4 border border-mfneutralsn-75`}
+            >
+              <MicIcon className="w-5 h-5 text-mfneutralsn-400 flex-shrink-0" />
+              <input
+                type="text"
+                placeholder="Ask Sidekick for help"
+                className="flex-1 bg-transparent text-[14px] text-mfneutralsn-500 placeholder:text-mfneutralsn-300 focus:outline-none"
+              />
+              <button
+                aria-label="Send"
+                className="flex items-center justify-center w-8 h-8 rounded-full bg-mfprimaryp-400 text-white flex-shrink-0"
+              >
+                <ArrowRightIcon className="w-4 h-4" />
+              </button>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    );
+  }
 
   return (
     <AnimatePresence>

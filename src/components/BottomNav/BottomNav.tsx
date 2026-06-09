@@ -1,5 +1,5 @@
 import React from "react";
-import { HomeIcon, MessageSquareIcon, BellIcon, SparklesIcon } from "lucide-react";
+import { HomeIcon, MessageSquareIcon, BellIcon, SparklesIcon, XIcon } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { BASE_PATH } from "../../constants";
@@ -13,7 +13,7 @@ export const BottomNav = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
   const tabsVariant = useHomeTabsVariant();
-  const { openAddSheet } = useGlobalUi();
+  const { toggleAddSheet, addSheetOpen } = useGlobalUi();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -67,14 +67,18 @@ export const BottomNav = (): JSX.Element => {
           </button>
         </div>
 
-        {/* Separated GAB sparkle with gradient outline */}
+        {/* Separated GAB sparkle (or X when the sheet is open) with gradient outline */}
         <div className="rounded-2xl p-[1.5px] bg-gradient-to-br from-mfprimaryp-400 via-pink-300 to-cyan-300">
           <button
-            onClick={openAddSheet}
-            aria-label="Open quick actions"
+            onClick={toggleAddSheet}
+            aria-label={addSheetOpen ? "Close quick actions" : "Open quick actions"}
             className="flex items-center justify-center w-14 h-14 rounded-[14px] bg-white"
           >
-            <SparklesIcon className="w-5 h-5 text-mfprimaryp-400" />
+            {addSheetOpen ? (
+              <XIcon className="w-5 h-5 text-mfneutralsn-500" />
+            ) : (
+              <SparklesIcon className="w-5 h-5 text-mfprimaryp-400" />
+            )}
           </button>
         </div>
       </div>

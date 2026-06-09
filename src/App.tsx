@@ -23,7 +23,7 @@ import { GlobalUiProvider, useGlobalUi } from './contexts/GlobalUiContext';
 function AppRoutes() {
   const navigate = useNavigate();
   const { showToast } = useAppToast();
-  const { hideGlobalFab, registerAddSheetOpener } = useGlobalUi();
+  const { hideGlobalFab, registerAddSheetOpener, registerAddSheetCloser, setAddSheetOpen } = useGlobalUi();
   const { shouldShowFrame } = useDeviceDetection();
   const tabsVariant = useHomeTabsVariant();
   const overlayPos = shouldShowFrame ? 'absolute' : 'fixed';
@@ -33,8 +33,16 @@ function AppRoutes() {
 
   useEffect(() => {
     registerAddSheetOpener(() => setShowAddSheet(true));
-    return () => registerAddSheetOpener(null);
-  }, [registerAddSheetOpener]);
+    registerAddSheetCloser(() => setShowAddSheet(false));
+    return () => {
+      registerAddSheetOpener(null);
+      registerAddSheetCloser(null);
+    };
+  }, [registerAddSheetOpener, registerAddSheetCloser]);
+
+  useEffect(() => {
+    setAddSheetOpen(showAddSheet);
+  }, [showAddSheet, setAddSheetOpen]);
 
   const handleAddAction = (actionId: string) => {
     switch (actionId) {
