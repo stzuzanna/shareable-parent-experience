@@ -134,7 +134,7 @@ export const PaymentSettings: React.FC<PaymentSettingsProps> = ({ onClose }): JS
         <div className="pb-24" />
       </div>
 
-      <div className={!shouldShowFrame ? "sticky bottom-0 z-[75]" : "relative z-[75]"}>
+      <div className={!shouldShowFrame ? "sticky bottom-0 z-50" : ""}>
         <BottomNav />
       </div>
     </div>
