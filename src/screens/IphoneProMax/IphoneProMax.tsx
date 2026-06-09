@@ -32,6 +32,7 @@ import {
 } from "./sections/LearningPostSection/LearningPostSection";
 import { useGlobalUi } from "../../contexts/GlobalUiContext";
 import { useHomeTabsVariant } from "../../hooks/useHomeTabsVariant";
+import { ReelPreview, ReelViewer } from "../../components/Reel/Reel";
 
 const kindergartenPhotos = [
   { id: 1, url: "https://images.pexels.com/photos/8613089/pexels-photo-8613089.jpeg?auto=compress&cs=tinysrgb&w=800", date: "2026-05-18" },
@@ -60,6 +61,7 @@ export const IphoneProMax = (): JSX.Element => {
   const [learningAreasFilter, setLearningAreasFilter] = useState<Set<string>>(new Set());
   const [photoFilterDate, setPhotoFilterDate] = useState<string | null>(null);
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+  const [showReel, setShowReel] = useState(false);
 
   useEffect(() => {
     setHideGlobalFab(!!selectedPhoto);
@@ -301,14 +303,36 @@ export const IphoneProMax = (): JSX.Element => {
       );
     }
 
-    // Home / newsfeed
-    const showSandboxPosts = postSourceFilter === "all" || postSourceFilter === "sandbox";
-    const showLittleExplorersPosts = postSourceFilter === "all" || postSourceFilter === "little-explorers";
-    const showPollPosts = postSourceFilter === "all" || postSourceFilter === "polls";
+    // Home / newsfeed. The Saved option filters everything down to bookmarked
+    // posts regardless of source; otherwise it's a per-source toggle.
+    const matchesFilter = (postId: string, source: PostSourceFilter): boolean => {
+      if (postSourceFilter === "saved") return isSaved(postId);
+      if (postSourceFilter === "all") return true;
+      return postSourceFilter === source;
+    };
+
+    const showPhoto = matchesFilter("photo-post", "little-explorers");
+    const showEvent = matchesFilter("event", "sandbox");
+    const showPoll = matchesFilter("poll-post", "polls");
+    const showWelcome = matchesFilter("welcome", "sandbox");
+    const visibleLearning =
+      isPills
+        ? LEARNING_POSTS.filter((post) => {
+            if (postSourceFilter === "saved" && !isSaved(post.id)) return false;
+            if (learningTypeFilter !== "all" && post.contentType !== learningTypeFilter) return false;
+            if (!learningPostMatchesAreasFilter(post.developmentAreas, learningAreasFilter)) return false;
+            return true;
+          })
+        : [];
+    const anyPostVisible =
+      showPhoto || showEvent || showPoll || showWelcome || visibleLearning.length > 0;
 
     return (
       <div className="flex-1 overflow-y-auto" ref={scrollContainerRef}>
         <div className="flex flex-col gap-4 p-4">
+          {/* Daily reel preview — opens a full-screen story-style viewer with
+              today's photos + captions. Shown above the to-dos. */}
+          <ReelPreview onOpen={() => setShowReel(true)} />
           <div ref={invoiceRef} className="min-w-0 overflow-visible">
             <TodosWidget
               isPaid={isPaid}
@@ -317,10 +341,12 @@ export const IphoneProMax = (): JSX.Element => {
               rsvpHasReplied={rsvpState.hasReplied}
             />
           </div>
-          {(showLittleExplorersPosts || showSandboxPosts || showPollPosts) && (
-            <h2 className="text-[16px] font-semibold text-mfneutralsn-500 mt-2">Newsfeed</h2>
+          {anyPostVisible && (
+            <h2 className="text-[16px] font-semibold text-mfneutralsn-500 mt-2">
+              {postSourceFilter === "saved" ? "Saved" : "Newsfeed"}
+            </h2>
           )}
-          {showLittleExplorersPosts && (
+          {showPhoto && (
             <div ref={photoRef}>
               <PhotoPostSection
                 isLiked={isLiked('photo-post')}
@@ -335,7 +361,7 @@ export const IphoneProMax = (): JSX.Element => {
               />
             </div>
           )}
-          {showSandboxPosts && (
+          {showEvent && (
             <div ref={eventRef}>
               <NavigationSection
                 onShowRSVP={() => setShowRSVP(true)}
@@ -345,7 +371,7 @@ export const IphoneProMax = (): JSX.Element => {
               />
             </div>
           )}
-          {showPollPosts && (
+          {showPoll && (
             <div ref={pollRef}>
               <PollPost
                 postId="poll-post"
@@ -363,7 +389,7 @@ export const IphoneProMax = (): JSX.Element => {
               />
             </div>
           )}
-          {showSandboxPosts && (
+          {showWelcome && (
             <div ref={welcomeRef}>
               <WelcomePostSection
                 isSaved={isSaved('welcome')}
@@ -371,27 +397,30 @@ export const IphoneProMax = (): JSX.Element => {
               />
             </div>
           )}
-          {isPills && LEARNING_POSTS
-            .filter((post) => {
-              if (learningTypeFilter !== 'all' && post.contentType !== learningTypeFilter) return false;
-              if (!learningPostMatchesAreasFilter(post.developmentAreas, learningAreasFilter)) return false;
-              return true;
-            })
-            .map((post) => (
-              <LearningPostCard
-                key={post.id}
-                post={post}
-                isLiked={isLiked(post.id)}
-                selectedReaction={getReaction(post.id)}
-                onToggleLike={() => toggleLike(post.id)}
-                onReaction={(emoji) => addReaction(post.id, emoji)}
-                onRemoveReaction={() => removeReaction(post.id)}
-                onAddComment={(comment) => addComment(post.id, comment)}
-                comments={getComments(post.id)}
-                isSaved={isSaved(post.id)}
-                onToggleSaved={() => toggleSaved(post.id)}
-              />
-            ))}
+          {visibleLearning.map((post) => (
+            <LearningPostCard
+              key={post.id}
+              post={post}
+              isLiked={isLiked(post.id)}
+              selectedReaction={getReaction(post.id)}
+              onToggleLike={() => toggleLike(post.id)}
+              onReaction={(emoji) => addReaction(post.id, emoji)}
+              onRemoveReaction={() => removeReaction(post.id)}
+              onAddComment={(comment) => addComment(post.id, comment)}
+              comments={getComments(post.id)}
+              isSaved={isSaved(post.id)}
+              onToggleSaved={() => toggleSaved(post.id)}
+            />
+          ))}
+          {postSourceFilter === "saved" && !anyPostVisible && (
+            <div className="flex flex-col items-center justify-center py-12 px-6 text-center">
+              <div className="w-12 h-12 rounded-full bg-mfneutralsn-75 flex items-center justify-center mb-3">
+                <BookmarkIcon className="w-5 h-5 text-mfneutralsn-300" strokeWidth={1.75} />
+              </div>
+              <p className="text-sm font-medium text-mfneutralsn-400">No saved posts yet</p>
+              <p className="text-[14px] text-mfneutralsn-300 mt-1">Tap the bookmark on a post to save it here</p>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -442,6 +471,12 @@ export const IphoneProMax = (): JSX.Element => {
       <div className={!shouldShowFrame ? 'sticky bottom-0 z-50' : ''}>
         <BottomNav />
       </div>
+
+      <ReelViewer
+        isOpen={showReel}
+        onClose={() => setShowReel(false)}
+        useAbsolute={shouldShowFrame}
+      />
     </div>
   );
 
