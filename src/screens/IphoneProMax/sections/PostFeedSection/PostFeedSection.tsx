@@ -27,6 +27,7 @@ const allActivityTypes = [
 
 export const postSourceOptions = [
   { id: "all", label: "All posts" },
+  { id: "saved", label: "Saved" },
   { id: "little-explorers", label: "Little Explorers" },
   { id: "sandbox", label: "Sandbox Childcare" },
   { id: "polls", label: "Polls" },
