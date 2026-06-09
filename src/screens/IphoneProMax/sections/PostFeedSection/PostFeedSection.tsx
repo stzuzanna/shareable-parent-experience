@@ -341,9 +341,9 @@ export const PostFeedSection = ({
       {isPills ? (
         <div className="bg-white px-4 pb-3">
           <div className="flex items-center gap-2 w-full">
-            <div className="flex items-center gap-2 flex-1 overflow-x-auto no-scrollbar">
-              {activeTab === 'home' ? (
-                pillsTabs.map((tab) => (
+            {activeTab === 'home' ? (
+              <div className="flex items-center gap-2 flex-1 overflow-x-auto no-scrollbar">
+                {pillsTabs.map((tab) => (
                   <button
                     key={tab.id}
                     onClick={() => onTabChange(tab.id)}
@@ -351,33 +351,34 @@ export const PostFeedSection = ({
                   >
                     {tab.label}
                   </button>
-                ))
-              ) : (
-                <>
-                  <button
-                    onClick={() => onTabChange('home')}
-                    aria-label="Close filter"
-                    className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-mfneutralsn-200 bg-white"
-                  >
-                    <XIcon className="w-4 h-4 text-mfneutralsn-500" />
-                  </button>
-                  <button className="flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium bg-mfprimaryp-400 border border-mfprimaryp-400 text-white">
-                    {pillsTabs.find((t) => t.id === activeTab)?.label ?? activeTab}
-                  </button>
-                  {activeTab === 'activity' && (
-                    <ActivityDropdown typeFilter={activityTypeFilter} onTypeFilterChange={onActivityTypeFilterChange} />
-                  )}
-                  {activeTab === 'photos' && (
-                    <PhotosCalendarPicker
-                      selectedDate={photoFilterDate}
-                      onSelectDate={onPhotoFilterDateChange}
-                      datesWithPhotos={photoDatesWithContent}
-                      popoverAlign="left"
-                    />
-                  )}
-                </>
-              )}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <>
+                <button
+                  onClick={() => onTabChange('home')}
+                  aria-label="Close filter"
+                  className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-mfneutralsn-200 bg-white"
+                >
+                  <XIcon className="w-4 h-4 text-mfneutralsn-500" />
+                </button>
+                <button className="flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium bg-mfprimaryp-400 border border-mfprimaryp-400 text-white">
+                  {pillsTabs.find((t) => t.id === activeTab)?.label ?? activeTab}
+                </button>
+                {activeTab === 'activity' && (
+                  <ActivityDropdown typeFilter={activityTypeFilter} onTypeFilterChange={onActivityTypeFilterChange} />
+                )}
+                {activeTab === 'photos' && (
+                  <PhotosCalendarPicker
+                    selectedDate={photoFilterDate}
+                    onSelectDate={onPhotoFilterDateChange}
+                    datesWithPhotos={photoDatesWithContent}
+                    popoverAlign="left"
+                  />
+                )}
+                <div className="flex-1" />
+              </>
+            )}
             <button
               aria-label="Filters"
               onClick={() => setShowFilterSheet(true)}

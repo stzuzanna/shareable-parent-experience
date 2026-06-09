@@ -22,6 +22,65 @@ export const BottomNav = (): JSX.Element => {
 
   const isPills = tabsVariant === "pills";
 
+  if (isPills) {
+    return (
+      <div className="flex items-center justify-center gap-2 mx-2 mb-2">
+        {/* Main nav cluster: Home / child / messages / parent */}
+        <div className="flex items-center justify-between gap-1 px-3 py-2 bg-mfneutralsn-50 rounded-2xl border border-gray-100 flex-1">
+          <button
+            onClick={() => navigate("/")}
+            className={`${baseBtn} ${isActive("/") ? activeBtn : ""}`}
+          >
+            <HomeIcon className={`w-6 h-6 ${iconColor("/")}`} />
+          </button>
+          <button
+            onClick={() => navigate("/child-profile")}
+            className={`${baseBtn} ${isActive("/child-profile") ? activeBtn : ""}`}
+          >
+            <Avatar className="w-8 h-8">
+              <AvatarImage
+                src={`${BASE_PATH}pexels-daisy-anderson-5581091-1.png`}
+                alt="Child profile"
+                className="object-cover"
+              />
+              <AvatarFallback>C</AvatarFallback>
+            </Avatar>
+          </button>
+          <button
+            onClick={() => navigate("/messages")}
+            className={`${baseBtn} ${isActive("/messages") ? activeBtn : ""}`}
+          >
+            <MessageSquareIcon className={`w-6 h-6 ${iconColor("/messages")}`} />
+          </button>
+          <button
+            onClick={() => navigate("/menu")}
+            className={`${baseBtn} ${isActive("/menu") ? activeBtn : ""}`}
+          >
+            <Avatar className="w-8 h-8">
+              <AvatarImage
+                src={`${BASE_PATH}avatar-2.png`}
+                alt="Account"
+                className="object-cover"
+              />
+              <AvatarFallback>AP</AvatarFallback>
+            </Avatar>
+          </button>
+        </div>
+
+        {/* Separated GAB sparkle with gradient outline */}
+        <div className="rounded-2xl p-[1.5px] bg-gradient-to-br from-mfprimaryp-400 via-pink-300 to-cyan-300">
+          <button
+            onClick={openAddSheet}
+            aria-label="Open quick actions"
+            className="flex items-center justify-center w-14 h-14 rounded-[14px] bg-white"
+          >
+            <SparklesIcon className="w-5 h-5 text-mfprimaryp-400" />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex items-center justify-between px-3 py-2 bg-mfneutralsn-50 rounded-2xl mx-2 mb-2 border border-gray-100">
       {/* Home / Newsfeed */}
@@ -55,56 +114,29 @@ export const BottomNav = (): JSX.Element => {
         <MessageSquareIcon className={`w-6 h-6 ${iconColor("/messages")}`} />
       </button>
 
-      {/* In pills variant, notifications move to top bar — show account avatar here instead.
-          In underline variant, keep the bell + notifications badge. */}
-      {isPills ? (
-        <button
-          onClick={() => navigate("/menu")}
-          className={`${baseBtn} ${isActive("/menu") ? activeBtn : ""}`}
-        >
-          <Avatar className="w-8 h-8">
-            <AvatarImage
-              src={`${BASE_PATH}avatar-2.png`}
-              alt="Account"
-              className="object-cover"
-            />
-            <AvatarFallback>AP</AvatarFallback>
-          </Avatar>
-        </button>
-      ) : (
-        <button
-          onClick={() => navigate("/notifications")}
-          className={`${baseBtn} ${isActive("/notifications") ? activeBtn : ""} relative`}
-        >
-          <BellIcon className={`w-6 h-6 ${iconColor("/notifications")}`} />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
-        </button>
-      )}
+      {/* Notifications */}
+      <button
+        onClick={() => navigate("/notifications")}
+        className={`${baseBtn} ${isActive("/notifications") ? activeBtn : ""} relative`}
+      >
+        <BellIcon className={`w-6 h-6 ${iconColor("/notifications")}`} />
+        <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
+      </button>
 
-      {/* Rightmost slot: GAB sparkle in pills variant, account avatar in underline variant */}
-      {isPills ? (
-        <button
-          onClick={openAddSheet}
-          aria-label="Open quick actions"
-          className={`${baseBtn} border border-mfprimaryp-400 bg-white`}
-        >
-          <SparklesIcon className="w-5 h-5 text-mfprimaryp-400" />
-        </button>
-      ) : (
-        <button
-          onClick={() => navigate("/menu")}
-          className={`${baseBtn} ${isActive("/menu") ? activeBtn : ""}`}
-        >
-          <Avatar className="w-8 h-8">
-            <AvatarImage
-              src={`${BASE_PATH}avatar-2.png`}
-              alt="Account"
-              className="object-cover"
-            />
-            <AvatarFallback>AP</AvatarFallback>
-          </Avatar>
-        </button>
-      )}
+      {/* Account */}
+      <button
+        onClick={() => navigate("/menu")}
+        className={`${baseBtn} ${isActive("/menu") ? activeBtn : ""}`}
+      >
+        <Avatar className="w-8 h-8">
+          <AvatarImage
+            src={`${BASE_PATH}avatar-2.png`}
+            alt="Account"
+            className="object-cover"
+          />
+          <AvatarFallback>AP</AvatarFallback>
+        </Avatar>
+      </button>
     </div>
   );
 };
