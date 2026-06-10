@@ -66,30 +66,21 @@ const CardHeader = ({ title, onPress }: { title: string; onPress?: () => void })
   </button>
 );
 
-// New About card header: title (bigger) + Edit link on the right.
-const SectionCardHeader = ({
-  title,
-  onEdit,
-}: {
-  title: string;
-  onEdit?: () => void;
-}) => (
-  <div className="w-full flex items-center justify-between px-4 pt-4 pb-2">
+// About card header: just the section title — editing happens in the subpage
+// reachable via "View all".
+const SectionCardHeader = ({ title }: { title: string }) => (
+  <div className="w-full flex items-center px-4 pt-4 pb-2">
     <span className="text-[16px] font-semibold text-mfneutralsn-500">{title}</span>
-    {onEdit && (
-      <button onClick={onEdit} className="text-[14px] font-medium text-mfprimaryp-400">
-        Edit
-      </button>
-    )}
   </div>
 );
 
 const ViewAllLink = ({ onPress }: { onPress: () => void }) => (
   <button
     onClick={onPress}
-    className="w-full text-left px-4 py-3 text-[14px] font-medium text-mfprimaryp-400"
+    className="w-full text-left px-4 py-3 text-[14px] font-medium text-mfprimaryp-400 flex items-center gap-1"
   >
     View all
+    <ChevronRightIcon className="w-4 h-4" />
   </button>
 );
 
@@ -978,7 +969,7 @@ export const OverviewContent = (): JSX.Element => {
     <div ref={rootRef} className="flex flex-col bg-white pt-4 pb-24 gap-4">
       {/* Permissions */}
       <Card>
-        <SectionCardHeader title="Permissions" onEdit={() => setSection("permissions")} />
+        <SectionCardHeader title="Permissions" />
         {LATEST_PERMISSIONS.map((p) => (
           <PermissionRow key={p.id} item={p} />
         ))}
@@ -987,7 +978,7 @@ export const OverviewContent = (): JSX.Element => {
 
       {/* Basic info */}
       <Card>
-        <SectionCardHeader title="Basic info" onEdit={() => setSection("basic")} />
+        <SectionCardHeader title="Basic info" />
         <SummaryRow
           icon={<LockIcon className="w-4 h-4" />}
           label={`${formatHumanDate(basicInfo.dateOfBirth) || "1 Feb 2025"} (1 year 4 months)`}
@@ -1036,7 +1027,7 @@ export const OverviewContent = (): JSX.Element => {
 
       {/* Family */}
       <Card>
-        <SectionCardHeader title="Family" onEdit={() => setSection("family")} />
+        <SectionCardHeader title="Family" />
         <FamilyPreviewRow
           avatar={MOTHER_AVATAR}
           fallback="SF"
@@ -1058,7 +1049,7 @@ export const OverviewContent = (): JSX.Element => {
 
       {/* Health details */}
       <Card>
-        <SectionCardHeader title="Health details" onEdit={() => setSection("health")} />
+        <SectionCardHeader title="Health details" />
         <SummaryRow
           icon={<StethoscopeIcon className="w-4 h-4" />}
           label={health.doctorName || "Add doctor info"}

@@ -1,10 +1,12 @@
 import { BASE_PATH } from '../../../../constants';
 import React from "react";
-import { SearchIcon } from "lucide-react";
+import { SearchIcon, BellIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useDeviceDetection } from "../../../../hooks/useDeviceDetection";
 
 export const ChildProfileHeader = (): JSX.Element => {
   const { shouldShowFrame } = useDeviceDetection();
+  const navigate = useNavigate();
 
   return (
     <header className={`flex flex-col w-full bg-mfneutralsn-50 ${!shouldShowFrame ? 'sticky top-0 z-50' : ''}`}>
@@ -25,7 +27,17 @@ export const ChildProfileHeader = (): JSX.Element => {
         <h1 className="text-[20px] font-bold text-mfneutralsn-500 tracking-tight leading-tight">
           Child profile
         </h1>
-        <SearchIcon className="w-5 h-5 text-mfneutralsn-400" />
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => navigate('/notifications')}
+            aria-label="Notifications"
+            className="relative"
+          >
+            <BellIcon className="w-5 h-5 text-mfneutralsn-400" />
+            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full" />
+          </button>
+          <SearchIcon className="w-5 h-5 text-mfneutralsn-400" />
+        </div>
       </div>
     </header>
   );
