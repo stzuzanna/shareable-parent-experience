@@ -19,6 +19,11 @@ import {
   setHomeTabsVariant,
   type HomeTabsVariant,
 } from "../../../../hooks/useHomeTabsVariant";
+import {
+  useSidekickVariant,
+  setSidekickVariant,
+  type SidekickVariant,
+} from "../../../../hooks/useSidekickVariant";
 import { AddLeaveFormContent } from "../../../../components/AddLeaveSheet/AddLeaveSheet";
 import { RequestCareFormContent } from "../../../../components/RequestCareSheet/RequestCareFormContent";
 import { MealBookingsFormContent } from "../../../../components/MealBookingsSheet/MealBookingsFormContent";
@@ -288,6 +293,7 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
                     </div>
 
                     <HomeTabsToggle />
+                    <SidekickToggle />
 
                     <button
                       className="flex items-center gap-3 px-4 py-3.5 rounded-xl border border-mfprimaryp-400 bg-mfprimaryp-50 active:bg-mfprimaryp-100 transition-colors text-left w-full"
@@ -351,6 +357,37 @@ const HomeTabsToggle: React.FC = () => {
             <button
               key={opt.id}
               onClick={() => setHomeTabsVariant(opt.id)}
+              className={`px-4 py-1.5 rounded-full text-[14px] font-medium transition-colors ${
+                isActive
+                  ? "bg-white text-mfprimaryp-400 shadow-sm"
+                  : "bg-transparent text-mfneutralsn-400"
+              }`}
+            >
+              {opt.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+const SidekickToggle: React.FC = () => {
+  const variant = useSidekickVariant();
+  const options: { id: SidekickVariant; label: string }[] = [
+    { id: "off", label: "Off" },
+    { id: "on", label: "On" },
+  ];
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="text-[14px] text-mfneutralsn-400">Sidekick</span>
+      <div className="flex items-center gap-1 p-1 rounded-full bg-mfneutralsn-75 self-start">
+        {options.map((opt) => {
+          const isActive = variant === opt.id;
+          return (
+            <button
+              key={opt.id}
+              onClick={() => setSidekickVariant(opt.id)}
               className={`px-4 py-1.5 rounded-full text-[14px] font-medium transition-colors ${
                 isActive
                   ? "bg-white text-mfprimaryp-400 shadow-sm"
