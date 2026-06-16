@@ -4,7 +4,8 @@ import { SearchIcon, SlidersHorizontalIcon, XIcon, ChevronDownIcon, CheckIcon, B
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useDeviceDetection } from "../../../../hooks/useDeviceDetection";
-import { useHomeTabsVariant } from "../../../../hooks/useHomeTabsVariant";
+import { useHomeTabsVariant, setHomeTabsVariant, type HomeTabsVariant } from "../../../../hooks/useHomeTabsVariant";
+import { SidekickPromptSeeds } from "../SidekickInContext/SidekickInContext";
 import { PhotosCalendarPicker } from "../PhotosCalendarPicker";
 import { DateRangeCalendar, DateRangePickerFields } from "../DateRangeCalendar";
 import { LEARNING_FILTER_AREAS } from "../LearningPostSection/LearningPostSection";
@@ -215,7 +216,7 @@ export const PostFeedSection = ({
   const { shouldShowFrame } = useDeviceDetection();
   const tabsVariant = useHomeTabsVariant();
   const navigate = useNavigate();
-  const isPills = tabsVariant === "pills";
+  const isPills = tabsVariant === "pills" || tabsVariant === "sidekick";
 
   const [showFilterSheet, setShowFilterSheet] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -320,9 +321,26 @@ export const PostFeedSection = ({
 
       {/* Title row */}
       <div className={`flex items-center justify-between px-5 pt-3 ${isPills ? 'pb-8' : 'pb-12'}`}>
-        <h1 className="text-[20px] font-bold text-mfneutralsn-500 tracking-tight leading-tight">
-          Home
-        </h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-[20px] font-bold text-mfneutralsn-500 tracking-tight leading-tight">
+            Home
+          </h1>
+          <div className="flex items-center gap-1">
+            {([["underline", "1"], ["pills", "2"], ["sidekick", "3"]] as [HomeTabsVariant, string][]).map(([id, label]) => (
+              <button
+                key={id}
+                onClick={() => setHomeTabsVariant(id)}
+                className={`w-5 h-5 rounded-full text-[11px] font-semibold transition-colors ${
+                  tabsVariant === id
+                    ? "bg-mfprimaryp-400 text-white"
+                    : "bg-mfneutralsn-100 text-mfneutralsn-400"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="flex items-center gap-4">
           {isPills && (
             <button
@@ -465,6 +483,8 @@ export const PostFeedSection = ({
         </>
       )}
     </header>
+
+    {tabsVariant === "sidekick" && <SidekickPromptSeeds tab={activeTab} />}
 
     <AnimatePresence>
       {showFilterSheet && (

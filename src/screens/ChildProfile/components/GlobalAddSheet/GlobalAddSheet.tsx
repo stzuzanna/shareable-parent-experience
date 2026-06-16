@@ -93,6 +93,13 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
     onClose();
   };
 
+  // Slightly hidden switch into the third prototype version. Closes the GAB
+  // first so we don't leave the sheet open behind the SidekickHome canvas.
+  const openSidekick = () => {
+    handleClose();
+    setHomeTabsVariant("sidekick");
+  };
+
   const handleActionClick = (actionId: string) => {
     if (actionId === "add-leave") {
       setStep("add-leave");
@@ -160,7 +167,10 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
               })}
             </div>
 
-            {/* "Ask Sidekick for help" input bar, sitting just above the bottom nav. */}
+            {/* "Ask Sidekick for help" bar, sitting just above the bottom nav.
+                Slightly hidden switch: tapping the bar (or its send button) opens
+                the third "sidekick" version of the prototype, used for in-context
+                sidekick explorations. */}
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
@@ -168,13 +178,19 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
               transition={{ duration: 0.2, delay: 0.08 }}
               className={`${pos} bottom-20 left-3 right-3 z-[80] flex items-center gap-2 h-12 px-3 rounded-full bg-white shadow-elevation-elevation-4 border border-mfneutralsn-75`}
             >
-              <MicIcon className="w-5 h-5 text-mfneutralsn-400 flex-shrink-0" />
-              <input
-                type="text"
-                placeholder="Ask Sidekick for help"
-                className="flex-1 bg-transparent text-[14px] text-mfneutralsn-500 placeholder:text-mfneutralsn-300 focus:outline-none"
-              />
               <button
+                type="button"
+                onClick={openSidekick}
+                aria-label="Ask Sidekick for help"
+                className="flex-1 flex items-center gap-2 min-w-0 text-left"
+              >
+                <MicIcon className="w-5 h-5 text-mfneutralsn-400 flex-shrink-0" />
+                <span className="flex-1 truncate text-[14px] text-mfneutralsn-300">
+                  Ask Sidekick for help
+                </span>
+              </button>
+              <button
+                onClick={openSidekick}
                 aria-label="Send"
                 className="flex items-center justify-center w-8 h-8 rounded-full bg-mfprimaryp-400 text-white flex-shrink-0"
               >
@@ -281,14 +297,6 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
                       );
                     })}
 
-                    <div className="flex items-center gap-3 pt-4">
-                      <div className="flex-1 h-px bg-mfneutralsn-75" />
-                      <span className="text-[14px] text-mfneutralsn-300 uppercase tracking-wide">Testing this prototype?</span>
-                      <div className="flex-1 h-px bg-mfneutralsn-75" />
-                    </div>
-
-                    <HomeTabsToggle />
-
                     <button
                       className="flex items-center gap-3 px-4 py-3.5 rounded-xl border border-mfprimaryp-400 bg-mfprimaryp-50 active:bg-mfprimaryp-100 transition-colors text-left w-full"
                       onClick={() => {
@@ -340,6 +348,7 @@ const HomeTabsToggle: React.FC = () => {
   const options: { id: HomeTabsVariant; label: string }[] = [
     { id: "underline", label: "Underline tabs" },
     { id: "pills", label: "Pills" },
+    { id: "sidekick", label: "Sidekick" },
   ];
   return (
     <div className="flex flex-col gap-2">

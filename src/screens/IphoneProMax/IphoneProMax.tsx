@@ -32,6 +32,13 @@ import {
 } from "./sections/LearningPostSection/LearningPostSection";
 import { useGlobalUi } from "../../contexts/GlobalUiContext";
 import { useHomeTabsVariant } from "../../hooks/useHomeTabsVariant";
+import { SidekickHome } from "../SidekickHome/SidekickHome";
+import {
+  SidekickCollectionsStrip,
+  SidekickNoticedBanner,
+  SidekickPromptSeeds,
+  SidekickMadeForYouCard,
+} from "./sections/SidekickInContext/SidekickInContext";
 import { ReelPreview, ReelViewer } from "../../components/Reel/Reel";
 
 const kindergartenPhotos = [
@@ -49,7 +56,9 @@ export const IphoneProMax = (): JSX.Element => {
   const { setHideGlobalFab } = useGlobalUi();
   const { shouldShowFrame } = useDeviceDetection();
   const tabsVariant = useHomeTabsVariant();
-  const isPills = tabsVariant === "pills";
+  const isPills = tabsVariant === "pills" || tabsVariant === "sidekick";
+  const isSidekick = false;
+  const isV3 = tabsVariant === "sidekick";
   const { toggleLike, addReaction, removeReaction, addComment, addPollVote, isLiked, getReaction, getComments, getPollVotes } = useInteractivity();
   const { savedPostIds, toggleSaved, isSaved } = useSavedPosts();
   const [isPaid, setIsPaid] = useState(false);
@@ -114,6 +123,11 @@ export const IphoneProMax = (): JSX.Element => {
       };
     }
   }, [location.search]);
+
+  // Third, slightly hidden prototype version — the sidekick exploration canvas.
+  if (isSidekick) {
+    return <SidekickHome />;
+  }
 
   if (showRSVP) {
     return (
@@ -207,6 +221,7 @@ export const IphoneProMax = (): JSX.Element => {
     if (activeTab === 'activity') {
       return (
         <div className="flex-1 overflow-y-auto">
+          {isV3 && <SidekickNoticedBanner tab="activity" />}
           <ActivitySection onClose={() => setActiveTab('home')} typeFilter={activityTypeFilter} />
         </div>
       );
@@ -218,7 +233,10 @@ export const IphoneProMax = (): JSX.Element => {
         : kindergartenPhotos;
 
       return (
-        <div className="flex-1 overflow-y-auto p-3">
+        <div className="flex-1 overflow-y-auto">
+          {isV3 && <SidekickCollectionsStrip />}
+          {isV3 && <SidekickNoticedBanner tab="photos" />}
+          <div className="p-3">
           {visiblePhotos.length === 0 ? (
             <p className="text-center text-[14px] text-mfneutralsn-300 py-12">No photos on this date</p>
           ) : (
@@ -238,6 +256,7 @@ export const IphoneProMax = (): JSX.Element => {
               ))}
             </div>
           )}
+          </div>
         </div>
       );
     }
@@ -333,6 +352,7 @@ export const IphoneProMax = (): JSX.Element => {
           {/* Daily reel preview — opens a full-screen story-style viewer with
               today's photos + captions. Shown above the to-dos. */}
           <ReelPreview onOpen={() => setShowReel(true)} />
+          {isV3 && <SidekickMadeForYouCard />}
           <div ref={invoiceRef} className="min-w-0 overflow-visible">
             <TodosWidget
               isPaid={isPaid}

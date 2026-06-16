@@ -1,6 +1,9 @@
 import { useSyncExternalStore } from "react";
 
-export type HomeTabsVariant = "underline" | "pills";
+// "sidekick" is a slightly hidden third version of the prototype, reached by
+// tapping the "Ask Sidekick for help" bar inside the pills GAB. It renders a
+// dedicated SidekickHome canvas used for in-context sidekick explorations.
+export type HomeTabsVariant = "underline" | "pills" | "sidekick";
 
 const STORAGE_KEY = "homeTabsVariant";
 
