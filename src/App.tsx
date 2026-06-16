@@ -88,7 +88,7 @@ function AppRoutes() {
         <Route path="/notifications" element={<Notifications />} />
       </Routes>
 
-      {!hideGlobalFab && tabsVariant !== 'pills' && (
+      {!hideGlobalFab && tabsVariant === 'underline' && (
         <button
           onClick={() => setShowAddSheet(true)}
           className={`${overlayPos} bottom-24 right-4 w-14 h-14 rounded-full bg-mfprimaryp-400 shadow-elevation-elevation-4 flex items-center justify-center z-[60] active:scale-95 transition-transform`}

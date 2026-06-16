@@ -20,7 +20,9 @@ export const BottomNav = (): JSX.Element => {
   const iconColor = (path: string) =>
     isActive(path) ? "text-mfneutralsn-500" : "text-mfneutralsn-300";
 
-  const isPills = tabsVariant === "pills";
+  // The sidekick version shares the pills navigation chrome (glass bar + GAB
+  // sparkle) so the bottom nav stays consistent when switching versions.
+  const isPills = tabsVariant === "pills" || tabsVariant === "sidekick";
 
   if (isPills) {
     return (
