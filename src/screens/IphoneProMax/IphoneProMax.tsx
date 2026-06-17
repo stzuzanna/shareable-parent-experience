@@ -37,7 +37,7 @@ import {
   SidekickCollectionsStrip,
   SidekickNoticedBanner,
   SidekickPromptSeeds,
-  SidekickMadeForYouCard,
+  SidekickObservationSuggestion,
 } from "./sections/SidekickInContext/SidekickInContext";
 import { ReelPreview, ReelViewer } from "../../components/Reel/Reel";
 
@@ -183,6 +183,7 @@ export const IphoneProMax = (): JSX.Element => {
               rsvpState={rsvpState}
               isSaved={isSaved("event")}
               onToggleSaved={() => toggleSaved("event")}
+              isV3={isV3}
             />
           </div>
         );
@@ -281,19 +282,21 @@ export const IphoneProMax = (): JSX.Element => {
               </div>
             )}
             {visibleLearningPosts.map((post) => (
-              <LearningPostCard
-                key={post.id}
-                post={post}
-                isLiked={isLiked(post.id)}
-                selectedReaction={getReaction(post.id)}
-                onToggleLike={() => toggleLike(post.id)}
-                onReaction={(emoji) => addReaction(post.id, emoji)}
-                onRemoveReaction={() => removeReaction(post.id)}
-                onAddComment={(comment) => addComment(post.id, comment)}
-                comments={getComments(post.id)}
-                isSaved={isSaved(post.id)}
-                onToggleSaved={() => toggleSaved(post.id)}
-              />
+              <React.Fragment key={post.id}>
+                <LearningPostCard
+                  post={post}
+                  isLiked={isLiked(post.id)}
+                  selectedReaction={getReaction(post.id)}
+                  onToggleLike={() => toggleLike(post.id)}
+                  onReaction={(emoji) => addReaction(post.id, emoji)}
+                  onRemoveReaction={() => removeReaction(post.id)}
+                  onAddComment={(comment) => addComment(post.id, comment)}
+                  comments={getComments(post.id)}
+                  isSaved={isSaved(post.id)}
+                  onToggleSaved={() => toggleSaved(post.id)}
+                />
+                {isV3 && <SidekickObservationSuggestion areas={post.developmentAreas} postId={post.id} />}
+              </React.Fragment>
             ))}
           </div>
         </div>
@@ -352,7 +355,6 @@ export const IphoneProMax = (): JSX.Element => {
           {/* Daily reel preview — opens a full-screen story-style viewer with
               today's photos + captions. Shown above the to-dos. */}
           <ReelPreview onOpen={() => setShowReel(true)} />
-          {isV3 && <SidekickMadeForYouCard />}
           <div ref={invoiceRef} className="min-w-0 overflow-visible">
             <TodosWidget
               isPaid={isPaid}
@@ -388,6 +390,7 @@ export const IphoneProMax = (): JSX.Element => {
                 rsvpState={rsvpState}
                 isSaved={isSaved('event')}
                 onToggleSaved={() => toggleSaved('event')}
+                isV3={isV3}
               />
             </div>
           )}
@@ -418,19 +421,21 @@ export const IphoneProMax = (): JSX.Element => {
             </div>
           )}
           {visibleLearning.map((post) => (
-            <LearningPostCard
-              key={post.id}
-              post={post}
-              isLiked={isLiked(post.id)}
-              selectedReaction={getReaction(post.id)}
-              onToggleLike={() => toggleLike(post.id)}
-              onReaction={(emoji) => addReaction(post.id, emoji)}
-              onRemoveReaction={() => removeReaction(post.id)}
-              onAddComment={(comment) => addComment(post.id, comment)}
-              comments={getComments(post.id)}
-              isSaved={isSaved(post.id)}
-              onToggleSaved={() => toggleSaved(post.id)}
-            />
+            <React.Fragment key={post.id}>
+              <LearningPostCard
+                post={post}
+                isLiked={isLiked(post.id)}
+                selectedReaction={getReaction(post.id)}
+                onToggleLike={() => toggleLike(post.id)}
+                onReaction={(emoji) => addReaction(post.id, emoji)}
+                onRemoveReaction={() => removeReaction(post.id)}
+                onAddComment={(comment) => addComment(post.id, comment)}
+                comments={getComments(post.id)}
+                isSaved={isSaved(post.id)}
+                onToggleSaved={() => toggleSaved(post.id)}
+              />
+              {isV3 && <SidekickObservationSuggestion areas={post.developmentAreas} postId={post.id} />}
+            </React.Fragment>
           ))}
           {postSourceFilter === "saved" && !anyPostVisible && (
             <div className="flex flex-col items-center justify-center py-12 px-6 text-center">

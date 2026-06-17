@@ -19,6 +19,7 @@ import {
   setHomeTabsVariant,
   type HomeTabsVariant,
 } from "../../../../hooks/useHomeTabsVariant";
+import { useGabVariant } from "../../../../hooks/useGabVariant";
 import { AddLeaveFormContent } from "../../../../components/AddLeaveSheet/AddLeaveSheet";
 import { RequestCareFormContent } from "../../../../components/RequestCareSheet/RequestCareFormContent";
 import { MealBookingsFormContent } from "../../../../components/MealBookingsSheet/MealBookingsFormContent";
@@ -79,7 +80,9 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
 }) => {
   const pos = useAbsolute ? "absolute" : "fixed";
   const tabsVariant = useHomeTabsVariant();
-  const isPills = tabsVariant === "pills";
+  const isPills = tabsVariant === "pills" || tabsVariant === "sidekick";
+  const isV3 = tabsVariant === "sidekick";
+  const gabVariant = useGabVariant();
   const [step, setStep] = useState<SheetStep>("actions");
 
   useEffect(() => {
@@ -97,7 +100,7 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
   // first so we don't leave the sheet open behind the SidekickHome canvas.
   const openSidekick = () => {
     handleClose();
-    setHomeTabsVariant("sidekick");
+    if (tabsVariant !== "sidekick") setHomeTabsVariant("sidekick");
   };
 
   const handleActionClick = (actionId: string) => {
@@ -121,18 +124,64 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
     onAction(actionId);
   };
 
-  // Floating-pills variant: when in pills home-tabs mode AND on the actions step,
-  // render the actions as floating pills cascading from above the GAB sparkle
-  // button rather than as a bottom sheet. Sub-form steps (add-leave, request-care…)
-  // still fall through to the bottom-sheet flow below.
+  // ─── Floating overlay variants (list-sheet / grid / pills) ─────────────────
+  // All three share: purple backdrop + sub-form steps fall through to the
+  // bottom-sheet flow below.
   if (isPills && step === "actions") {
-    // Pills stacked bottom-to-top in the Figma; we reverse so the natural visual
-    // top-to-bottom order (Request care → Add leave) matches the list above.
+    const activeGab = isV3 ? gabVariant : "pills";
+
+    // Grid: 3×2 tiles in a bottom sheet
+    const gridItems = pillActions.slice(0, 6);
+
+    // Pills: original floating pill list
     const stackedPills = [...pillActions].reverse();
+
+    // Shared "Ask Sidekick" floating bar (used by list-sheet and pills variants)
+    const SidekickBar = () => (
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 8 }}
+        transition={{ duration: 0.2, delay: 0.08 }}
+        className={`${pos} bottom-20 left-3 right-3 z-[80] flex items-center gap-2 h-12 px-3 rounded-full bg-white shadow-elevation-elevation-4 border border-mfneutralsn-75`}
+      >
+        <button
+          type="button"
+          onClick={openSidekick}
+          aria-label="Ask Sidekick for help"
+          className="flex-1 flex items-center gap-2 min-w-0 text-left"
+        >
+          <MicIcon className="w-5 h-5 text-mfneutralsn-400 flex-shrink-0" />
+          <span className="flex-1 truncate text-[14px] text-mfneutralsn-300">Ask Sidekick for help</span>
+        </button>
+        <button
+          onClick={openSidekick}
+          aria-label="Send"
+          className="flex items-center justify-center w-8 h-8 rounded-full bg-mfprimaryp-400 text-white flex-shrink-0"
+        >
+          <ArrowRightIcon className="w-4 h-4" />
+        </button>
+      </motion.div>
+    );
+
+    // Shared floating GAB close button
+    const GabClose = () => (
+      <div className={`${pos} bottom-2 right-2 z-[85] rounded-2xl p-[1.5px] bg-gradient-to-br from-mfprimaryp-400 via-pink-300 to-cyan-300`}>
+        <button
+          onClick={handleClose}
+          aria-label="Close quick actions"
+          className="flex items-center justify-center w-14 h-14 rounded-[14px] bg-white"
+        >
+          <XIcon className="w-5 h-5 text-mfneutralsn-500" />
+        </button>
+      </div>
+    );
+
     return (
       <AnimatePresence>
         {isOpen && (
           <>
+            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -142,76 +191,163 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
               onClick={handleClose}
             />
 
-            {/* Floating pills cascading up from above the bottom nav, right-aligned.
-                bottom-36 = lowest pill sits ~16px above the Ask Sidekick input
-                (Sidekick at bottom-20 + h-12 → top edge at 128px). */}
-            <div className={`${pos} bottom-36 right-4 z-[80] flex flex-col items-end gap-3 pointer-events-none`}>
-              {stackedPills.map((p, i) => {
-                const Icon = p.icon;
-                return (
-                  <motion.button
-                    key={p.id}
-                    initial={{ opacity: 0, y: 16, scale: 0.92 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 12, scale: 0.95 }}
-                    transition={{ duration: 0.22, delay: 0.035 * i, type: "spring", damping: 22, stiffness: 320 }}
-                    onClick={() => handleActionClick(p.id)}
-                    className="pointer-events-auto flex items-center gap-3 pl-4 pr-1.5 h-11 rounded-full bg-white shadow-elevation-elevation-4 border border-mfneutralsn-75 active:bg-gray-50"
+            {/* ── A: Grouped list sheet ────────────────────────────────────── */}
+            {activeGab === "arc" && (() => {
+              type ListAction = { id: string; icon: React.ElementType; label: string; iconBg: string; iconColor: string };
+              const groups: ListAction[][] = [
+                [
+                  { id: "checkin-pin", icon: KeyRoundIcon,     label: "Show check in pin",       iconBg: "bg-violet-100", iconColor: "text-violet-500" },
+                  { id: "check-out",   icon: CheckIcon,         label: "Check out",               iconBg: "bg-red-100",    iconColor: "text-red-500"    },
+                  { id: "request-care",icon: CalendarIcon,      label: "Request care",            iconBg: "bg-violet-100", iconColor: "text-violet-500" },
+                ],
+                [
+                  { id: "meals",       icon: UtensilsIcon,      label: "Opt in and out of meals", iconBg: "bg-amber-100",  iconColor: "text-amber-500"  },
+                  { id: "add-leave",   icon: CalendarX2Icon,    label: "Add leave",               iconBg: "bg-violet-100", iconColor: "text-violet-500" },
+                ],
+                [
+                  { id: "message",     icon: MessageSquareIcon, label: "Send message",            iconBg: "bg-violet-100", iconColor: "text-violet-500" },
+                  { id: "call-childcare", icon: PhoneIcon,      label: "Call childcare",          iconBg: "bg-green-100",  iconColor: "text-green-600"  },
+                ],
+              ];
+              return (
+                <>
+                  <motion.div
+                    initial={{ y: "100%" }}
+                    animate={{ y: 0 }}
+                    exit={{ y: "100%" }}
+                    transition={{ type: "spring", damping: 28, stiffness: 350 }}
+                    className={`${pos} bottom-0 left-0 right-0 bg-white rounded-t-3xl z-[80] overflow-hidden flex flex-col`}
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    <span className="text-[14px] font-medium text-mfneutralsn-500 whitespace-nowrap">{p.label}</span>
-                    <span className={`flex items-center justify-center w-8 h-8 rounded-full ${p.iconBg}`}>
-                      <Icon className={`w-4 h-4 ${p.iconColor}`} />
+                    {/* Status line */}
+                    <div className="px-5 pt-5 pb-2">
+                      <p className="text-[13px] text-mfneutralsn-300">Abby is checked in today</p>
+                    </div>
+
+                    {/* Grouped rows */}
+                    <div className="flex flex-col overflow-y-auto">
+                      {groups.map((group, gi) => (
+                        <React.Fragment key={gi}>
+                          {gi > 0 && <div className="h-px bg-gray-200 mx-5 my-1" />}
+                          {group.map((p) => {
+                            const Icon = p.icon;
+                            return (
+                              <button key={p.id} onClick={() => handleActionClick(p.id)}
+                                className="flex items-center gap-4 px-5 py-3 active:bg-mfneutralsn-50 transition-colors text-left w-full">
+                                <span className={`flex items-center justify-center w-9 h-9 rounded-xl ${p.iconBg} flex-shrink-0`}>
+                                  <Icon className={`w-[18px] h-[18px] ${p.iconColor}`} />
+                                </span>
+                                <span className="text-[15px] text-mfneutralsn-500">{p.label}</span>
+                              </button>
+                            );
+                          })}
+                        </React.Fragment>
+                      ))}
+                    </div>
+
+                    {/* Ask Sidekick input bar */}
+                    <div className="px-4 pt-3 pb-6 border-t border-gray-200 mt-1">
+                      <button
+                        onClick={openSidekick}
+                        className="w-full flex items-center gap-3 px-4 h-11 rounded-xl bg-gray-50 border border-gray-200 active:bg-gray-100 transition-colors text-left"
+                      >
+                        <MicIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                        <span className="flex-1 text-[14px] text-gray-400">Ask Sidekick a question</span>
+                        <ArrowRightIcon className="w-4 h-4 text-mfprimaryp-400 flex-shrink-0" />
+                      </button>
+                    </div>
+                  </motion.div>
+                </>
+              );
+            })()}
+
+            {/* ── B: Grid sheet ────────────────────────────────────────────── */}
+            {activeGab === "grid" && (
+              <motion.div
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                exit={{ y: "100%" }}
+                transition={{ type: "spring", damping: 28, stiffness: 350 }}
+                className={`${pos} bottom-0 left-0 right-0 z-[80] bg-white rounded-t-3xl`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex justify-center pt-3 pb-1">
+                  <div className="w-10 h-1 rounded-full bg-gray-200" />
+                </div>
+                <div className="px-5 pt-3 pb-8">
+                  <div className="flex items-center justify-between mb-5">
+                    <h2 className="text-[17px] font-semibold text-mfneutralsn-500">Quick actions</h2>
+                    <button onClick={handleClose} className="w-8 h-8 flex items-center justify-center text-mfneutralsn-300 active:bg-mfneutralsn-50 rounded-full">
+                      <XIcon className="w-5 h-5" />
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2.5">
+                    {gridItems.map((p, i) => {
+                      const Icon = p.icon;
+                      return (
+                        <motion.button
+                          key={p.id}
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.16, delay: 0.03 * i, type: "spring", damping: 20, stiffness: 360 }}
+                          onClick={() => handleActionClick(p.id)}
+                          className="flex flex-col items-center gap-2.5 py-5 rounded-2xl bg-mfneutralsn-50 border border-mfneutralsn-100 active:bg-mfneutralsn-100 transition-colors"
+                        >
+                          <span className={`flex items-center justify-center w-12 h-12 rounded-2xl ${p.iconBg}`}>
+                            <Icon className={`w-5 h-5 ${p.iconColor}`} />
+                          </span>
+                          <span className="text-[11px] font-semibold text-mfneutralsn-400 text-center leading-tight px-2">{p.label}</span>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                  {/* Ask Sidekick row */}
+                  <button
+                    onClick={openSidekick}
+                    className="mt-3 w-full flex items-center gap-3 px-4 h-13 py-3.5 rounded-2xl bg-gradient-to-r from-mfprimaryp-50 to-pink-50 border border-mfprimaryp-200 active:opacity-80 transition-opacity"
+                  >
+                    <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-mfprimaryp-100 flex-shrink-0">
+                      <MicIcon className="w-4 h-4 text-mfprimaryp-400" />
                     </span>
-                  </motion.button>
-                );
-              })}
-            </div>
+                    <div className="flex flex-col items-start">
+                      <span className="text-[13px] font-semibold text-mfprimaryp-400">Ask Sidekick for help</span>
+                      <span className="text-[11px] text-mfprimaryp-300">Get a personalised suggestion</span>
+                    </div>
+                    <ArrowRightIcon className="w-4 h-4 text-mfprimaryp-300 ml-auto flex-shrink-0" />
+                  </button>
+                </div>
+              </motion.div>
+            )}
 
-            {/* "Ask Sidekick for help" bar, sitting just above the bottom nav.
-                Slightly hidden switch: tapping the bar (or its send button) opens
-                the third "sidekick" version of the prototype, used for in-context
-                sidekick explorations. */}
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 8 }}
-              transition={{ duration: 0.2, delay: 0.08 }}
-              className={`${pos} bottom-20 left-3 right-3 z-[80] flex items-center gap-2 h-12 px-3 rounded-full bg-white shadow-elevation-elevation-4 border border-mfneutralsn-75`}
-            >
-              <button
-                type="button"
-                onClick={openSidekick}
-                aria-label="Ask Sidekick for help"
-                className="flex-1 flex items-center gap-2 min-w-0 text-left"
-              >
-                <MicIcon className="w-5 h-5 text-mfneutralsn-400 flex-shrink-0" />
-                <span className="flex-1 truncate text-[14px] text-mfneutralsn-300">
-                  Ask Sidekick for help
-                </span>
-              </button>
-              <button
-                onClick={openSidekick}
-                aria-label="Send"
-                className="flex items-center justify-center w-8 h-8 rounded-full bg-mfprimaryp-400 text-white flex-shrink-0"
-              >
-                <ArrowRightIcon className="w-4 h-4" />
-              </button>
-            </motion.div>
+            {/* ── C: Floating pills (original) ─────────────────────────────── */}
+            {activeGab === "pills" && (
+              <div className={`${pos} bottom-36 right-4 z-[80] flex flex-col items-end gap-3 pointer-events-none`}>
+                {stackedPills.map((p, i) => {
+                  const Icon = p.icon;
+                  return (
+                    <motion.button
+                      key={p.id}
+                      initial={{ opacity: 0, y: 16, scale: 0.92 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 12, scale: 0.95 }}
+                      transition={{ duration: 0.22, delay: 0.035 * i, type: "spring", damping: 22, stiffness: 320 }}
+                      onClick={() => handleActionClick(p.id)}
+                      className="pointer-events-auto flex items-center gap-3 pl-4 pr-1.5 h-11 rounded-full bg-white shadow-elevation-elevation-4 border border-mfneutralsn-75 active:bg-gray-50"
+                    >
+                      <span className="text-[14px] font-medium text-mfneutralsn-500 whitespace-nowrap">{p.label}</span>
+                      <span className={`flex items-center justify-center w-8 h-8 rounded-full ${p.iconBg}`}>
+                        <Icon className={`w-4 h-4 ${p.iconColor}`} />
+                      </span>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            )}
 
-            {/* Floating GAB close (X) button — lifted above the backdrop so the
-                rest of the bottom nav stays dimmed but the close affordance
-                stays bright and tappable. Positioned to overlay the GAB
-                sparkle slot in BottomNav (right-2 bottom-2, w-14 h-14 with the
-                gradient outline). */}
-            <div className={`${pos} bottom-2 right-2 z-[85] rounded-2xl p-[1.5px] bg-gradient-to-br from-mfprimaryp-400 via-pink-300 to-cyan-300`}>
-              <button
-                onClick={handleClose}
-                aria-label="Close quick actions"
-                className="flex items-center justify-center w-14 h-14 rounded-[14px] bg-white"
-              >
-                <XIcon className="w-5 h-5 text-mfneutralsn-500" />
-              </button>
-            </div>
+            {/* "Ask Sidekick" bar + GAB close — pills variant only
+                (list-sheet and grid handle these inline) */}
+            {activeGab === "pills" && <SidekickBar />}
+            {activeGab === "pills" && <GabClose />}
           </>
         )}
       </AnimatePresence>
