@@ -1,10 +1,11 @@
 import React from "react";
-import { HomeIcon, MessageSquareIcon, BellIcon, SparklesIcon, XIcon } from "lucide-react";
+import { HomeIcon, MessageSquareIcon, BellIcon, PlusIcon, XIcon } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { BASE_PATH } from "../../constants";
 import { useHomeTabsVariant } from "../../hooks/useHomeTabsVariant";
 import { useGlobalUi } from "../../contexts/GlobalUiContext";
+import { useGabVariant, setGabVariant, type GabVariant } from "../../hooks/useGabVariant";
 
 const activeBtn = "bg-white border border-[#e2e2e9]";
 const baseBtn = "no-zoom flex items-center justify-center w-10 h-10 rounded-[10px] transition-all";
@@ -14,6 +15,8 @@ export const BottomNav = (): JSX.Element => {
   const location = useLocation();
   const tabsVariant = useHomeTabsVariant();
   const { toggleAddSheet, addSheetOpen } = useGlobalUi();
+  const gabVariant = useGabVariant();
+  const isV3 = tabsVariant === "sidekick";
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -72,19 +75,39 @@ export const BottomNav = (): JSX.Element => {
           </button>
         </div>
 
-        {/* Separated GAB sparkle (or X when the sheet is open) with gradient outline */}
-        <div className="rounded-2xl p-[1.5px] bg-gradient-to-br from-mfprimaryp-400 via-pink-300 to-cyan-300">
-          <button
-            onClick={toggleAddSheet}
-            aria-label={addSheetOpen ? "Close quick actions" : "Open quick actions"}
-            className="flex items-center justify-center w-14 h-14 rounded-[14px] bg-white"
-          >
-            {addSheetOpen ? (
-              <XIcon className="w-5 h-5 text-mfneutralsn-500" />
-            ) : (
-              <SparklesIcon className="w-5 h-5 text-mfprimaryp-400" />
-            )}
-          </button>
+        {/* Separated GAB (or X when the sheet is open) with gradient outline */}
+        <div className="flex flex-col items-center gap-1">
+          {/* A/B/C GAB variant switcher — only shown in v3 */}
+          {isV3 && (
+            <div className="flex items-center gap-1">
+              {(["arc", "grid", "pills"] as GabVariant[]).map((v, i) => (
+                <button
+                  key={v}
+                  onClick={() => setGabVariant(v)}
+                  className={`w-5 h-5 rounded-full text-[9px] font-bold flex items-center justify-center transition-colors ${
+                    gabVariant === v
+                      ? "bg-mfprimaryp-400 text-white"
+                      : "bg-mfneutralsn-100 text-mfneutralsn-300"
+                  }`}
+                >
+                  {String.fromCharCode(65 + i)}
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="rounded-2xl p-[1.5px] bg-gradient-to-br from-mfprimaryp-400 via-pink-300 to-cyan-300">
+            <button
+              onClick={toggleAddSheet}
+              aria-label={addSheetOpen ? "Close quick actions" : "Open quick actions"}
+              className="flex items-center justify-center w-14 h-14 rounded-[14px] bg-white"
+            >
+              {addSheetOpen ? (
+                <XIcon className="w-5 h-5 text-mfneutralsn-500" />
+              ) : (
+                <PlusIcon className="w-5 h-5 text-mfprimaryp-400" />
+              )}
+            </button>
+          </div>
         </div>
         </div>
       </div>

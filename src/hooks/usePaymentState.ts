@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react';
 
-let isPaidValue = false;
+let isPaidValue = true;
 const listeners = new Set<() => void>();
 
 const subscribe = (cb: () => void) => {
