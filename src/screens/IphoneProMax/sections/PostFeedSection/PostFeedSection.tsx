@@ -1,6 +1,6 @@
 import { BASE_PATH } from '../../../../constants';
 import React, { useEffect, useRef, useState } from "react";
-import { SearchIcon, SlidersHorizontalIcon, XIcon, ChevronDownIcon, CheckIcon, BellIcon } from "lucide-react";
+import { SearchIcon, SlidersHorizontalIcon, XIcon, ChevronDownIcon, CheckIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useDeviceDetection } from "../../../../hooks/useDeviceDetection";
@@ -342,16 +342,6 @@ export const PostFeedSection = ({
           </div>
         </div>
         <div className="flex items-center gap-4">
-          {isPills && (
-            <button
-              onClick={() => navigate('/notifications')}
-              aria-label="Notifications"
-              className="relative"
-            >
-              <BellIcon className="w-5 h-5 text-mfneutralsn-400" />
-              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full" />
-            </button>
-          )}
           <SearchIcon className="w-5 h-5 text-mfneutralsn-400" />
         </div>
       </div>
@@ -494,7 +484,7 @@ export const PostFeedSection = ({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="absolute inset-0 bg-black/40 z-[70]"
+              className="fixed inset-0 bg-black/40 z-[70]"
               onClick={() => setShowFilterSheet(false)}
             />
             <motion.div
@@ -502,7 +492,7 @@ export const PostFeedSection = ({
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 350 }}
-              className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl z-[80] max-h-[85%] overflow-y-auto"
+              className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-[80] max-h-[85%] overflow-y-auto"
             >
               <div className="flex justify-center pt-3 pb-2">
                 <div className="w-10 h-1 rounded-full bg-gray-200" />

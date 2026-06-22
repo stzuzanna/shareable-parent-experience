@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import { BASE_PATH } from './constants';
 import { useDeviceDetection } from './hooks/useDeviceDetection';
-import { useHomeTabsVariant } from './hooks/useHomeTabsVariant';
+import { useHomeTabsVariant, setHomeTabsVariant } from './hooks/useHomeTabsVariant';
 import { DeviceFrame } from './components/DeviceFrame/DeviceFrame';
 import { PlusIcon } from 'lucide-react';
 import { IphoneProMax } from './screens/IphoneProMax/IphoneProMax';
@@ -15,10 +15,17 @@ import { Menu } from './screens/Menu/Menu';
 import { Balance } from './screens/Balance/Balance';
 import { ActivityPlans } from './screens/ActivityPlans/ActivityPlans';
 import { Notifications } from './screens/Notifications/Notifications';
+import { Inbox } from './screens/Inbox/Inbox';
+import { Calendar } from './screens/Calendar/Calendar';
 import { GlobalAddSheet } from './screens/ChildProfile/components/GlobalAddSheet/GlobalAddSheet';
 import { FeedbackSheet } from './components/FeedbackSheet/FeedbackSheet';
 import { ToastProvider, useAppToast } from './contexts/ToastContext';
 import { GlobalUiProvider, useGlobalUi } from './contexts/GlobalUiContext';
+
+function SetVariantAndRedirect({ variant }: { variant: Parameters<typeof setHomeTabsVariant>[0] }) {
+  setHomeTabsVariant(variant);
+  return <Navigate to="/" replace />;
+}
 
 function AppRoutes() {
   const navigate = useNavigate();
@@ -77,6 +84,10 @@ function AppRoutes() {
         <Route path="/" element={<IphoneProMax />} />
         <Route path="/index.html" element={<IphoneProMax />} />
         <Route path="/demo/parent" element={<IphoneProMax />} />
+        {/* Direct version entry points — set variant then land on home */}
+        <Route path="/v1" element={<SetVariantAndRedirect variant="underline" />} />
+        <Route path="/v2" element={<SetVariantAndRedirect variant="pills" />} />
+        <Route path="/v3" element={<SetVariantAndRedirect variant="sidekick" />} />
         <Route path="/child-profile" element={<ChildProfile />} />
         <Route path="/child-profile/about" element={<AboutPage />} />
         <Route path="/child-profile/about/permissions" element={<PermissionsPage />} />
@@ -86,6 +97,8 @@ function AppRoutes() {
         <Route path="/balance" element={<Balance />} />
         <Route path="/activity-plans" element={<ActivityPlans />} />
         <Route path="/notifications" element={<Notifications />} />
+        <Route path="/inbox" element={<Inbox />} />
+        <Route path="/calendar" element={<Calendar />} />
       </Routes>
 
       {!hideGlobalFab && tabsVariant === 'underline' && (

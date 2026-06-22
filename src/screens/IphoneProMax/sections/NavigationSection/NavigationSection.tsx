@@ -176,7 +176,7 @@ export const NavigationSection: React.FC<NavigationSectionProps> = ({
               onClick={() => setShowTalkingPoints(true)}
               className="w-full flex items-center justify-center gap-2 h-11 rounded-lg border border-mfprimaryp-200 bg-mfprimaryp-50 active:bg-mfprimaryp-100 transition-colors"
             >
-              <SparklesIcon className="w-4 h-4 text-mfprimaryp-400" />
+              <img src={`${BASE_PATH}sidekick-icon.svg`} alt="Sidekick" style={{ width: 20, height: 20 }} />
               <span className="text-[14px] font-medium text-mfprimaryp-400">Generate talking points</span>
             </button>
           )}

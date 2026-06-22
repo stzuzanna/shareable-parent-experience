@@ -19,7 +19,8 @@ import {
   setHomeTabsVariant,
   type HomeTabsVariant,
 } from "../../../../hooks/useHomeTabsVariant";
-import { useGabVariant } from "../../../../hooks/useGabVariant";
+import { useGabVariant, setGabVariant, type GabVariant } from "../../../../hooks/useGabVariant";
+import { SidekickChatSheet } from "../../../IphoneProMax/sections/SidekickInContext/SidekickInContext";
 import { AddLeaveFormContent } from "../../../../components/AddLeaveSheet/AddLeaveSheet";
 import { RequestCareFormContent } from "../../../../components/RequestCareSheet/RequestCareFormContent";
 import { MealBookingsFormContent } from "../../../../components/MealBookingsSheet/MealBookingsFormContent";
@@ -84,6 +85,8 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
   const isV3 = tabsVariant === "sidekick";
   const gabVariant = useGabVariant();
   const [step, setStep] = useState<SheetStep>("actions");
+  const [sidekickInput, setSidekickInput] = useState("");
+  const [sidekickChatOpen, setSidekickChatOpen] = useState(false);
 
   useEffect(() => {
     if (!isOpen) {
@@ -124,11 +127,58 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
     onAction(actionId);
   };
 
+  // ─── Stable Sidekick input bar (defined here so it never remounts on re-render)
+  const [selectedPill, setSelectedPill] = useState<string | null>(null);
+  const sendSidekickFromBar = () => setSidekickChatOpen(true);
+  const handleQuickPill = (pill: string) => { setSelectedPill(pill); setSidekickChatOpen(true); };
+
+  const QUICK_PILLS = ["Drop off questions", "Summarise week", "Ask about the day"];
+
+  const SidekickQuickPills = () => (
+    <div className="flex gap-2 overflow-x-auto no-scrollbar mb-2.5">
+      {QUICK_PILLS.map((pill) => (
+        <button
+          key={pill}
+          onClick={() => handleQuickPill(pill)}
+          className="flex-shrink-0 px-3 py-1.5 rounded-full text-[12px] font-semibold bg-white text-mfprimaryp-400 border border-mfprimaryp-200 active:bg-mfprimaryp-50 transition-colors whitespace-nowrap shadow-sm"
+        >
+          {pill}
+        </button>
+      ))}
+    </div>
+  );
+
+  const SidekickInputBar = ({ className = "", showPills = true }: { className?: string; showPills?: boolean }) => (
+    <div>
+      {showPills && <SidekickQuickPills />}
+      <div className={`flex items-center gap-2 h-12 px-3 rounded-full bg-white border border-mfneutralsn-75 shadow-elevation-elevation-4 ${className}`}>
+        <MicIcon className="w-5 h-5 text-mfneutralsn-400 flex-shrink-0" />
+        <input
+          value={sidekickInput}
+          onChange={(e) => setSidekickInput(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter") sendSidekickFromBar(); }}
+          placeholder="Ask Sidekick for help"
+          className="flex-1 bg-transparent text-[14px] text-mfneutralsn-500 placeholder:text-mfneutralsn-300 outline-none min-w-0"
+          autoComplete="off"
+          autoFocus
+        />
+        <button
+          onClick={sendSidekickFromBar}
+          aria-label="Send"
+          className="flex items-center justify-center w-8 h-8 rounded-full bg-mfprimaryp-400 text-white flex-shrink-0 active:opacity-80"
+        >
+          <ArrowRightIcon className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  );
+
   // ─── Floating overlay variants (list-sheet / grid / pills) ─────────────────
   // All three share: purple backdrop + sub-form steps fall through to the
   // bottom-sheet flow below.
+  const activeGab = isV3 ? gabVariant : "pills";
+
   if (isPills && step === "actions") {
-    const activeGab = isV3 ? gabVariant : "pills";
 
     // Grid: 3×2 tiles in a bottom sheet
     const gridItems = pillActions.slice(0, 6);
@@ -136,33 +186,41 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
     // Pills: original floating pill list
     const stackedPills = [...pillActions].reverse();
 
-    // Shared "Ask Sidekick" floating bar (used by list-sheet and pills variants)
+    // Shared "Ask Sidekick" floating bar (pills variant)
     const SidekickBar = () => (
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 8 }}
         transition={{ duration: 0.2, delay: 0.08 }}
-        className={`${pos} bottom-20 left-3 right-3 z-[80] flex items-center gap-2 h-12 px-3 rounded-full bg-white shadow-elevation-elevation-4 border border-mfneutralsn-75`}
+        className={`${pos} bottom-20 left-3 right-3 z-[80]`}
       >
-        <button
-          type="button"
-          onClick={openSidekick}
-          aria-label="Ask Sidekick for help"
-          className="flex-1 flex items-center gap-2 min-w-0 text-left"
-        >
-          <MicIcon className="w-5 h-5 text-mfneutralsn-400 flex-shrink-0" />
-          <span className="flex-1 truncate text-[14px] text-mfneutralsn-300">Ask Sidekick for help</span>
-        </button>
-        <button
-          onClick={openSidekick}
-          aria-label="Send"
-          className="flex items-center justify-center w-8 h-8 rounded-full bg-mfprimaryp-400 text-white flex-shrink-0"
-        >
-          <ArrowRightIcon className="w-4 h-4" />
-        </button>
+        <SidekickInputBar showPills={false} />
       </motion.div>
     );
+
+    const sendSidekick = () => {
+      setSidekickChatOpen(true);
+    };
+
+    // Inline variant switcher — rendered at the top of each variant's content
+    const GabSwitcher = ({ dark = false }: { dark?: boolean }) => isV3 ? (
+      <div className={`flex items-center gap-1.5 ${dark ? "" : "self-end"}`}>
+        {([["arc", "List"], ["grid", "Grid"], ["pills", "Stacked"]] as [GabVariant, string][]).map(([v, label]) => (
+          <button
+            key={v}
+            onClick={(e) => { e.stopPropagation(); setGabVariant(v); }}
+            className={`px-3 py-1 rounded-full text-[12px] font-medium transition-colors ${
+              activeGab === v
+                ? dark ? "bg-white text-mfneutralsn-500" : "bg-mfprimaryp-400 text-white"
+                : dark ? "bg-white/20 text-white/70" : "bg-mfneutralsn-100 text-mfneutralsn-400"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+    ) : null;
 
     // Shared floating GAB close button
     const GabClose = () => (
@@ -178,8 +236,9 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
     );
 
     return (
+      <>
       <AnimatePresence>
-        {isOpen && (
+        {isOpen && !sidekickChatOpen && (
           <>
             {/* Backdrop */}
             <motion.div
@@ -219,9 +278,10 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
                     className={`${pos} bottom-0 left-0 right-0 bg-white rounded-t-3xl z-[80] overflow-hidden flex flex-col`}
                     onClick={(e) => e.stopPropagation()}
                   >
-                    {/* Status line */}
-                    <div className="px-5 pt-5 pb-2">
+                    {/* Switcher + status line */}
+                    <div className="px-5 pt-4 pb-2 flex items-center justify-between">
                       <p className="text-[13px] text-mfneutralsn-300">Abby is checked in today</p>
+                      <GabSwitcher />
                     </div>
 
                     {/* Grouped rows */}
@@ -247,14 +307,7 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
 
                     {/* Ask Sidekick input bar */}
                     <div className="px-4 pt-3 pb-6 border-t border-gray-200 mt-1">
-                      <button
-                        onClick={openSidekick}
-                        className="w-full flex items-center gap-3 px-4 h-11 rounded-xl bg-gray-50 border border-gray-200 active:bg-gray-100 transition-colors text-left"
-                      >
-                        <MicIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                        <span className="flex-1 text-[14px] text-gray-400">Ask Sidekick a question</span>
-                        <ArrowRightIcon className="w-4 h-4 text-mfprimaryp-400 flex-shrink-0" />
-                      </button>
+                      <SidekickInputBar />
                     </div>
                   </motion.div>
                 </>
@@ -275,8 +328,8 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
                   <div className="w-10 h-1 rounded-full bg-gray-200" />
                 </div>
                 <div className="px-5 pt-3 pb-8">
-                  <div className="flex items-center justify-between mb-5">
-                    <h2 className="text-[17px] font-semibold text-mfneutralsn-500">Quick actions</h2>
+                  <div className="flex items-center justify-between mb-4">
+                    <GabSwitcher />
                     <button onClick={handleClose} className="w-8 h-8 flex items-center justify-center text-mfneutralsn-300 active:bg-mfneutralsn-50 rounded-full">
                       <XIcon className="w-5 h-5" />
                     </button>
@@ -291,7 +344,7 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ duration: 0.16, delay: 0.03 * i, type: "spring", damping: 20, stiffness: 360 }}
                           onClick={() => handleActionClick(p.id)}
-                          className="flex flex-col items-center gap-2.5 py-5 rounded-2xl bg-mfneutralsn-50 border border-mfneutralsn-100 active:bg-mfneutralsn-100 transition-colors"
+                          className="flex flex-col items-center gap-2.5 py-5 rounded-2xl bg-mfneutralsn-50 active:bg-mfneutralsn-100 transition-colors"
                         >
                           <span className={`flex items-center justify-center w-12 h-12 rounded-2xl ${p.iconBg}`}>
                             <Icon className={`w-5 h-5 ${p.iconColor}`} />
@@ -301,20 +354,10 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
                       );
                     })}
                   </div>
-                  {/* Ask Sidekick row */}
-                  <button
-                    onClick={openSidekick}
-                    className="mt-3 w-full flex items-center gap-3 px-4 h-13 py-3.5 rounded-2xl bg-gradient-to-r from-mfprimaryp-50 to-pink-50 border border-mfprimaryp-200 active:opacity-80 transition-opacity"
-                  >
-                    <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-mfprimaryp-100 flex-shrink-0">
-                      <MicIcon className="w-4 h-4 text-mfprimaryp-400" />
-                    </span>
-                    <div className="flex flex-col items-start">
-                      <span className="text-[13px] font-semibold text-mfprimaryp-400">Ask Sidekick for help</span>
-                      <span className="text-[11px] text-mfprimaryp-300">Get a personalised suggestion</span>
-                    </div>
-                    <ArrowRightIcon className="w-4 h-4 text-mfprimaryp-300 ml-auto flex-shrink-0" />
-                  </button>
+                  {/* Ask Sidekick input */}
+                  <div className="mt-3">
+                    <SidekickInputBar />
+                  </div>
                 </div>
               </motion.div>
             )}
@@ -322,6 +365,28 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
             {/* ── C: Floating pills (original) ─────────────────────────────── */}
             {activeGab === "pills" && (
               <div className={`${pos} bottom-36 right-4 z-[80] flex flex-col items-end gap-3 pointer-events-none`}>
+                {/* Variant switcher at top of stack */}
+                {isV3 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.18 }}
+                    className="pointer-events-auto flex items-center gap-1.5 bg-black/30 backdrop-blur-sm rounded-full px-2 py-1.5"
+                  >
+                    {([["arc", "List"], ["grid", "Grid"], ["pills", "Stacked"]] as [GabVariant, string][]).map(([v, label]) => (
+                      <button
+                        key={v}
+                        onClick={(e) => { e.stopPropagation(); setGabVariant(v); }}
+                        className={`px-2.5 py-1 rounded-full text-[12px] font-medium transition-colors ${
+                          activeGab === v ? "bg-white text-mfneutralsn-500" : "text-white/70 active:text-white"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
                 {stackedPills.map((p, i) => {
                   const Icon = p.icon;
                   return (
@@ -351,6 +416,29 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
           </>
         )}
       </AnimatePresence>
+
+      <AnimatePresence>
+        {sidekickChatOpen && (
+          <SidekickChatSheet
+            title="Sidekick"
+            sentMessage={selectedPill ?? (sidekickInput.trim() || undefined)}
+            prompts={selectedPill || sidekickInput.trim() ? [
+              "Tell me more about this",
+              "What should I do next?",
+              "Draft a message about this",
+              "Any patterns related to this?",
+            ] : [
+              "What should I ask at pickup today?",
+              "Summarise Abby's week",
+              "Draft a message to the key person",
+              "What activities can I try at home?",
+              "How is Abby doing with meals?",
+            ]}
+            onClose={() => { setSidekickChatOpen(false); setSidekickInput(""); setSelectedPill(null); }}
+          />
+        )}
+      </AnimatePresence>
+    </>
     );
   }
 

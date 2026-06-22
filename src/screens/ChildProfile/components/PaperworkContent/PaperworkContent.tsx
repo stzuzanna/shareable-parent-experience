@@ -3,6 +3,7 @@ import { ChevronRightIcon, FilterIcon, XIcon, SearchIcon, CheckIcon, ChevronDown
 import { motion, AnimatePresence } from "framer-motion";
 import { setChildProfileSubpageActive } from "../../../../hooks/useChildProfileSubpage";
 import { DocumentPreviewPage } from "../DocumentPreviewPage/DocumentPreviewPage";
+import { ContractDetailPage, ContractDetailProps } from "../ContractDetailPage/ContractDetailPage";
 
 type FilterKey = "all" | "notes" | "forms" | "health";
 
@@ -49,6 +50,98 @@ const items: Item[] = [
   { title: "Accident report", meta: "21 Feb 2026 · Accident report", type: "health" },
   { title: "Accident report", meta: "9 Jan 2026 · Accident report", type: "health" },
 ];
+
+// Items that should route through ContractDetailPage first (keyed by title)
+type ContractMeta = Omit<ContractDetailProps, "onClose" | "onViewDocument">;
+const CONTRACT_META: Record<string, ContractMeta> = {
+  "About me": {
+    title: "About me",
+    childName: "Abby",
+    status: "pending",
+    sentOn: "02/21/2026",
+    fileName: "abby_about-me_02-21-2026.pdf",
+    fileSize: "0.07 MB",
+    createdOn: "02/21/2026 at 9:00am",
+    contractId: "CONTRACT-001",
+    signees: [
+      { name: "Parent / Guardian", role: "Guardian", status: "pending" },
+      { name: "Little Explorers", role: "Nursery", status: "received", statusDate: "Feb 21 2026" },
+    ],
+  },
+  "Field trip consent": {
+    title: "Field trip consent",
+    childName: "Abby",
+    status: "pending",
+    sentOn: "02/18/2026",
+    fileName: "abby_field-trip-consent_02-18-2026.pdf",
+    fileSize: "0.05 MB",
+    createdOn: "02/18/2026 at 10:30am",
+    contractId: "CONTRACT-002",
+    signees: [
+      { name: "Parent / Guardian", role: "Guardian", status: "pending" },
+      { name: "Little Explorers", role: "Nursery", status: "received", statusDate: "Feb 18 2026" },
+    ],
+  },
+  "Photo release": {
+    title: "Photo release",
+    childName: "Abby",
+    status: "pending",
+    sentOn: "02/12/2026",
+    fileName: "abby_photo-release_02-12-2026.pdf",
+    fileSize: "0.04 MB",
+    createdOn: "02/12/2026 at 11:00am",
+    contractId: "CONTRACT-003",
+    signees: [
+      { name: "Parent / Guardian", role: "Guardian", status: "pending" },
+      { name: "Little Explorers", role: "Nursery", status: "received", statusDate: "Feb 12 2026" },
+    ],
+  },
+  "Enrollment form": {
+    title: "Enrollment form",
+    childName: "Abby",
+    status: "signed",
+    sentOn: "02/21/2026",
+    completedOn: "02/22/2026",
+    fileName: "abby_enrollment-form_02-21-2026.pdf",
+    fileSize: "0.09 MB",
+    createdOn: "02/21/2026 at 11:22am",
+    contractId: "CONTRACT-004",
+    signees: [
+      { name: "Parent / Guardian", role: "Guardian", status: "signed", statusDate: "Feb 22 2026, 9:14am" },
+      { name: "Little Explorers", role: "Nursery", status: "signed", statusDate: "Feb 21 2026, 2:18pm" },
+    ],
+  },
+  "Updated care contract": {
+    title: "Updated care contract",
+    childName: "Abby",
+    status: "signed",
+    sentOn: "02/21/2026",
+    completedOn: "02/23/2026",
+    fileName: "abby_updated-care-contract_02-21-2026.pdf",
+    fileSize: "0.11 MB",
+    createdOn: "02/21/2026 at 2:00pm",
+    contractId: "CONTRACT-005",
+    signees: [
+      { name: "Parent / Guardian", role: "Guardian", status: "signed", statusDate: "Feb 23 2026, 8:50am" },
+      { name: "Little Explorers", role: "Nursery", status: "signed", statusDate: "Feb 21 2026, 3:05pm" },
+    ],
+  },
+  "Permission slip": {
+    title: "Permission slip",
+    childName: "Abby",
+    status: "signed",
+    sentOn: "03/18/2026",
+    completedOn: "03/19/2026",
+    fileName: "abby_permission-slip_03-18-2026.pdf",
+    fileSize: "0.06 MB",
+    createdOn: "03/18/2026 at 1:00pm",
+    contractId: "CONTRACT-006",
+    signees: [
+      { name: "Parent / Guardian", role: "Guardian", status: "signed", statusDate: "Mar 19 2026, 7:45am" },
+      { name: "Little Explorers", role: "Nursery", status: "signed", statusDate: "Mar 18 2026, 1:30pm" },
+    ],
+  },
+};
 
 const filters: { id: FilterKey; label: string }[] = [
   { id: "all", label: "All types" },
@@ -154,10 +247,20 @@ export const PaperworkContent = (): JSX.Element => {
     subtitle: string;
     bodyText?: string;
   } | null>(null);
+  const [contractDetail, setContractDetail] = useState<ContractMeta | null>(null);
+
+  const handleOpenItem = (it: Item) => {
+    const meta = CONTRACT_META[it.title];
+    if (meta) {
+      setContractDetail(meta);
+    } else {
+      setOpenDocument({ title: it.title, subtitle: it.meta, bodyText: it.bodyText });
+    }
+  };
 
   useEffect(() => {
-    setChildProfileSubpageActive(openDocument !== null);
-  }, [openDocument]);
+    setChildProfileSubpageActive(openDocument !== null || contractDetail !== null);
+  }, [openDocument, contractDetail]);
 
   useEffect(() => () => setChildProfileSubpageActive(false), []);
 
@@ -200,6 +303,20 @@ export const PaperworkContent = (): JSX.Element => {
     });
   };
 
+  if (contractDetail !== null) {
+    return (
+      <ContractDetailPage
+        {...contractDetail}
+        onClose={() => setContractDetail(null)}
+        onViewDocument={() => {
+          const doc = { title: contractDetail.title, subtitle: contractDetail.sentOn, bodyText: undefined };
+          setContractDetail(null);
+          setOpenDocument(doc);
+        }}
+      />
+    );
+  }
+
   if (openDocument !== null) {
     return (
       <DocumentPreviewPage
@@ -236,9 +353,7 @@ export const PaperworkContent = (): JSX.Element => {
           <button
             key={`${it.title}-${idx}`}
             type="button"
-            onClick={() =>
-              setOpenDocument({ title: it.title, subtitle: it.meta, bodyText: it.bodyText })
-            }
+            onClick={() => handleOpenItem(it)}
             className="flex items-center justify-between gap-3 px-4 py-3 bg-white border border-mfneutralsn-75 rounded-xl text-left active:bg-gray-50"
           >
             <div className="flex-1 min-w-0">

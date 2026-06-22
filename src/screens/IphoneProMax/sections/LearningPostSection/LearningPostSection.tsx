@@ -67,6 +67,7 @@ interface LearningPostCardProps {
   comments: string[];
   isSaved: boolean;
   onToggleSaved: () => void;
+  sidekickSlot?: React.ReactNode;
 }
 
 const AREA_COLORS: Record<string, string> = {
@@ -101,6 +102,7 @@ export const LearningPostCard: React.FC<LearningPostCardProps> = ({
   comments,
   isSaved,
   onToggleSaved,
+  sidekickSlot,
 }) => {
   const [commentText, setCommentText] = React.useState('');
   const commentInputRef = React.useRef<HTMLInputElement | null>(null);
@@ -156,6 +158,8 @@ export const LearningPostCard: React.FC<LearningPostCardProps> = ({
             ))}
           </div>
         </div>
+
+        {sidekickSlot && <div className="px-4 pt-1 pb-2">{sidekickSlot}</div>}
 
         <div className="w-full h-64 overflow-hidden rounded-lg mt-4">
           <img
