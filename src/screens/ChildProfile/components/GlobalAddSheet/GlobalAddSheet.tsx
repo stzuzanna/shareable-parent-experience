@@ -160,7 +160,6 @@ export const GlobalAddSheet: React.FC<GlobalAddSheetProps> = ({
           placeholder="Ask Sidekick for help"
           className="flex-1 bg-transparent text-[14px] text-mfneutralsn-500 placeholder:text-mfneutralsn-300 outline-none min-w-0"
           autoComplete="off"
-          autoFocus
         />
         <button
           onClick={sendSidekickFromBar}
