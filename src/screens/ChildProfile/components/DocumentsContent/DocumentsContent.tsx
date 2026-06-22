@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { ChevronRightIcon, ArrowLeftIcon, FileTextIcon, CheckCircle2Icon, XCircleIcon, HelpCircleIcon } from "lucide-react";
 import { setChildProfileSubpageActive } from "../../../../hooks/useChildProfileSubpage";
 import { DocumentPreviewPage } from "../DocumentPreviewPage/DocumentPreviewPage";
+import { ContractDetailPage } from "../ContractDetailPage/ContractDetailPage";
+import { BASE_PATH } from "../../../../constants";
 
 // ── Shared primitives ─────────────────────────────────────────────────────────
 
@@ -261,30 +263,112 @@ const sectionTitles: Record<NonNullable<Section>, string> = {
   resources: "Resources",
 };
 
+// ── Contract detail data ──────────────────────────────────────────────────────
+
+const CONTRACT_META: Record<string, { status: "signed" | "pending"; completedOn?: string; contractId: string; fileName: string }> = {
+  "about-me": {
+    status: "pending",
+    contractId: "c9cda816-56b1-4735-9f37-dc4d3bb8e734",
+    fileName: "abby-freedman_about-me-form_04-29-2026.pdf",
+  },
+  "enrollment": {
+    status: "signed",
+    completedOn: "04/29/2026",
+    contractId: "eefa7455-14bb-42bf-9e4e-18596560871a",
+    fileName: "abby-freedman_enrollment-form_04-29-2026.pdf",
+  },
+  "care-contract": {
+    status: "signed",
+    completedOn: "02/21/2026",
+    contractId: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    fileName: "abby-freedman_care-contract_02-21-2026.pdf",
+  },
+  "merchandise": {
+    status: "signed",
+    completedOn: "03/03/2026",
+    contractId: "f1e2d3c4-b5a6-9870-fedc-ba0987654321",
+    fileName: "abby-freedman_merchandise_03-03-2026.pdf",
+  },
+};
+
 export const DocumentsContent = (): JSX.Element => {
   const [section, setSection] = useState<Section>(null);
   const [openDocument, setOpenDocument] = useState<DocumentItem | null>(null);
+  const [contractDetail, setContractDetail] = useState<DocumentItem | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setChildProfileSubpageActive(section !== null || openDocument !== null);
-  }, [section, openDocument]);
+    setChildProfileSubpageActive(section !== null || openDocument !== null || contractDetail !== null);
+  }, [section, openDocument, contractDetail]);
 
   useEffect(() => () => setChildProfileSubpageActive(false), []);
 
   useEffect(() => {
     const scrollable = rootRef.current?.closest(".overflow-y-auto") as HTMLElement | null;
     scrollable?.scrollTo({ top: 0, behavior: "smooth" });
-  }, [section, openDocument]);
+  }, [section, openDocument, contractDetail]);
+
+  // Forms → contract detail first, then document preview
+  const handleOpenFormDocument = (doc: DocumentItem) => {
+    if (CONTRACT_META[doc.id]) {
+      setContractDetail(doc);
+    } else {
+      setOpenDocument(doc);
+    }
+  };
 
   if (openDocument !== null) {
     return (
-      <div ref={rootRef} className="flex flex-col min-h-full">
+      <div ref={rootRef} className="flex flex-col">
         <DocumentPreviewPage
           title={openDocument.title}
           subtitle={openDocument.subtitle}
           bodyText={openDocument.bodyText}
-          onBack={() => setOpenDocument(null)}
+          onBack={() => {
+            // if came from contract detail, go back there
+            if (contractDetail !== null) {
+              setOpenDocument(null);
+            } else {
+              setOpenDocument(null);
+            }
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (contractDetail !== null) {
+    const meta = CONTRACT_META[contractDetail.id] ?? {
+      status: "pending" as const,
+      contractId: "unknown",
+      fileName: contractDetail.title + ".pdf",
+    };
+    const isPending = meta.status === "pending";
+    return (
+      <div ref={rootRef} className="flex flex-col">
+        <ContractDetailPage
+          title={contractDetail.title}
+          childName="Abby Freedman"
+          status={meta.status}
+          sentOn="04/29/2026"
+          completedOn={meta.completedOn}
+          fileName={meta.fileName}
+          fileSize="0.09 MB"
+          signees={
+            isPending
+              ? [
+                  { name: "Martha Freedman", role: "Mum", status: "received", statusDate: "Apr 29 2026, 3:01pm" },
+                  { name: "Nursery representative", role: "Name shown once signed", status: "pending" },
+                ]
+              : [
+                  { name: "Martha Freedman", role: "Mum", avatarSrc: `${BASE_PATH}avatar-2.png`, status: "signed", statusDate: "Apr 29 2026, 2:18pm" },
+                  { name: "Sofia Adams", role: "Nursery staff", avatarSrc: `${BASE_PATH}avatar---rounded---xl.png`, status: "signed", statusDate: "Apr 29 2026, 2:21pm" },
+                ]
+          }
+          createdOn="04/29/2026 at 11:22am"
+          contractId={meta.contractId}
+          onClose={() => setContractDetail(null)}
+          onViewDocument={() => setOpenDocument(contractDetail)}
         />
       </div>
     );
@@ -294,7 +378,7 @@ export const DocumentsContent = (): JSX.Element => {
     return (
       <div ref={rootRef} className="flex flex-col bg-mfneutralsn-50 min-h-full">
         <SectionHeader title={sectionTitles[section]} onBack={() => setSection(null)} />
-        {section === "forms" && <FormsDetail onOpenDocument={setOpenDocument} />}
+        {section === "forms" && <FormsDetail onOpenDocument={handleOpenFormDocument} />}
         {section === "permissions" && <PermissionsDetail />}
         {section === "notes" && <NotesDetail onOpenNote={setOpenDocument} />}
         {section === "resources" && <ResourcesDetail />}
@@ -325,7 +409,7 @@ export const DocumentsContent = (): JSX.Element => {
           <FormDocumentRow
             key={doc.id}
             doc={doc}
-            onOpen={setOpenDocument}
+            onOpen={handleOpenFormDocument}
             showDivider={index < list.length - 1}
           />
         ))}

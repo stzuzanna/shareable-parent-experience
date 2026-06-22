@@ -89,7 +89,7 @@ export const DocumentPreviewPage: React.FC<DocumentPreviewPageProps> = ({
   bodyText,
   onBack,
 }) => (
-  <div className="flex flex-col bg-mfneutralsn-50 min-h-full pb-24">
+  <div className="flex flex-col bg-mfneutralsn-50 pb-24">
     <div className="flex items-center gap-3 px-4 py-3 bg-white border-b border-mfneutralsn-75">
       <button
         type="button"
