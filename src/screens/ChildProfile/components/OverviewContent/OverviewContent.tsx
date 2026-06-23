@@ -432,41 +432,43 @@ interface AboutState {
   specialNote: string;
 }
 
-// Small bold section label inside the About panel
+// Small section label — matches canvas body-small n300 emphasized (14px medium gray)
 const PanelSectionLabel = ({ children }: { children: React.ReactNode }) => (
-  <p className="px-4 pt-5 pb-1 text-[11px] font-semibold text-mfneutralsn-300 uppercase tracking-wider">
-    {children}
-  </p>
+  <p className="text-[14px] font-medium text-mfneutralsn-300">{children}</p>
 );
 
-// Canvas-style info row: fixed-width label + value or "Add +" affordance
+// Canvas-style info row: 130px label + value or "Add" affordance.
+// No horizontal padding — container provides it (px-4).
+// Rows stack in a plain flex-col; first row has no border, rest have border-top.
 const AboutInfoRow = ({
   label,
   value,
   onAdd,
   onEdit,
+  first,
 }: {
   label: string;
   value?: string;
   onAdd?: () => void;
   onEdit?: () => void;
+  first?: boolean;
 }) => (
   <div
     onClick={value ? onEdit : onAdd}
-    className={`flex items-center gap-3 py-3 px-4 border-t border-[#f1f1f4] ${(!value && onAdd) || (value && onEdit) ? "cursor-pointer active:bg-gray-50" : ""}`}
+    className={`flex items-center gap-2 py-3 ${!first ? "border-t border-[#f1f1f4]" : ""} ${(!value && onAdd) || (value && onEdit) ? "cursor-pointer" : ""}`}
   >
-    <span className="w-[140px] flex-shrink-0 text-[14px] text-mfneutralsn-300">{label}</span>
+    <span className="w-[130px] flex-shrink-0 text-[14px] text-mfneutralsn-300">{label}</span>
     {value ? (
-      <span className="text-[14px] text-mfneutralsn-500 flex-1 min-w-0">{value}</span>
+      <span className="text-[14px] text-mfneutralsn-400 flex-1 min-w-0">{value}</span>
     ) : (
-      <span className="flex items-center gap-1 text-[14px] text-mfprimaryp-400">
-        Add <PlusIcon className="w-3.5 h-3.5" />
+      <span className="flex items-center gap-1 text-[14px] text-mfneutralsn-300 opacity-80">
+        Add <PlusIcon className="w-[18px] h-[18px]" />
       </span>
     )}
   </div>
 );
 
-// View mode body
+// View mode body — mirrors canvas DetailPanel body: px-4 pt-6 pb-6, gap-6 between sections
 const AboutViewContent = ({
   state,
   onEdit,
@@ -474,33 +476,48 @@ const AboutViewContent = ({
   state: AboutState;
   onEdit: (field: keyof AboutState) => void;
 }) => (
-  <div className="flex flex-col pb-6">
-    <PanelSectionLabel>Basic info</PanelSectionLabel>
-    <AboutInfoRow label="Full name"      value={state.fullName}      onEdit={() => onEdit("fullName")} />
-    <AboutInfoRow label="Preferred name" value={state.preferredName} onAdd={() => onEdit("preferredName")} onEdit={() => onEdit("preferredName")} />
-    <AboutInfoRow
-      label="Date of birth"
-      value={state.dateOfBirth ? `${formatHumanDate(state.dateOfBirth)} (1 year 4 months)` : undefined}
-      onEdit={() => onEdit("dateOfBirth")}
-      onAdd={() => onEdit("dateOfBirth")}
-    />
-    <AboutInfoRow label="Languages"   value={state.languages}   onAdd={() => onEdit("languages")}   onEdit={() => onEdit("languages")} />
-    <AboutInfoRow label="Nationality" value={state.nationality} onAdd={() => onEdit("nationality")} onEdit={() => onEdit("nationality")} />
-    <AboutInfoRow label="Birthplace"  value={state.birthplace}  onAdd={() => onEdit("birthplace")}  onEdit={() => onEdit("birthplace")} />
+  <div className="flex flex-col gap-6 px-4 pt-6 pb-6">
+    {/* Basic info section */}
+    <div className="flex flex-col">
+      <PanelSectionLabel>Basic info</PanelSectionLabel>
+      <div className="flex flex-col">
+        <AboutInfoRow first label="Full name"      value={state.fullName}      onEdit={() => onEdit("fullName")} />
+        <AboutInfoRow label="Preferred name" value={state.preferredName || undefined} onAdd={() => onEdit("preferredName")} onEdit={() => onEdit("preferredName")} />
+        <AboutInfoRow
+          label="Date of birth"
+          value={state.dateOfBirth ? `${formatHumanDate(state.dateOfBirth)} (1 year 4 months)` : undefined}
+          onEdit={() => onEdit("dateOfBirth")}
+          onAdd={() => onEdit("dateOfBirth")}
+        />
+        <AboutInfoRow label="Languages"   value={state.languages || undefined}   onAdd={() => onEdit("languages")}   onEdit={() => onEdit("languages")} />
+        <AboutInfoRow label="Nationality" value={state.nationality || undefined} onAdd={() => onEdit("nationality")} onEdit={() => onEdit("nationality")} />
+        <AboutInfoRow label="Birthplace"  value={state.birthplace || undefined}  onAdd={() => onEdit("birthplace")}  onEdit={() => onEdit("birthplace")} />
+      </div>
+    </div>
 
-    <PanelSectionLabel>Household</PanelSectionLabel>
-    <AboutInfoRow label="Home language"          value={state.homeLanguage}          onAdd={() => onEdit("homeLanguage")}          onEdit={() => onEdit("homeLanguage")} />
-    <AboutInfoRow label="Lives with"             value={state.livesWith}             onAdd={() => onEdit("livesWith")}             onEdit={() => onEdit("livesWith")} />
-    <AboutInfoRow label="Parental responsibility" value={state.parentalResponsibility} onAdd={() => onEdit("parentalResponsibility")} onEdit={() => onEdit("parentalResponsibility")} />
+    {/* Household section */}
+    <div className="flex flex-col">
+      <PanelSectionLabel>Household</PanelSectionLabel>
+      <div className="flex flex-col">
+        <AboutInfoRow first label="Home language"           value={state.homeLanguage || undefined}           onAdd={() => onEdit("homeLanguage")}           onEdit={() => onEdit("homeLanguage")} />
+        <AboutInfoRow label="Lives with"              value={state.livesWith || undefined}              onAdd={() => onEdit("livesWith")}              onEdit={() => onEdit("livesWith")} />
+        <AboutInfoRow label="Parental responsibility" value={state.parentalResponsibility || undefined} onAdd={() => onEdit("parentalResponsibility")} onEdit={() => onEdit("parentalResponsibility")} />
+      </div>
+    </div>
 
-    <PanelSectionLabel>Sensitive info</PanelSectionLabel>
-    <AboutInfoRow label="Ethnicity"    value={state.ethnicity}    onAdd={() => onEdit("ethnicity")}    onEdit={() => onEdit("ethnicity")} />
-    <AboutInfoRow label="Religion"     value={state.religion}     onAdd={() => onEdit("religion")}     onEdit={() => onEdit("religion")} />
-    <AboutInfoRow label="Special note" value={state.specialNote}  onAdd={() => onEdit("specialNote")}  onEdit={() => onEdit("specialNote")} />
+    {/* Sensitive info section */}
+    <div className="flex flex-col">
+      <PanelSectionLabel>Sensitive info</PanelSectionLabel>
+      <div className="flex flex-col">
+        <AboutInfoRow first label="Ethnicity"    value={state.ethnicity || undefined}   onAdd={() => onEdit("ethnicity")}    onEdit={() => onEdit("ethnicity")} />
+        <AboutInfoRow label="Religion"     value={state.religion || undefined}     onAdd={() => onEdit("religion")}     onEdit={() => onEdit("religion")} />
+        <AboutInfoRow label="Special note" value={state.specialNote || undefined}  onAdd={() => onEdit("specialNote")}  onEdit={() => onEdit("specialNote")} />
+      </div>
+    </div>
   </div>
 );
 
-// Edit mode: auto-focuses the target field after mount
+// Edit mode field — label above full-width input, auto-scrolls+focuses when it's the target
 const AboutEditField = ({
   fieldKey,
   focusField,
@@ -516,43 +533,42 @@ const AboutEditField = ({
   onChange: (v: string) => void;
   multiline?: boolean;
 }) => {
-  const ref = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
   useEffect(() => {
-    if (focusField === fieldKey && ref.current) {
-      const el = ref.current;
-      setTimeout(() => {
-        el.focus();
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
-      }, 100);
-    }
+    if (focusField !== fieldKey) return;
+    const timer = setTimeout(() => {
+      wrapRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      inputRef.current?.focus();
+    }, 100);
+    return () => clearTimeout(timer);
   }, [focusField, fieldKey]);
 
   return (
-    <div className="px-4 py-3 border-t border-[#f1f1f4]">
-      <label className="block text-[11px] font-semibold text-mfneutralsn-300 uppercase tracking-wider mb-1.5">
-        {label}
-      </label>
+    <div ref={wrapRef} className="flex flex-col gap-1.5">
+      <label className="text-[12px] font-medium text-mfneutralsn-400">{label}</label>
       {multiline ? (
         <textarea
-          ref={ref as React.RefObject<HTMLTextAreaElement>}
+          ref={inputRef as React.RefObject<HTMLTextAreaElement>}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           rows={3}
-          className="w-full text-[14px] text-mfneutralsn-500 border border-[#e5e5ea] rounded-lg px-3 py-2 resize-none outline-none focus:border-mfprimaryp-400 transition-colors"
+          className="w-full text-[14px] text-mfneutralsn-500 border border-[#c6c6d2] rounded-lg px-3 py-2.5 resize-none outline-none focus:border-mfprimaryp-400 transition-colors bg-white"
         />
       ) : (
         <input
-          ref={ref as React.RefObject<HTMLInputElement>}
+          ref={inputRef as React.RefObject<HTMLInputElement>}
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full text-[14px] text-mfneutralsn-500 border border-[#e5e5ea] rounded-lg px-3 py-2 outline-none focus:border-mfprimaryp-400 transition-colors"
+          className="w-full text-[14px] text-mfneutralsn-500 border border-[#c6c6d2] rounded-lg px-3 py-2.5 outline-none focus:border-mfprimaryp-400 transition-colors bg-white"
         />
       )}
     </div>
   );
 };
 
+// Edit mode body — mirrors canvas EditDetailPanel body: px-4 pt-6 pb-6, sections gap-6, fields gap-4
 const AboutEditContent = ({
   state,
   focusField,
@@ -562,24 +578,30 @@ const AboutEditContent = ({
   focusField: keyof AboutState | null;
   onChange: (field: keyof AboutState, value: string) => void;
 }) => (
-  <div className="flex flex-col pb-6">
-    <PanelSectionLabel>Basic info</PanelSectionLabel>
-    <AboutEditField fieldKey="fullName"      focusField={focusField} label="Full name"      value={state.fullName}      onChange={(v) => onChange("fullName", v)} />
-    <AboutEditField fieldKey="preferredName" focusField={focusField} label="Preferred name" value={state.preferredName} onChange={(v) => onChange("preferredName", v)} />
-    <AboutEditField fieldKey="dateOfBirth"   focusField={focusField} label="Date of birth"  value={state.dateOfBirth}   onChange={(v) => onChange("dateOfBirth", v)} />
-    <AboutEditField fieldKey="languages"     focusField={focusField} label="Languages"      value={state.languages}     onChange={(v) => onChange("languages", v)} />
-    <AboutEditField fieldKey="nationality"   focusField={focusField} label="Nationality"    value={state.nationality}   onChange={(v) => onChange("nationality", v)} />
-    <AboutEditField fieldKey="birthplace"    focusField={focusField} label="Birthplace"     value={state.birthplace}    onChange={(v) => onChange("birthplace", v)} />
+  <div className="flex flex-col gap-6 px-4 pt-6 pb-6">
+    <div className="flex flex-col gap-4">
+      <PanelSectionLabel>Basic info</PanelSectionLabel>
+      <AboutEditField fieldKey="fullName"      focusField={focusField} label="Full name"      value={state.fullName}      onChange={(v) => onChange("fullName", v)} />
+      <AboutEditField fieldKey="preferredName" focusField={focusField} label="Preferred name" value={state.preferredName} onChange={(v) => onChange("preferredName", v)} />
+      <AboutEditField fieldKey="dateOfBirth"   focusField={focusField} label="Date of birth"  value={state.dateOfBirth}   onChange={(v) => onChange("dateOfBirth", v)} />
+      <AboutEditField fieldKey="languages"     focusField={focusField} label="Languages"      value={state.languages}     onChange={(v) => onChange("languages", v)} />
+      <AboutEditField fieldKey="nationality"   focusField={focusField} label="Nationality"    value={state.nationality}   onChange={(v) => onChange("nationality", v)} />
+      <AboutEditField fieldKey="birthplace"    focusField={focusField} label="Birthplace"     value={state.birthplace}    onChange={(v) => onChange("birthplace", v)} />
+    </div>
 
-    <PanelSectionLabel>Household</PanelSectionLabel>
-    <AboutEditField fieldKey="homeLanguage"           focusField={focusField} label="Home language"           value={state.homeLanguage}           onChange={(v) => onChange("homeLanguage", v)} />
-    <AboutEditField fieldKey="livesWith"              focusField={focusField} label="Lives with"              value={state.livesWith}              onChange={(v) => onChange("livesWith", v)} />
-    <AboutEditField fieldKey="parentalResponsibility" focusField={focusField} label="Parental responsibility" value={state.parentalResponsibility} onChange={(v) => onChange("parentalResponsibility", v)} />
+    <div className="flex flex-col gap-4">
+      <PanelSectionLabel>Household</PanelSectionLabel>
+      <AboutEditField fieldKey="homeLanguage"           focusField={focusField} label="Home language"           value={state.homeLanguage}           onChange={(v) => onChange("homeLanguage", v)} />
+      <AboutEditField fieldKey="livesWith"              focusField={focusField} label="Lives with"              value={state.livesWith}              onChange={(v) => onChange("livesWith", v)} />
+      <AboutEditField fieldKey="parentalResponsibility" focusField={focusField} label="Parental responsibility" value={state.parentalResponsibility} onChange={(v) => onChange("parentalResponsibility", v)} />
+    </div>
 
-    <PanelSectionLabel>Sensitive info</PanelSectionLabel>
-    <AboutEditField fieldKey="ethnicity"   focusField={focusField} label="Ethnicity"    value={state.ethnicity}   onChange={(v) => onChange("ethnicity", v)} />
-    <AboutEditField fieldKey="religion"    focusField={focusField} label="Religion"     value={state.religion}    onChange={(v) => onChange("religion", v)} />
-    <AboutEditField fieldKey="specialNote" focusField={focusField} label="Special note" value={state.specialNote} onChange={(v) => onChange("specialNote", v)} multiline />
+    <div className="flex flex-col gap-4">
+      <PanelSectionLabel>Sensitive info</PanelSectionLabel>
+      <AboutEditField fieldKey="ethnicity"   focusField={focusField} label="Ethnicity"    value={state.ethnicity}   onChange={(v) => onChange("ethnicity", v)} />
+      <AboutEditField fieldKey="religion"    focusField={focusField} label="Religion"     value={state.religion}    onChange={(v) => onChange("religion", v)} />
+      <AboutEditField fieldKey="specialNote" focusField={focusField} label="Special note" value={state.specialNote} onChange={(v) => onChange("specialNote", v)} multiline />
+    </div>
   </div>
 );
 
