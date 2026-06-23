@@ -605,6 +605,129 @@ const AboutEditContent = ({
   </div>
 );
 
+// ── Health panel (same view/edit pattern as About) ────────────────────────────
+
+const HealthViewContent = ({
+  state,
+  onEdit,
+}: {
+  state: HealthState;
+  onEdit: (field: keyof HealthState) => void;
+}) => (
+  <div className="flex flex-col gap-6 px-4 pt-6 pb-6">
+    <div className="flex flex-col">
+      <PanelSectionLabel>General</PanelSectionLabel>
+      <div className="flex flex-col">
+        <AboutInfoRow first label="Tolerates penicillin"   value={state.toleratesPenicillin || undefined} onAdd={() => onEdit("toleratesPenicillin")} onEdit={() => onEdit("toleratesPenicillin")} />
+        <AboutInfoRow       label="Dietary considerations" value={state.diet || undefined}                onAdd={() => onEdit("diet")}                 onEdit={() => onEdit("diet")} />
+        <AboutInfoRow       label="Special notes"          value={state.specialNotes || undefined}        onAdd={() => onEdit("specialNotes")}         onEdit={() => onEdit("specialNotes")} />
+      </div>
+    </div>
+
+    <div className="flex flex-col">
+      <PanelSectionLabel>Doctor</PanelSectionLabel>
+      <div className="flex flex-col">
+        <AboutInfoRow first label="Name"    value={state.doctorName || undefined}                                  onAdd={() => onEdit("doctorName")}    onEdit={() => onEdit("doctorName")} />
+        <AboutInfoRow       label="Phone"   value={state.doctorPhone || undefined}                                 onAdd={() => onEdit("doctorPhone")}   onEdit={() => onEdit("doctorPhone")} />
+        <AboutInfoRow       label="Address" value={state.doctorAddress ? state.doctorAddress.replace(/\n/g, ", ") : undefined} onAdd={() => onEdit("doctorAddress")} onEdit={() => onEdit("doctorAddress")} />
+      </div>
+    </div>
+
+    <div className="flex flex-col">
+      <PanelSectionLabel>Dentist</PanelSectionLabel>
+      <div className="flex flex-col">
+        <AboutInfoRow first label="Name"    value={state.dentistName || undefined}    onAdd={() => onEdit("dentistName")}    onEdit={() => onEdit("dentistName")} />
+        <AboutInfoRow       label="Phone"   value={state.dentistPhone || undefined}   onAdd={() => onEdit("dentistPhone")}   onEdit={() => onEdit("dentistPhone")} />
+        <AboutInfoRow       label="Address" value={state.dentistAddress || undefined} onAdd={() => onEdit("dentistAddress")} onEdit={() => onEdit("dentistAddress")} />
+      </div>
+    </div>
+  </div>
+);
+
+const HealthEditContent = ({
+  state,
+  focusField,
+  onChange,
+}: {
+  state: HealthState;
+  focusField: keyof HealthState | null;
+  onChange: (field: keyof HealthState, value: string) => void;
+}) => (
+  <div className="flex flex-col gap-6 px-4 pt-6 pb-6">
+    <div className="flex flex-col gap-4">
+      <PanelSectionLabel>General</PanelSectionLabel>
+      <HealthEditField fieldKey="toleratesPenicillin" focusField={focusField} label="Tolerates penicillin"   value={state.toleratesPenicillin} onChange={(v) => onChange("toleratesPenicillin", v)} />
+      <HealthEditField fieldKey="diet"                focusField={focusField} label="Dietary considerations" value={state.diet}                onChange={(v) => onChange("diet", v)} multiline />
+      <HealthEditField fieldKey="specialNotes"        focusField={focusField} label="Special notes"          value={state.specialNotes}        onChange={(v) => onChange("specialNotes", v)} multiline />
+    </div>
+
+    <div className="flex flex-col gap-4">
+      <PanelSectionLabel>Doctor</PanelSectionLabel>
+      <HealthEditField fieldKey="doctorName"    focusField={focusField} label="Name"    value={state.doctorName}    onChange={(v) => onChange("doctorName", v)} />
+      <HealthEditField fieldKey="doctorPhone"   focusField={focusField} label="Phone"   value={state.doctorPhone}   onChange={(v) => onChange("doctorPhone", v)} />
+      <HealthEditField fieldKey="doctorAddress" focusField={focusField} label="Address" value={state.doctorAddress} onChange={(v) => onChange("doctorAddress", v)} multiline />
+    </div>
+
+    <div className="flex flex-col gap-4">
+      <PanelSectionLabel>Dentist</PanelSectionLabel>
+      <HealthEditField fieldKey="dentistName"    focusField={focusField} label="Name"    value={state.dentistName}    onChange={(v) => onChange("dentistName", v)} />
+      <HealthEditField fieldKey="dentistPhone"   focusField={focusField} label="Phone"   value={state.dentistPhone}   onChange={(v) => onChange("dentistPhone", v)} />
+      <HealthEditField fieldKey="dentistAddress" focusField={focusField} label="Address" value={state.dentistAddress} onChange={(v) => onChange("dentistAddress", v)} multiline />
+    </div>
+  </div>
+);
+
+// Identical shape to AboutEditField but typed for HealthState
+const HealthEditField = ({
+  fieldKey,
+  focusField,
+  label,
+  value,
+  onChange,
+  multiline,
+}: {
+  fieldKey: keyof HealthState;
+  focusField: keyof HealthState | null;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  multiline?: boolean;
+}) => {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
+  useEffect(() => {
+    if (focusField !== fieldKey) return;
+    const timer = setTimeout(() => {
+      wrapRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      inputRef.current?.focus();
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [focusField, fieldKey]);
+
+  return (
+    <div ref={wrapRef} className="flex flex-col gap-1.5">
+      <label className="text-[12px] font-medium text-mfneutralsn-400">{label}</label>
+      {multiline ? (
+        <textarea
+          ref={inputRef as React.RefObject<HTMLTextAreaElement>}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          rows={3}
+          className="w-full text-[14px] text-mfneutralsn-500 border border-[#c6c6d2] rounded-lg px-3 py-2.5 resize-none outline-none focus:border-mfprimaryp-400 transition-colors bg-white"
+        />
+      ) : (
+        <input
+          ref={inputRef as React.RefObject<HTMLInputElement>}
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full text-[14px] text-mfneutralsn-500 border border-[#c6c6d2] rounded-lg px-3 py-2.5 outline-none focus:border-mfprimaryp-400 transition-colors bg-white"
+        />
+      )}
+    </div>
+  );
+};
+
 // ── Detail view: Basic info (classic layout) ──────────────────────────────────
 
 const BasicInfoDetail = ({
@@ -1196,6 +1319,9 @@ export const OverviewContent = (): JSX.Element => {
   const [aboutEditing, setAboutEditing] = useState(false);
   const [aboutFocusField, setAboutFocusField] = useState<keyof AboutState | null>(null);
 
+  const [healthEditing, setHealthEditing] = useState(false);
+  const [healthFocusField, setHealthFocusField] = useState<keyof HealthState | null>(null);
+
   const [health, setHealth] = useState<HealthState>({
     toleratesPenicillin: "Yes",
     diet: "",
@@ -1534,12 +1660,58 @@ export const OverviewContent = (): JSX.Element => {
         </>
       )}
       {panel === "health" && (
-        <DetailPanel
-          title="Health details"
-          onClose={() => setPanel(null)}
-        >
-          <HealthDetailsDetail state={health} openEdit={openEdit} />
-        </DetailPanel>
+        <>
+          <div className="fixed inset-0 z-40 bg-black/20" onClick={() => { setPanel(null); setHealthEditing(false); setHealthFocusField(null); }} />
+          <div className="fixed inset-x-0 bottom-0 top-16 z-50 bg-white flex flex-col rounded-t-2xl overflow-hidden shadow-xl">
+            <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-[#f1f1f4] flex-shrink-0">
+              {healthEditing ? (
+                <button
+                  onClick={() => { setHealthEditing(false); setHealthFocusField(null); }}
+                  className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0"
+                  aria-label="Back"
+                >
+                  <ArrowLeftIcon className="w-4 h-4 text-mfneutralsn-500" />
+                </button>
+              ) : (
+                <div>
+                  <p className="text-[17px] font-semibold text-mfneutralsn-500 leading-snug">Health details</p>
+                </div>
+              )}
+              {!healthEditing && (
+                <button
+                  onClick={() => { setPanel(null); setHealthEditing(false); setHealthFocusField(null); }}
+                  className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0 ml-3"
+                >
+                  <XIcon className="w-4 h-4 text-mfneutralsn-400" />
+                </button>
+              )}
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              {healthEditing ? (
+                <HealthEditContent
+                  state={health}
+                  focusField={healthFocusField}
+                  onChange={(field, value) => setHealth((prev) => ({ ...prev, [field]: value }))}
+                />
+              ) : (
+                <HealthViewContent
+                  state={health}
+                  onEdit={(field) => { setHealthFocusField(field); setHealthEditing(true); }}
+                />
+              )}
+            </div>
+            {!healthEditing && (
+              <div className="flex-shrink-0 px-4 py-4 border-t border-[#f1f1f4]">
+                <button
+                  onClick={() => { setHealthFocusField(null); setHealthEditing(true); }}
+                  className="w-full h-11 rounded-xl bg-mfprimaryp-400 text-white text-[15px] font-semibold active:opacity-90 transition-opacity"
+                >
+                  Edit
+                </button>
+              </div>
+            )}
+          </div>
+        </>
       )}
       {panel === "permissions" && (
         <DetailPanel
