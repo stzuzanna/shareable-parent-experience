@@ -1,5 +1,5 @@
 import React from "react";
-import { BellIcon, SearchIcon } from "lucide-react";
+import { SearchIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
 import { useDeviceDetection } from "../../../../hooks/useDeviceDetection";
@@ -43,10 +43,6 @@ const TitleBar = ({ shouldShowFrame }: { shouldShowFrame: boolean }) => {
           <DesignPill />
         </div>
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate("/notifications")} aria-label="Notifications" className="relative">
-            <BellIcon className="w-5 h-5 text-mfneutralsn-400" />
-            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full" />
-          </button>
           <SearchIcon className="w-5 h-5 text-mfneutralsn-400" />
         </div>
       </div>
