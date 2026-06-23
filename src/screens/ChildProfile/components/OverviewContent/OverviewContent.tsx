@@ -612,6 +612,31 @@ const AboutEditContent = ({
 
 // ── Health panel (same view/edit pattern as About) ────────────────────────────
 
+// Tappable icon row used inside full-screen section pages
+const SectionRow = ({
+  Icon,
+  value,
+  placeholder,
+  onTap,
+}: {
+  Icon: React.ElementType;
+  value?: string;
+  placeholder: string;
+  onTap?: () => void;
+}) => (
+  <div
+    onClick={onTap}
+    className={`flex items-center gap-3 py-2 ${onTap ? "cursor-pointer" : ""}`}
+  >
+    <div className="w-6 h-6 rounded-md bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0">
+      <Icon className="w-4 h-4 text-mfneutralsn-400" />
+    </div>
+    <span className={`text-[14px] ${value ? "text-mfneutralsn-400" : "text-mfneutralsn-300"}`}>
+      {value || placeholder}
+    </span>
+  </div>
+);
+
 const HealthViewContent = ({
   state,
   onEdit,
@@ -619,33 +644,22 @@ const HealthViewContent = ({
   state: HealthState;
   onEdit: (field: keyof HealthState) => void;
 }) => (
-  <div className="flex flex-col gap-6 px-4 pt-6 pb-6">
-    <div className="flex flex-col">
-      <PanelSectionLabel>General</PanelSectionLabel>
-      <div className="flex flex-col">
-        <AboutInfoRow first label="Tolerates penicillin"   value={state.toleratesPenicillin || undefined} onAdd={() => onEdit("toleratesPenicillin")} onEdit={() => onEdit("toleratesPenicillin")} />
-        <AboutInfoRow       label="Dietary considerations" value={state.diet || undefined}                onAdd={() => onEdit("diet")}                 onEdit={() => onEdit("diet")} />
-        <AboutInfoRow       label="Special notes"          value={state.specialNotes || undefined}        onAdd={() => onEdit("specialNotes")}         onEdit={() => onEdit("specialNotes")} />
-      </div>
-    </div>
-
-    <div className="flex flex-col">
-      <PanelSectionLabel>Doctor</PanelSectionLabel>
-      <div className="flex flex-col">
-        <AboutInfoRow first label="Name"    value={state.doctorName || undefined}                                  onAdd={() => onEdit("doctorName")}    onEdit={() => onEdit("doctorName")} />
-        <AboutInfoRow       label="Phone"   value={state.doctorPhone || undefined}                                 onAdd={() => onEdit("doctorPhone")}   onEdit={() => onEdit("doctorPhone")} />
-        <AboutInfoRow       label="Address" value={state.doctorAddress ? state.doctorAddress.replace(/\n/g, ", ") : undefined} onAdd={() => onEdit("doctorAddress")} onEdit={() => onEdit("doctorAddress")} />
-      </div>
-    </div>
-
-    <div className="flex flex-col">
-      <PanelSectionLabel>Dentist</PanelSectionLabel>
-      <div className="flex flex-col">
-        <AboutInfoRow first label="Name"    value={state.dentistName || undefined}    onAdd={() => onEdit("dentistName")}    onEdit={() => onEdit("dentistName")} />
-        <AboutInfoRow       label="Phone"   value={state.dentistPhone || undefined}   onAdd={() => onEdit("dentistPhone")}   onEdit={() => onEdit("dentistPhone")} />
-        <AboutInfoRow       label="Address" value={state.dentistAddress || undefined} onAdd={() => onEdit("dentistAddress")} onEdit={() => onEdit("dentistAddress")} />
-      </div>
-    </div>
+  <div className="flex flex-col">
+    <Section Icon={StethoscopeIcon} title="General" description="Health & conditions">
+      <SectionRow Icon={HelpCircleIcon} value={state.toleratesPenicillin ? `Penicillin: ${state.toleratesPenicillin}` : undefined} placeholder="Add penicillin info" onTap={() => onEdit("toleratesPenicillin")} />
+      <SectionRow Icon={InfoIcon}      value={state.diet || undefined}          placeholder="Add dietary considerations" onTap={() => onEdit("diet")} />
+      <SectionRow Icon={InfoIcon}      value={state.specialNotes || undefined}  placeholder="Add special notes"         onTap={() => onEdit("specialNotes")} />
+    </Section>
+    <Section Icon={StethoscopeIcon} title="Doctor" description="Primary physician">
+      <SectionRow Icon={UserIcon}    value={state.doctorName || undefined}                                          placeholder="Add doctor name"    onTap={() => onEdit("doctorName")} />
+      <SectionRow Icon={PhoneIcon}   value={state.doctorPhone || undefined}                                         placeholder="Add phone number"   onTap={() => onEdit("doctorPhone")} />
+      <SectionRow Icon={MapPinIcon}  value={state.doctorAddress ? state.doctorAddress.replace(/\n/g, ", ") : undefined} placeholder="Add address"   onTap={() => onEdit("doctorAddress")} />
+    </Section>
+    <Section Icon={StethoscopeIcon} title="Dentist" description="Dental care provider">
+      <SectionRow Icon={UserIcon}    value={state.dentistName || undefined}    placeholder="Add dentist name"   onTap={() => onEdit("dentistName")} />
+      <SectionRow Icon={PhoneIcon}   value={state.dentistPhone || undefined}   placeholder="Add phone number"   onTap={() => onEdit("dentistPhone")} />
+      <SectionRow Icon={MapPinIcon}  value={state.dentistAddress || undefined} placeholder="Add address"        onTap={() => onEdit("dentistAddress")} />
+    </Section>
   </div>
 );
 
@@ -1159,31 +1173,17 @@ const SubpageRowDual = ({
 );
 
 const LeaveDetail = () => (
-    <div className="flex flex-col pb-24">
-      <SubsectionTitle>Upcoming</SubsectionTitle>
-      <SubpageRowDual
-        icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />}
-        label="1 - 10 Jul 2026"
-      />
-      <SubpageRowDual
-        icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />}
-        label="22 - 24 Dec 2026"
-      />
-
-      <SubsectionTitle>Past</SubsectionTitle>
-      <SubpageRowDual
-        icon={<ThermometerIcon className="w-4 h-4 text-mfredr-400" />}
-        label="4 Mar 2026"
-      />
-      <SubpageRowDual
-        icon={<ThermometerIcon className="w-4 h-4 text-mfredr-400" />}
-        label="18 - 19 Feb 2026"
-      />
-      <SubpageRowDual
-        icon={<SunIcon className="w-4 h-4 text-mfyellowy-400" />}
-        label="23 Dec 2025 - 2 Jan 2026"
-      />
-    </div>
+  <div className="flex flex-col">
+    <Section Icon={SunIcon} title="Upcoming" description="Planned time off">
+      <AboutRow Icon={SunIcon}  value="1 - 10 Jul 2026 · Holiday" />
+      <AboutRow Icon={SunIcon}  value="22 - 24 Dec 2026 · Holiday" />
+    </Section>
+    <Section Icon={ThermometerIcon} title="Past" description="Previous absences">
+      <AboutRow Icon={ThermometerIcon} value="4 Mar 2026 · Sick" />
+      <AboutRow Icon={ThermometerIcon} value="18 - 19 Feb 2026 · Sick" />
+      <AboutRow Icon={SunIcon}         value="23 Dec 2025 - 2 Jan 2026 · Holiday" />
+    </Section>
+  </div>
 );
 
 type PermissionStatus = "yes" | "no" | "pending";
@@ -1194,9 +1194,9 @@ const LATEST_PERMISSIONS: { id: string; label: string; status: PermissionStatus;
 ];
 
 const PermissionStatusIcon = ({ status }: { status: PermissionStatus }) => {
-  if (status === "yes") return <CheckCircle2Icon className="w-5 h-5 text-green-500" />;
-  if (status === "no") return <XCircleIcon className="w-5 h-5 text-mfredr-400" />;
-  return <HelpCircleIcon className="w-5 h-5 text-mfprimaryp-400" />;
+  if (status === "yes") return <CheckCircle2Icon className="w-4 h-4 text-green-500" />;
+  if (status === "no") return <XCircleIcon className="w-4 h-4 text-mfredr-400" />;
+  return <HelpCircleIcon className="w-4 h-4 text-mfprimaryp-400" />;
 };
 
 const PermissionRow = ({
@@ -1245,15 +1245,18 @@ const PermissionsDetail = () => {
   };
 
   return (
-    <div className="flex flex-col pt-2 pb-24 gap-0 px-2">
+    <div className="flex flex-col">
+      <Section Icon={ShieldCheckIcon} title="Permissions" description="Your child's consents">
       {items.map((item) => {
         const isEditing = editingId === item.id || item.answer === null;
         return (
           <div
             key={item.id}
-            className="flex items-center gap-3 px-4 py-3.5 border border-mfprimaryp-100 rounded-xl mb-2 bg-white"
+            className="flex items-center gap-3 py-2.5"
           >
-            <PermissionStatusIcon status={item.answer ?? "pending"} />
+            <div className="w-6 h-6 rounded-md bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0">
+              <PermissionStatusIcon status={item.answer ?? "pending"} />
+            </div>
             <span className="flex-1 text-sm font-medium text-mfneutralsn-500">{item.label}</span>
             {isEditing ? (
               <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -1281,6 +1284,7 @@ const PermissionsDetail = () => {
           </div>
         );
       })}
+      </Section>
     </div>
   );
 };
