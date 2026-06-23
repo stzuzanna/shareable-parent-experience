@@ -113,16 +113,19 @@ const Section = ({
   children: React.ReactNode;
 }) => (
   <div className="px-4 py-4 border-b border-[#f1f1f4] flex flex-col gap-3">
-    <div className="flex items-start gap-2">
-      {Icon && (
-        <div className="w-6 h-6 rounded-md bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0 mt-0.5">
-          <Icon className="w-4 h-4 text-mfneutralsn-400" />
-        </div>
-      )}
-      <div>
+    {/* Icon + title on one row; subtitle flush-left below (aligned with icon) */}
+    <div>
+      <div className="flex items-center gap-2">
+        {Icon && (
+          <div className="w-6 h-6 rounded-md bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0">
+            <Icon className="w-4 h-4 text-mfneutralsn-400" />
+          </div>
+        )}
         <p className="text-[14px] font-semibold text-mfneutralsn-500">{title}</p>
-        {description && <p className="text-[13px] text-mfneutralsn-300 mt-0.5">{description}</p>}
       </div>
+      {description && (
+        <p className="text-[13px] text-mfneutralsn-300 mt-0.5">{description}</p>
+      )}
     </div>
     <div className="flex flex-col gap-2">{children}</div>
     {onViewAll && (
