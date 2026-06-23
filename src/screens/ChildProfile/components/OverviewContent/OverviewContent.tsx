@@ -642,22 +642,36 @@ const HealthViewContent = ({
   state: HealthState;
   onEdit: (field: keyof HealthState) => void;
 }) => (
-  <div className="flex flex-col">
-    <Section Icon={StethoscopeIcon} title="General" description="Health & conditions">
-      <SectionRow Icon={HelpCircleIcon} value={state.toleratesPenicillin ? `Penicillin: ${state.toleratesPenicillin}` : undefined} placeholder="Add penicillin info" onTap={() => onEdit("toleratesPenicillin")} />
-      <SectionRow Icon={InfoIcon}      value={state.diet || undefined}          placeholder="Add dietary considerations" onTap={() => onEdit("diet")} />
-      <SectionRow Icon={InfoIcon}      value={state.specialNotes || undefined}  placeholder="Add special notes"         onTap={() => onEdit("specialNotes")} />
-    </Section>
-    <Section Icon={StethoscopeIcon} title="Doctor" description="Primary physician">
-      <SectionRow Icon={UserIcon}    value={state.doctorName || undefined}                                          placeholder="Add doctor name"    onTap={() => onEdit("doctorName")} />
-      <SectionRow Icon={PhoneIcon}   value={state.doctorPhone || undefined}                                         placeholder="Add phone number"   onTap={() => onEdit("doctorPhone")} />
-      <SectionRow Icon={MapPinIcon}  value={state.doctorAddress ? state.doctorAddress.replace(/\n/g, ", ") : undefined} placeholder="Add address"   onTap={() => onEdit("doctorAddress")} />
-    </Section>
-    <Section Icon={StethoscopeIcon} title="Dentist" description="Dental care provider">
-      <SectionRow Icon={UserIcon}    value={state.dentistName || undefined}    placeholder="Add dentist name"   onTap={() => onEdit("dentistName")} />
-      <SectionRow Icon={PhoneIcon}   value={state.dentistPhone || undefined}   placeholder="Add phone number"   onTap={() => onEdit("dentistPhone")} />
-      <SectionRow Icon={MapPinIcon}  value={state.dentistAddress || undefined} placeholder="Add address"        onTap={() => onEdit("dentistAddress")} />
-    </Section>
+  <div className="flex flex-col gap-6 px-4 pt-6 pb-6">
+    {/* General */}
+    <div className="flex flex-col">
+      <PanelSectionLabel>General</PanelSectionLabel>
+      <div className="flex flex-col">
+        <AboutInfoRow first label="Penicillin"   value={state.toleratesPenicillin || undefined} onAdd={() => onEdit("toleratesPenicillin")} onEdit={() => onEdit("toleratesPenicillin")} />
+        <AboutInfoRow label="Diet"          value={state.diet || undefined}                onAdd={() => onEdit("diet")}                onEdit={() => onEdit("diet")} />
+        <AboutInfoRow label="Special notes" value={state.specialNotes || undefined}       onAdd={() => onEdit("specialNotes")}       onEdit={() => onEdit("specialNotes")} />
+      </div>
+    </div>
+
+    {/* Doctor */}
+    <div className="flex flex-col">
+      <PanelSectionLabel>Doctor</PanelSectionLabel>
+      <div className="flex flex-col">
+        <AboutInfoRow first label="Name"    value={state.doctorName || undefined}                                              onAdd={() => onEdit("doctorName")}    onEdit={() => onEdit("doctorName")} />
+        <AboutInfoRow label="Phone"   value={state.doctorPhone || undefined}                                             onAdd={() => onEdit("doctorPhone")}   onEdit={() => onEdit("doctorPhone")} />
+        <AboutInfoRow label="Address" value={state.doctorAddress ? state.doctorAddress.replace(/\n/g, ", ") : undefined} onAdd={() => onEdit("doctorAddress")} onEdit={() => onEdit("doctorAddress")} />
+      </div>
+    </div>
+
+    {/* Dentist */}
+    <div className="flex flex-col">
+      <PanelSectionLabel>Dentist</PanelSectionLabel>
+      <div className="flex flex-col">
+        <AboutInfoRow first label="Name"    value={state.dentistName || undefined}    onAdd={() => onEdit("dentistName")}    onEdit={() => onEdit("dentistName")} />
+        <AboutInfoRow label="Phone"   value={state.dentistPhone || undefined}   onAdd={() => onEdit("dentistPhone")}   onEdit={() => onEdit("dentistPhone")} />
+        <AboutInfoRow label="Address" value={state.dentistAddress || undefined} onAdd={() => onEdit("dentistAddress")} onEdit={() => onEdit("dentistAddress")} />
+      </div>
+    </div>
   </div>
 );
 
