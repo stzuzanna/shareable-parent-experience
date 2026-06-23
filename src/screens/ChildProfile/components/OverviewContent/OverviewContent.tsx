@@ -1329,9 +1329,27 @@ export const OverviewContent = (): JSX.Element => {
   });
   const [aboutEditing, setAboutEditing] = useState(false);
   const [aboutFocusField, setAboutFocusField] = useState<keyof AboutState | null>(null);
+  const [aboutDraft, setAboutDraft] = useState<AboutState | null>(null);
+
+  const openAboutEdit = (field: keyof AboutState | null = null) => {
+    setAboutDraft({ ...aboutState });
+    setAboutFocusField(field);
+    setAboutEditing(true);
+  };
+  const cancelAboutEdit = () => { setAboutEditing(false); setAboutFocusField(null); setAboutDraft(null); };
+  const saveAboutEdit = () => { if (aboutDraft) setAboutState(aboutDraft); setAboutEditing(false); setAboutFocusField(null); setAboutDraft(null); };
 
   const [healthEditing, setHealthEditing] = useState(false);
   const [healthFocusField, setHealthFocusField] = useState<keyof HealthState | null>(null);
+  const [healthDraft, setHealthDraft] = useState<HealthState | null>(null);
+
+  const openHealthEdit = (field: keyof HealthState | null = null) => {
+    setHealthDraft({ ...health });
+    setHealthFocusField(field);
+    setHealthEditing(true);
+  };
+  const cancelHealthEdit = () => { setHealthEditing(false); setHealthFocusField(null); setHealthDraft(null); };
+  const saveHealthEdit = () => { if (healthDraft) setHealth(healthDraft); setHealthEditing(false); setHealthFocusField(null); setHealthDraft(null); };
 
   const [health, setHealth] = useState<HealthState>({
     toleratesPenicillin: "Yes",
@@ -1625,10 +1643,7 @@ export const OverviewContent = (): JSX.Element => {
           {/* header */}
           <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-[#f1f1f4] flex-shrink-0">
             <button
-              onClick={aboutEditing
-                ? () => { setAboutEditing(false); setAboutFocusField(null); }
-                : () => { setPanel(null); setAboutEditing(false); setAboutFocusField(null); }
-              }
+              onClick={aboutEditing ? cancelAboutEdit : () => { setPanel(null); }}
               className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0"
               aria-label="Back"
             >
@@ -1643,22 +1658,37 @@ export const OverviewContent = (): JSX.Element => {
           <div className="flex-1 overflow-y-auto">
             {aboutEditing ? (
               <AboutEditContent
-                state={aboutState}
+                state={aboutDraft!}
                 focusField={aboutFocusField}
-                onChange={(field, value) => setAboutState((prev) => ({ ...prev, [field]: value }))}
+                onChange={(field, value) => setAboutDraft((prev) => prev ? { ...prev, [field]: value } : prev)}
               />
             ) : (
               <AboutViewContent
                 state={aboutState}
-                onEdit={(field) => { setAboutFocusField(field); setAboutEditing(true); }}
+                onEdit={(field) => openAboutEdit(field)}
               />
             )}
           </div>
           {/* footer */}
-          {!aboutEditing && (
+          {aboutEditing ? (
+            <div className="flex-shrink-0 px-4 py-4 border-t border-[#f1f1f4] flex gap-3">
+              <button
+                onClick={cancelAboutEdit}
+                className="flex-1 h-11 rounded-xl border border-mfneutralsn-200 bg-white text-[15px] font-medium text-mfneutralsn-500 active:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveAboutEdit}
+                className="flex-1 h-11 rounded-xl bg-mfprimaryp-400 text-white text-[15px] font-semibold active:opacity-90 transition-opacity"
+              >
+                Save
+              </button>
+            </div>
+          ) : (
             <div className="flex-shrink-0 px-4 py-4 border-t border-[#f1f1f4]">
               <button
-                onClick={() => { setAboutFocusField(null); setAboutEditing(true); }}
+                onClick={() => openAboutEdit(null)}
                 className="w-full h-11 rounded-xl bg-mfprimaryp-400 text-white text-[15px] font-semibold active:opacity-90 transition-opacity"
               >
                 Edit
@@ -1671,35 +1701,50 @@ export const OverviewContent = (): JSX.Element => {
         <div className="fixed inset-0 z-50 bg-white flex flex-col">
           <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-[#f1f1f4] flex-shrink-0">
             <button
-              onClick={healthEditing
-                ? () => { setHealthEditing(false); setHealthFocusField(null); }
-                : () => { setPanel(null); setHealthEditing(false); setHealthFocusField(null); }
-              }
+              onClick={healthEditing ? cancelHealthEdit : () => { setPanel(null); }}
               className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0"
               aria-label="Back"
             >
               <ArrowLeftIcon className="w-4 h-4 text-mfneutralsn-500" />
             </button>
-            <p className="text-[17px] font-semibold text-mfneutralsn-500 leading-snug flex-1">Health details</p>
+            <div className="flex-1 min-w-0">
+              <p className="text-[17px] font-semibold text-mfneutralsn-500 leading-snug">Health details</p>
+              {!healthEditing && <p className="text-[13px] text-mfneutralsn-300 mt-0.5">Medical information</p>}
+            </div>
           </div>
           <div className="flex-1 overflow-y-auto">
             {healthEditing ? (
               <HealthEditContent
-                state={health}
+                state={healthDraft!}
                 focusField={healthFocusField}
-                onChange={(field, value) => setHealth((prev) => ({ ...prev, [field]: value }))}
+                onChange={(field, value) => setHealthDraft((prev) => prev ? { ...prev, [field]: value } : prev)}
               />
             ) : (
               <HealthViewContent
                 state={health}
-                onEdit={(field) => { setHealthFocusField(field); setHealthEditing(true); }}
+                onEdit={(field) => openHealthEdit(field)}
               />
             )}
           </div>
-          {!healthEditing && (
+          {healthEditing ? (
+            <div className="flex-shrink-0 px-4 py-4 border-t border-[#f1f1f4] flex gap-3">
+              <button
+                onClick={cancelHealthEdit}
+                className="flex-1 h-11 rounded-xl border border-mfneutralsn-200 bg-white text-[15px] font-medium text-mfneutralsn-500 active:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveHealthEdit}
+                className="flex-1 h-11 rounded-xl bg-mfprimaryp-400 text-white text-[15px] font-semibold active:opacity-90 transition-opacity"
+              >
+                Save
+              </button>
+            </div>
+          ) : (
             <div className="flex-shrink-0 px-4 py-4 border-t border-[#f1f1f4]">
               <button
-                onClick={() => { setHealthFocusField(null); setHealthEditing(true); }}
+                onClick={() => openHealthEdit(null)}
                 className="w-full h-11 rounded-xl bg-mfprimaryp-400 text-white text-[15px] font-semibold active:opacity-90 transition-opacity"
               >
                 Edit
