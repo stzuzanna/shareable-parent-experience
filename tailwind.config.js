@@ -24,6 +24,7 @@ module.exports = {
         "mfneutralsn-300": "var(--mfneutralsn-300)",
         "mfneutralsn-400": "var(--mfneutralsn-400)",
         "mfneutralsn-50": "var(--mfneutralsn-50)",
+        "mfneutralsn-75": "var(--mfneutralsn-75)",
         "mfneutralsn-500": "var(--mfneutralsn-500)",
         "mforangeo-400": "var(--mforangeo-400)",
         "mfprimaryp-100": "var(--mfprimaryp-100)",
