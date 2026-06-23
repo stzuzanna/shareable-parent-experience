@@ -1692,20 +1692,33 @@ export const OverviewContent = (): JSX.Element => {
         </div>
       )}
       {panel === "permissions" && (
-        <DetailPanel
-          title="Permissions"
-          onClose={() => setPanel(null)}
-          bottomClass={shouldShowFrame ? "bottom-0" : "bottom-20"}
-        >
-          <PermissionsDetail />
-        </DetailPanel>
+        <div className="fixed inset-0 z-50 bg-white flex flex-col">
+          <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-[#f1f1f4] flex-shrink-0">
+            <button
+              onClick={() => setPanel(null)}
+              className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0"
+              aria-label="Back"
+            >
+              <ArrowLeftIcon className="w-4 h-4 text-mfneutralsn-500" />
+            </button>
+            <p className="text-[17px] font-semibold text-mfneutralsn-500 flex-1">Permissions</p>
+          </div>
+          <div className="flex-1 overflow-y-auto">
+            <PermissionsDetail />
+          </div>
+        </div>
       )}
       {panel === "leave" && (
-        <DetailPanel
-          title="Leave"
-          onClose={() => setPanel(null)}
-          bottomClass={shouldShowFrame ? "bottom-0" : "bottom-20"}
-          footer={
+        <div className="fixed inset-0 z-50 bg-white flex flex-col">
+          <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-[#f1f1f4] flex-shrink-0">
+            <button
+              onClick={() => setPanel(null)}
+              className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0"
+              aria-label="Back"
+            >
+              <ArrowLeftIcon className="w-4 h-4 text-mfneutralsn-500" />
+            </button>
+            <p className="text-[17px] font-semibold text-mfneutralsn-500 flex-1">Leave</p>
             <button
               type="button"
               onClick={() => setShowLeaveSheet(true)}
@@ -1714,10 +1727,11 @@ export const OverviewContent = (): JSX.Element => {
               <PlusIcon className="w-3.5 h-3.5" />
               Add leave
             </button>
-          }
-        >
-          <LeaveDetail />
-        </DetailPanel>
+          </div>
+          <div className="flex-1 overflow-y-auto">
+            <LeaveDetail />
+          </div>
+        </div>
       )}
 
       <AddLeaveSheet
