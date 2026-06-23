@@ -1623,7 +1623,7 @@ export const OverviewContent = (): JSX.Element => {
 
       {/* Panel overlays */}
       {panel === "family" && (
-        <div className="fixed inset-0 z-50 bg-white flex flex-col">
+        <div className="fixed inset-0 z-[200] bg-white flex flex-col">
           <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-[#f1f1f4] flex-shrink-0">
             <button
               onClick={() => setPanel(null)}
@@ -1651,7 +1651,7 @@ export const OverviewContent = (): JSX.Element => {
         </div>
       )}
       {panel === "basic" && (
-        <div className="fixed inset-0 z-50 bg-white flex flex-col">
+        <div className="fixed inset-0 z-[200] bg-white flex flex-col">
           {/* header */}
           <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-[#f1f1f4] flex-shrink-0">
             <button
@@ -1710,7 +1710,7 @@ export const OverviewContent = (): JSX.Element => {
         </div>
       )}
       {panel === "health" && (
-        <div className="fixed inset-0 z-50 bg-white flex flex-col">
+        <div className="fixed inset-0 z-[200] bg-white flex flex-col">
           <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-[#f1f1f4] flex-shrink-0">
             <button
               onClick={healthEditing ? cancelHealthEdit : () => { setPanel(null); }}
@@ -1766,7 +1766,7 @@ export const OverviewContent = (): JSX.Element => {
         </div>
       )}
       {panel === "permissions" && (
-        <div className="fixed inset-0 z-50 bg-white flex flex-col">
+        <div className="fixed inset-0 z-[200] bg-white flex flex-col">
           <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-[#f1f1f4] flex-shrink-0">
             <button
               onClick={() => setPanel(null)}
@@ -1783,7 +1783,7 @@ export const OverviewContent = (): JSX.Element => {
         </div>
       )}
       {panel === "leave" && (
-        <div className="fixed inset-0 z-50 bg-white flex flex-col">
+        <div className="fixed inset-0 z-[200] bg-white flex flex-col">
           <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-[#f1f1f4] flex-shrink-0">
             <button
               onClick={() => setPanel(null)}
