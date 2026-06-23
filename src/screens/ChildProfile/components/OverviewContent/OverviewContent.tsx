@@ -117,9 +117,7 @@ const Section = ({
     <div>
       <div className="flex items-center gap-2">
         {Icon && (
-          <div className="w-6 h-6 rounded-md bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0">
-            <Icon className="w-4 h-4 text-mfneutralsn-400" />
-          </div>
+          <Icon className="w-4 h-4 text-mfneutralsn-400 flex-shrink-0" />
         )}
         <p className="text-[14px] font-semibold text-mfneutralsn-500">{title}</p>
       </div>
