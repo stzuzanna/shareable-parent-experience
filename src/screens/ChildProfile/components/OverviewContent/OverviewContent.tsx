@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ChevronRightIcon, ArrowLeftIcon, SunIcon, ThermometerIcon, StethoscopeIcon, CheckCircle2Icon, XCircleIcon, HelpCircleIcon, PlusIcon, LockIcon, LanguagesIcon, HeartIcon, MapPinIcon, AlertTriangleIcon, MailIcon, PhoneIcon, FileTextIcon, IdCardIcon, InfoIcon } from "lucide-react";
 import { useProfileVariant } from "../../../../hooks/useProfileVariant";
 import { useDeviceDetection } from "../../../../hooks/useDeviceDetection";
+import { useChildProfileDesign } from "../../../../hooks/useChildProfileDesign";
 import { setChildProfileSubpageActive } from "../../../../hooks/useChildProfileSubpage";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
 import { AddLeaveSheet } from "../../../../components/AddLeaveSheet/AddLeaveSheet";
@@ -168,6 +169,52 @@ const SummaryRow = ({
       <p className="text-[14px] text-mfneutralsn-400 truncate">{label}</p>
     </div>
     {trailing && <div className="flex-shrink-0">{trailing}</div>}
+  </div>
+);
+
+// ── Classic design primitives (card-based layout) ─────────────────────────────
+
+const ClassicCard = ({ children }: { children: React.ReactNode }) => (
+  <div className="bg-white border-b border-mfneutralsn-75">{children}</div>
+);
+
+const ClassicCardHeader = ({ title, onPress }: { title: string; onPress?: () => void }) => (
+  <button onClick={onPress} className="w-full flex items-center justify-between px-4 pt-3 pb-2 text-left">
+    <span className="text-[14px] text-mfneutralsn-300">{title}</span>
+    <ChevronRightIcon className="w-5 h-5 text-mfneutralsn-200" />
+  </button>
+);
+
+const ClassicSectionCardHeader = ({ title }: { title: string }) => (
+  <div className="w-full flex items-center px-4 pt-4 pb-2">
+    <span className="text-[16px] font-semibold text-mfneutralsn-500">{title}</span>
+  </div>
+);
+
+const ClassicViewAllLink = ({ onPress }: { onPress: () => void }) => (
+  <button onClick={onPress} className="w-full text-left px-4 py-3 text-[14px] font-medium text-mfprimaryp-400 flex items-center gap-1">
+    View all <ChevronRightIcon className="w-4 h-4" />
+  </button>
+);
+
+const ClassicFamilyPreviewRow = ({
+  avatar, fallback, name, role, email, phone,
+}: { avatar: string; fallback: string; name: string; role: string; email?: string; phone?: string }) => (
+  <div className="px-4 py-2.5 flex items-center justify-between gap-3">
+    <div className="flex items-center gap-3 min-w-0">
+      <Avatar className="w-9 h-9 flex-shrink-0">
+        <AvatarImage src={avatar} alt={name} />
+        <AvatarFallback>{fallback}</AvatarFallback>
+      </Avatar>
+      <div className="min-w-0">
+        <p className="text-sm font-semibold text-mfneutralsn-500 truncate">{name}</p>
+        <p className="text-[14px] text-mfneutralsn-300 mt-0.5 truncate">{role}</p>
+      </div>
+    </div>
+    <div className="flex items-center gap-2 flex-shrink-0 text-mfneutralsn-400">
+      {email && <MailIcon className="w-4 h-4" />}
+      {phone && <PhoneIcon className="w-4 h-4" />}
+    </div>
   </div>
 );
 
@@ -863,6 +910,7 @@ const PermissionsDetail = () => {
 
 export const OverviewContent = (): JSX.Element => {
   const variant = useProfileVariant();
+  const design = useChildProfileDesign();
   const { shouldShowFrame } = useDeviceDetection();
   const navigate = useNavigate();
   const location = useLocation();
@@ -996,6 +1044,67 @@ export const OverviewContent = (): JSX.Element => {
     );
   }
 
+  // ── Classic layout ──────────────────────────────────────────────────────────
+  if (design === "classic") {
+    return (
+      <div ref={rootRef} className="flex flex-col bg-white pt-4 pb-24 gap-4">
+        <ClassicCard>
+          <ClassicSectionCardHeader title="Permissions" />
+          {LATEST_PERMISSIONS.map((p) => <PermissionRow key={p.id} item={p} />)}
+          <ClassicViewAllLink onPress={() => setSection("permissions")} />
+        </ClassicCard>
+
+        <ClassicCard>
+          <ClassicSectionCardHeader title="Basic info" />
+          <SummaryRow icon={<LockIcon className="w-4 h-4" />} label={`${formatHumanDate(basicInfo.dateOfBirth) || "1 Feb 2025"} (1 year 4 months)`} />
+          <SummaryRow icon={<LanguagesIcon className="w-4 h-4" />} label={basicInfo.languages.join(", ") || "Add languages"} />
+          {basicInfo.allergy && (
+            <div className="flex h-12 items-center gap-3 px-4">
+              <div className="w-6 h-6 rounded-md bg-mfyellowy-100 flex items-center justify-center flex-shrink-0 text-mfyellowy-400">
+                <AlertTriangleIcon className="w-4 h-4" />
+              </div>
+              <p className="text-[14px] text-mfneutralsn-500 truncate">{basicInfo.allergy}</p>
+            </div>
+          )}
+          <ClassicViewAllLink onPress={() => setSection("basic")} />
+        </ClassicCard>
+
+        <ClassicCard>
+          <ClassicSectionCardHeader title="Family" />
+          <ClassicFamilyPreviewRow avatar={MOTHER_AVATAR} fallback="SF" name="Sarah Freedman" role="Mother (Primary)" phone={familyExtras.sarah?.phone} />
+          <ClassicFamilyPreviewRow avatar={FATHER_AVATAR} fallback="MF" name="Michael Freedman" role="Father" phone={familyExtras.michael?.phone} />
+          <ClassicViewAllLink onPress={() => setSection("family")} />
+        </ClassicCard>
+
+        <ClassicCard>
+          <ClassicSectionCardHeader title="Health details" />
+          <SummaryRow icon={<StethoscopeIcon className="w-4 h-4" />} label={health.doctorName || "Add doctor info"} />
+          <SummaryRow icon={<MapPinIcon className="w-4 h-4" />} label={health.doctorAddress ? health.doctorAddress.split("\n")[0] : "Add address"} />
+          <ClassicViewAllLink onPress={() => setSection("health")} />
+        </ClassicCard>
+
+        <ClassicCard>
+          <ClassicCardHeader title="Leave" onPress={() => setSection("leave")} />
+          <LeaveRow icon={<SunIcon className="w-[18px] h-[18px] text-mfyellowy-400" />} label="1 - 10 Jul 26" sublabel="Holiday · Opted out of meals" trailing="Upcoming" />
+          <LeaveRow icon={<ThermometerIcon className="w-[18px] h-[18px] text-mfredr-400" />} label="4 Mar 26" sublabel="Sick" trailing="Past" />
+        </ClassicCard>
+
+        {variant === "v1" && (
+          <ClassicCard>
+            <ClassicCardHeader title="Care" onPress={() => setSection("care")} />
+            <div className="px-4 py-3">
+              <p className="text-sm font-medium text-mfneutralsn-500">Monthly full time</p>
+              <p className="text-[14px] text-mfneutralsn-300 mt-0.5">$1,350/month · Aug 31 –</p>
+            </div>
+          </ClassicCard>
+        )}
+
+        <EditFieldSheet isOpen={editingField !== null} field={editingField} onClose={() => setEditingField(null)} onSave={handleSaveField} useAbsolute={shouldShowFrame} />
+      </div>
+    );
+  }
+
+  // ── New (child-pro) layout ──────────────────────────────────────────────────
   return (
     <div ref={rootRef} className="flex flex-col bg-white pb-24">
       {/* Family */}
