@@ -1604,117 +1604,92 @@ export const OverviewContent = (): JSX.Element => {
         </DetailPanel>
       )}
       {panel === "basic" && (
-        <>
-          {/* backdrop */}
-          <div className="fixed inset-0 z-40 bg-black/20" onClick={() => { setPanel(null); setAboutEditing(false); setAboutFocusField(null); }} />
-          <div className={`fixed inset-x-0 top-16 z-50 bg-white flex flex-col rounded-t-2xl overflow-hidden shadow-xl ${shouldShowFrame ? "bottom-0" : "bottom-20"}`}>
-            {/* header */}
-            <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-[#f1f1f4] flex-shrink-0">
-              {aboutEditing ? (
-                <button
-                  onClick={() => { setAboutEditing(false); setAboutFocusField(null); }}
-                  className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0"
-                  aria-label="Back"
-                >
-                  <ArrowLeftIcon className="w-4 h-4 text-mfneutralsn-500" />
-                </button>
-              ) : (
-                <div>
-                  <p className="text-[17px] font-semibold text-mfneutralsn-500 leading-snug">About</p>
-                  <p className="text-[13px] text-mfneutralsn-300 mt-0.5">Personal details</p>
-                </div>
-              )}
-              {!aboutEditing && (
-                <button
-                  onClick={() => { setPanel(null); setAboutEditing(false); setAboutFocusField(null); }}
-                  className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0 ml-3 mt-0.5"
-                >
-                  <XIcon className="w-4 h-4 text-mfneutralsn-400" />
-                </button>
-              )}
+        <div className="fixed inset-0 z-50 bg-white flex flex-col">
+          {/* header */}
+          <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-[#f1f1f4] flex-shrink-0">
+            <button
+              onClick={aboutEditing
+                ? () => { setAboutEditing(false); setAboutFocusField(null); }
+                : () => { setPanel(null); setAboutEditing(false); setAboutFocusField(null); }
+              }
+              className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0"
+              aria-label="Back"
+            >
+              <ArrowLeftIcon className="w-4 h-4 text-mfneutralsn-500" />
+            </button>
+            <div className="flex-1 min-w-0">
+              <p className="text-[17px] font-semibold text-mfneutralsn-500 leading-snug">About</p>
+              {!aboutEditing && <p className="text-[13px] text-mfneutralsn-300 mt-0.5">Personal details</p>}
             </div>
-            {/* body */}
-            <div className="flex-1 overflow-y-auto">
-              {aboutEditing ? (
-                <AboutEditContent
-                  state={aboutState}
-                  focusField={aboutFocusField}
-                  onChange={(field, value) => setAboutState((prev) => ({ ...prev, [field]: value }))}
-                />
-              ) : (
-                <AboutViewContent
-                  state={aboutState}
-                  onEdit={(field) => { setAboutFocusField(field); setAboutEditing(true); }}
-                />
-              )}
-            </div>
-            {/* footer */}
-            {!aboutEditing && (
-              <div className="flex-shrink-0 px-4 py-4 border-t border-[#f1f1f4]">
-                <button
-                  onClick={() => { setAboutFocusField(null); setAboutEditing(true); }}
-                  className="w-full h-11 rounded-xl bg-mfprimaryp-400 text-white text-[15px] font-semibold active:opacity-90 transition-opacity"
-                >
-                  Edit
-                </button>
-              </div>
+          </div>
+          {/* body */}
+          <div className="flex-1 overflow-y-auto">
+            {aboutEditing ? (
+              <AboutEditContent
+                state={aboutState}
+                focusField={aboutFocusField}
+                onChange={(field, value) => setAboutState((prev) => ({ ...prev, [field]: value }))}
+              />
+            ) : (
+              <AboutViewContent
+                state={aboutState}
+                onEdit={(field) => { setAboutFocusField(field); setAboutEditing(true); }}
+              />
             )}
           </div>
-        </>
+          {/* footer */}
+          {!aboutEditing && (
+            <div className="flex-shrink-0 px-4 py-4 border-t border-[#f1f1f4]">
+              <button
+                onClick={() => { setAboutFocusField(null); setAboutEditing(true); }}
+                className="w-full h-11 rounded-xl bg-mfprimaryp-400 text-white text-[15px] font-semibold active:opacity-90 transition-opacity"
+              >
+                Edit
+              </button>
+            </div>
+          )}
+        </div>
       )}
       {panel === "health" && (
-        <>
-          <div className="fixed inset-0 z-40 bg-black/20" onClick={() => { setPanel(null); setHealthEditing(false); setHealthFocusField(null); }} />
-          <div className={`fixed inset-x-0 top-16 z-50 bg-white flex flex-col rounded-t-2xl overflow-hidden shadow-xl ${shouldShowFrame ? "bottom-0" : "bottom-20"}`}>
-            <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-[#f1f1f4] flex-shrink-0">
-              {healthEditing ? (
-                <button
-                  onClick={() => { setHealthEditing(false); setHealthFocusField(null); }}
-                  className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0"
-                  aria-label="Back"
-                >
-                  <ArrowLeftIcon className="w-4 h-4 text-mfneutralsn-500" />
-                </button>
-              ) : (
-                <div>
-                  <p className="text-[17px] font-semibold text-mfneutralsn-500 leading-snug">Health details</p>
-                </div>
-              )}
-              {!healthEditing && (
-                <button
-                  onClick={() => { setPanel(null); setHealthEditing(false); setHealthFocusField(null); }}
-                  className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0 ml-3"
-                >
-                  <XIcon className="w-4 h-4 text-mfneutralsn-400" />
-                </button>
-              )}
-            </div>
-            <div className="flex-1 overflow-y-auto">
-              {healthEditing ? (
-                <HealthEditContent
-                  state={health}
-                  focusField={healthFocusField}
-                  onChange={(field, value) => setHealth((prev) => ({ ...prev, [field]: value }))}
-                />
-              ) : (
-                <HealthViewContent
-                  state={health}
-                  onEdit={(field) => { setHealthFocusField(field); setHealthEditing(true); }}
-                />
-              )}
-            </div>
-            {!healthEditing && (
-              <div className="flex-shrink-0 px-4 py-4 border-t border-[#f1f1f4]">
-                <button
-                  onClick={() => { setHealthFocusField(null); setHealthEditing(true); }}
-                  className="w-full h-11 rounded-xl bg-mfprimaryp-400 text-white text-[15px] font-semibold active:opacity-90 transition-opacity"
-                >
-                  Edit
-                </button>
-              </div>
+        <div className="fixed inset-0 z-50 bg-white flex flex-col">
+          <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-[#f1f1f4] flex-shrink-0">
+            <button
+              onClick={healthEditing
+                ? () => { setHealthEditing(false); setHealthFocusField(null); }
+                : () => { setPanel(null); setHealthEditing(false); setHealthFocusField(null); }
+              }
+              className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0"
+              aria-label="Back"
+            >
+              <ArrowLeftIcon className="w-4 h-4 text-mfneutralsn-500" />
+            </button>
+            <p className="text-[17px] font-semibold text-mfneutralsn-500 leading-snug flex-1">Health details</p>
+          </div>
+          <div className="flex-1 overflow-y-auto">
+            {healthEditing ? (
+              <HealthEditContent
+                state={health}
+                focusField={healthFocusField}
+                onChange={(field, value) => setHealth((prev) => ({ ...prev, [field]: value }))}
+              />
+            ) : (
+              <HealthViewContent
+                state={health}
+                onEdit={(field) => { setHealthFocusField(field); setHealthEditing(true); }}
+              />
             )}
           </div>
-        </>
+          {!healthEditing && (
+            <div className="flex-shrink-0 px-4 py-4 border-t border-[#f1f1f4]">
+              <button
+                onClick={() => { setHealthFocusField(null); setHealthEditing(true); }}
+                className="w-full h-11 rounded-xl bg-mfprimaryp-400 text-white text-[15px] font-semibold active:opacity-90 transition-opacity"
+              >
+                Edit
+              </button>
+            </div>
+          )}
+        </div>
       )}
       {panel === "permissions" && (
         <DetailPanel
