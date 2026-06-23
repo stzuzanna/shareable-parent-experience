@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PillIcon, SunIcon, ChevronDownIcon } from "lucide-react";
 import { DesktopNudge } from "../../components/DesktopNudge";
@@ -7,7 +7,7 @@ import { useProfileVariant } from "../../hooks/useProfileVariant";
 import { useChildProfileDesign } from "../../hooks/useChildProfileDesign";
 import { useChildProfileSubpageActive } from "../../hooks/useChildProfileSubpage";
 import { BottomNav } from "../../components/BottomNav/BottomNav";
-import { ChildProfileHeader } from "./components/ChildProfileHeader/ChildProfileHeader";
+import { ChildProfileHeader, NewIdentitySection } from "./components/ChildProfileHeader/ChildProfileHeader";
 import { ChildProfileInfo } from "./components/ChildProfileInfo/ChildProfileInfo";
 import { ChildProfileTabs, TabConfig } from "./components/ChildProfileTabs/ChildProfileTabs";
 import { OverviewContent } from "./components/OverviewContent/OverviewContent";
@@ -102,6 +102,12 @@ export const ChildProfile = (): JSX.Element => {
 
   const tabs = variant === "v2" ? V2_TABS : V1_TABS;
   const [activeTab, setActiveTab] = useState<string>("about");
+  const [headerScrolled, setHeaderScrolled] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = () => {
+    setHeaderScrolled((scrollRef.current?.scrollTop ?? 0) > 140);
+  };
 
   useEffect(() => {
     if (!tabs.some((t) => t.id === activeTab)) setActiveTab("about");
@@ -122,13 +128,20 @@ export const ChildProfile = (): JSX.Element => {
 
   const appContent = (
     <div className={`relative flex flex-col bg-white ${shouldShowFrame ? "h-full" : "min-h-screen"} ${!shouldShowFrame ? "touch:h-screen" : ""}`}>
-      <ChildProfileHeader />
+      <ChildProfileHeader scrolled={headerScrolled} />
 
-      <div className={`flex-1 overflow-y-auto ${!shouldShowFrame ? "touch:pb-20" : ""}`}>
+      <div
+        ref={scrollRef}
+        onScroll={handleScroll}
+        className={`flex-1 overflow-y-auto ${!shouldShowFrame ? "touch:pb-20" : ""}`}
+      >
         {!inSubpage && (
           <>
             {/* Classic design restores the old identity info block */}
             {design === "classic" && <ChildProfileInfo />}
+
+            {/* New design: identity section scrolls away, triggering compact header */}
+            {design === "new" && <NewIdentitySection />}
 
             {design === "new" ? <NewPrioritySection /> : <ClassicPrioritySection />}
 

@@ -28,7 +28,7 @@ const DesignPill = () => {
 const TitleBar = ({ shouldShowFrame }: { shouldShowFrame: boolean }) => {
   const navigate = useNavigate();
   return (
-    <div className={`flex flex-col w-full bg-white ${!shouldShowFrame ? "sticky top-0 z-50" : ""}`}>
+    <div className="flex flex-col w-full bg-white">
       {shouldShowFrame && (
         <div className="flex items-center justify-between px-5 pt-2 pb-1">
           <span className="font-semibold text-mfneutralsn-500 text-[15px] tracking-[-0.3px]">9:41</span>
@@ -54,63 +54,83 @@ const TitleBar = ({ shouldShowFrame }: { shouldShowFrame: boolean }) => {
   );
 };
 
-const NewHeader = ({ shouldShowFrame }: { shouldShowFrame: boolean }) => (
-  <div className="flex flex-col bg-white">
-    <TitleBar shouldShowFrame={shouldShowFrame} />
+// The full identity section that lives inside the scroll container (scrolls away)
+export const NewIdentitySection = (): JSX.Element => (
+  <div className="flex flex-col items-center px-4 pt-4 pb-5 bg-white">
+    <div className="relative mb-4">
+      <Avatar className="w-[88px] h-[88px]">
+        <AvatarImage
+          src={`${BASE_PATH}pexels-daisy-anderson-5581091-1.png`}
+          alt="Abby Freedman"
+          className="object-cover"
+        />
+        <AvatarFallback className="text-lg">AF</AvatarFallback>
+      </Avatar>
+      <div className="absolute bottom-0.5 right-0.5 w-6 h-6 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
+          <path d="M20 6L9 17l-5-5" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+    </div>
 
-    {/* Identity: centered avatar + name + tags */}
-    <div className="flex flex-col items-center px-4 pt-4 pb-5">
-      <div className="relative mb-4">
-        <Avatar className="w-[88px] h-[88px]">
-          <AvatarImage
-            src={`${BASE_PATH}pexels-daisy-anderson-5581091-1.png`}
-            alt="Abby Freedman"
-            className="object-cover"
-          />
-          <AvatarFallback className="text-lg">AF</AvatarFallback>
+    <h2 className="text-[22px] font-semibold text-mfneutralsn-500 leading-tight text-center">
+      Abby Freedman
+    </h2>
+    <p className="text-[14px] text-mfneutralsn-300 mt-1 text-center">
+      Bunnies room · 1 year 4 months
+    </p>
+
+    <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
+      <div className="flex items-center gap-1.5 pl-1 pr-3 h-7 rounded-full border border-mfneutralsn-200 bg-white">
+        <Avatar className="w-5 h-5">
+          <AvatarImage src={KEY_PERSON_AVATAR} alt={KEY_PERSON_NAME} />
+          <AvatarFallback className="text-[10px]">OW</AvatarFallback>
         </Avatar>
-        <div className="absolute bottom-0.5 right-0.5 w-6 h-6 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
-            <path d="M20 6L9 17l-5-5" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </div>
+        <span className="text-[13px] text-mfneutralsn-500 leading-none">{KEY_PERSON_NAME}</span>
       </div>
-
-      <h2 className="text-[22px] font-semibold text-mfneutralsn-500 leading-tight text-center">
-        Abby Freedman
-      </h2>
-      <p className="text-[14px] text-mfneutralsn-300 mt-1 text-center">
-        Bunnies room · 1 year 4 months
-      </p>
-
-      <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
-        <div className="flex items-center gap-1.5 pl-1 pr-3 h-7 rounded-full border border-mfneutralsn-200 bg-white">
-          <Avatar className="w-5 h-5">
-            <AvatarImage src={KEY_PERSON_AVATAR} alt={KEY_PERSON_NAME} />
-            <AvatarFallback className="text-[10px]">OW</AvatarFallback>
-          </Avatar>
-          <span className="text-[13px] text-mfneutralsn-500 leading-none">{KEY_PERSON_NAME}</span>
-        </div>
-        <span
-          className="inline-flex items-center px-2.5 h-7 rounded-full text-[13px] leading-none border"
-          style={{ backgroundColor: "#fffcf5", borderColor: "#fac12e", color: "#2d2d39" }}
-        >
-          Lactose
-        </span>
-      </div>
+      <span
+        className="inline-flex items-center px-2.5 h-7 rounded-full text-[13px] leading-none border"
+        style={{ backgroundColor: "#fffcf5", borderColor: "#fac12e", color: "#2d2d39" }}
+      >
+        Lactose
+      </span>
     </div>
   </div>
 );
 
-const ClassicHeader = ({ shouldShowFrame }: { shouldShowFrame: boolean }) => (
-  <TitleBar shouldShowFrame={shouldShowFrame} />
+// Compact identity row shown inside the sticky header when scrolled
+const CompactIdentityRow = (): JSX.Element => (
+  <div className="flex items-center gap-2.5 px-5 pb-3">
+    <Avatar className="w-7 h-7 flex-shrink-0">
+      <AvatarImage
+        src={`${BASE_PATH}pexels-daisy-anderson-5581091-1.png`}
+        alt="Abby Freedman"
+        className="object-cover"
+      />
+      <AvatarFallback className="text-[10px]">AF</AvatarFallback>
+    </Avatar>
+    <span className="text-[15px] font-semibold text-mfneutralsn-500 leading-tight">Abby Freedman</span>
+  </div>
 );
 
-export const ChildProfileHeader = (): JSX.Element => {
+const NewHeader = ({ scrolled, shouldShowFrame }: { scrolled: boolean; shouldShowFrame: boolean }) => (
+  <div className={`flex flex-col bg-white ${!shouldShowFrame ? "sticky top-0 z-40" : ""}`}>
+    <TitleBar shouldShowFrame={shouldShowFrame} />
+    {scrolled && <CompactIdentityRow />}
+  </div>
+);
+
+const ClassicHeader = ({ shouldShowFrame }: { shouldShowFrame: boolean }) => (
+  <div className={`flex flex-col bg-white ${!shouldShowFrame ? "sticky top-0 z-40" : ""}`}>
+    <TitleBar shouldShowFrame={shouldShowFrame} />
+  </div>
+);
+
+export const ChildProfileHeader = ({ scrolled = false }: { scrolled?: boolean }): JSX.Element => {
   const { shouldShowFrame } = useDeviceDetection();
   const design = useChildProfileDesign();
 
   return design === "new"
-    ? <NewHeader shouldShowFrame={shouldShowFrame} />
+    ? <NewHeader scrolled={scrolled} shouldShowFrame={shouldShowFrame} />
     : <ClassicHeader shouldShowFrame={shouldShowFrame} />;
 };
