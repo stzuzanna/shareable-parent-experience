@@ -1012,16 +1012,16 @@ const SIBLING = { name: "Tom Freedman", role: "Sibling", room: "Caterpillars", f
 
 type ContactExtras = { email?: string; phone?: string };
 
-// Contact info row (plain — no chevron, no EditableRow)
-const ContactInfoRow = ({
+// Inline contact detail chip: icon + value (or placeholder) — used side by side in one row
+const ContactInfoChip = ({
   icon, value, placeholder, onAdd,
 }: { icon: React.ReactNode; value?: string; placeholder: string; onAdd?: () => void }) => (
   <div
-    className={`flex items-center gap-3 py-2.5 ${!value && onAdd ? "cursor-pointer" : ""}`}
+    className={`flex items-center gap-1 ${!value && onAdd ? "cursor-pointer" : ""}`}
     onClick={!value && onAdd ? onAdd : undefined}
   >
     <span className={value ? "text-mfneutralsn-400" : "text-mfneutralsn-300"}>{icon}</span>
-    <span className={`text-[14px] ${value ? "text-mfneutralsn-500" : "text-mfneutralsn-300 italic"}`}>
+    <span className={`text-[13px] ${value ? "text-mfneutralsn-500" : "text-mfneutralsn-300"}`}>
       {value || placeholder}
     </span>
   </div>
@@ -1053,29 +1053,31 @@ const ContactCard = ({
         </div>
         {contact.primary && <PrimaryBadge />}
       </div>
-      {/* Contact rows */}
-      <ContactInfoRow
-        icon={<MailIcon className="w-4 h-4" />}
-        value={extras.email}
-        placeholder="Add email"
-        onAdd={() => openEdit({
-          title: `${contact.name} — Email`,
-          subtitle: `Email address we can reach ${contact.role.toLowerCase()} on.`,
-          type: "text", value: extras.email ?? "", placeholder: "name@example.com",
-          key: { section: "family", field: `${contact.id}:email` },
-        })}
-      />
-      <ContactInfoRow
-        icon={<PhoneIcon className="w-4 h-4" />}
-        value={extras.phone}
-        placeholder="Phone missing"
-        onAdd={() => openEdit({
-          title: `${contact.name} — Phone`,
-          subtitle: `Phone number we can reach ${contact.role.toLowerCase()} on.`,
-          type: "text", value: extras.phone ?? "", placeholder: "+1 (555) 123-4567",
-          key: { section: "family", field: `${contact.id}:phone` },
-        })}
-      />
+      {/* Email + phone on the same row */}
+      <div className="flex items-center gap-4 mt-0.5">
+        <ContactInfoChip
+          icon={<MailIcon className="w-4 h-4" />}
+          value={extras.email}
+          placeholder="Add email"
+          onAdd={() => openEdit({
+            title: `${contact.name} — Email`,
+            subtitle: `Email address we can reach ${contact.role.toLowerCase()} on.`,
+            type: "text", value: extras.email ?? "", placeholder: "name@example.com",
+            key: { section: "family", field: `${contact.id}:email` },
+          })}
+        />
+        <ContactInfoChip
+          icon={<PhoneIcon className="w-4 h-4" />}
+          value={extras.phone}
+          placeholder="Phone missing"
+          onAdd={() => openEdit({
+            title: `${contact.name} — Phone`,
+            subtitle: `Phone number we can reach ${contact.role.toLowerCase()} on.`,
+            type: "text", value: extras.phone ?? "", placeholder: "+1 (555) 123-4567",
+            key: { section: "family", field: `${contact.id}:phone` },
+          })}
+        />
+      </div>
     </div>
   );
 };
