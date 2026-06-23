@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ChevronRightIcon, ArrowLeftIcon, SunIcon, ThermometerIcon, StethoscopeIcon, CheckCircle2Icon, XCircleIcon, HelpCircleIcon, PlusIcon, LockIcon, LanguagesIcon, HeartIcon, MapPinIcon, AlertTriangleIcon, MailIcon, PhoneIcon, FileTextIcon, IdCardIcon, InfoIcon } from "lucide-react";
+import { ChevronRightIcon, ArrowLeftIcon, SunIcon, ThermometerIcon, StethoscopeIcon, CheckCircle2Icon, XCircleIcon, HelpCircleIcon, PlusIcon, LockIcon, LanguagesIcon, HeartIcon, MapPinIcon, AlertTriangleIcon, MailIcon, PhoneIcon, FileTextIcon, IdCardIcon, InfoIcon, XIcon, UsersIcon, UserIcon, CakeIcon, ShieldCheckIcon, CalendarOffIcon } from "lucide-react";
 import { useProfileVariant } from "../../../../hooks/useProfileVariant";
 import { useDeviceDetection } from "../../../../hooks/useDeviceDetection";
 import { useChildProfileDesign } from "../../../../hooks/useChildProfileDesign";
-import { setChildProfileSubpageActive } from "../../../../hooks/useChildProfileSubpage";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
 import { AddLeaveSheet } from "../../../../components/AddLeaveSheet/AddLeaveSheet";
 import { EditFieldSheet, type EditFieldConfig } from "../../../../components/EditFieldSheet/EditFieldSheet";
@@ -50,24 +49,78 @@ const formatHumanDate = (iso: string): string => {
 const MOTHER_AVATAR = "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=400";
 const FATHER_AVATAR = "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=400";
 
+// ── Detail panel overlay ──────────────────────────────────────────────────────
+
+const DetailPanel = ({
+  title,
+  subtitle,
+  onClose,
+  footer,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  onClose: () => void;
+  footer?: React.ReactNode;
+  children: React.ReactNode;
+}) => (
+  <>
+    {/* backdrop */}
+    <div className="fixed inset-0 z-40 bg-black/20" onClick={onClose} />
+    {/* panel — slides up from bottom on mobile */}
+    <div className="fixed inset-x-0 bottom-0 top-16 z-50 bg-white flex flex-col rounded-t-2xl overflow-hidden shadow-xl">
+      {/* header */}
+      <div className="flex items-start justify-between px-4 pt-4 pb-3 border-b border-[#f1f1f4] flex-shrink-0">
+        <div>
+          <p className="text-[17px] font-semibold text-mfneutralsn-500 leading-snug">{title}</p>
+          {subtitle && <p className="text-[13px] text-mfneutralsn-300 mt-0.5">{subtitle}</p>}
+        </div>
+        <button
+          onClick={onClose}
+          className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0 ml-3 mt-0.5"
+        >
+          <XIcon className="w-4 h-4 text-mfneutralsn-400" />
+        </button>
+      </div>
+      {/* body */}
+      <div className="flex-1 overflow-y-auto">{children}</div>
+      {/* footer */}
+      {footer && (
+        <div className="flex-shrink-0 px-4 py-4 border-t border-[#f1f1f4] flex gap-3">
+          {footer}
+        </div>
+      )}
+    </div>
+  </>
+);
+
 // ── Child-pro style primitives ────────────────────────────────────────────────
 
-// Flat section separated by a bottom border, with title + optional description + View all
+// Flat section separated by a bottom border, with icon + title + optional description + View all
 const Section = ({
+  Icon,
   title,
   description,
   onViewAll,
   children,
 }: {
+  Icon?: React.ElementType;
   title: string;
   description?: string;
   onViewAll?: () => void;
   children: React.ReactNode;
 }) => (
   <div className="px-4 py-4 border-b border-[#f1f1f4] flex flex-col gap-3">
-    <div>
-      <p className="text-[14px] font-semibold text-mfneutralsn-500">{title}</p>
-      {description && <p className="text-[13px] text-mfneutralsn-300 mt-0.5">{description}</p>}
+    <div className="flex items-start gap-2">
+      {Icon && (
+        <div className="w-6 h-6 rounded-md bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0 mt-0.5">
+          <Icon className="w-4 h-4 text-mfneutralsn-400" />
+        </div>
+      )}
+      <div>
+        <p className="text-[14px] font-semibold text-mfneutralsn-500">{title}</p>
+        {description && <p className="text-[13px] text-mfneutralsn-300 mt-0.5">{description}</p>}
+      </div>
     </div>
     <div className="flex flex-col gap-2">{children}</div>
     {onViewAll && (
@@ -81,13 +134,23 @@ const Section = ({
   </div>
 );
 
+// AboutRow: icon square + value
+const AboutRow = ({ Icon, value }: { Icon: React.ElementType; value: string }) => (
+  <div className="flex items-center gap-3 py-2">
+    <div className="w-6 h-6 rounded-md bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0">
+      <Icon className="w-4 h-4 text-mfneutralsn-400" />
+    </div>
+    <span className="text-[14px] text-mfneutralsn-400">{value}</span>
+  </div>
+);
+
 // Contact summary card: bordered, tappable, with avatar + name + relation + pill
 const ContactSummaryCard = ({
   avatarSrc,
   fallback,
   name,
   relation,
-  info,
+  additionalInfo,
   pill,
   onClick,
 }: {
@@ -95,7 +158,7 @@ const ContactSummaryCard = ({
   fallback: string;
   name: string;
   relation: string;
-  info?: string;
+  additionalInfo?: string;
   pill: "Primary" | "Secondary";
   onClick?: () => void;
 }) => (
@@ -110,7 +173,7 @@ const ContactSummaryCard = ({
     <div className="flex-1 min-w-0">
       <p className="text-[14px] font-semibold text-mfneutralsn-500 leading-tight">{name}</p>
       <p className="text-[13px] text-mfneutralsn-300 mt-0.5 leading-tight truncate">
-        {relation}{info ? ` · ${info}` : ""}
+        {relation}{additionalInfo ? ` · ${additionalInfo}` : ""}
       </p>
     </div>
     <span
@@ -278,7 +341,6 @@ const SubsectionTitle = ({ children }: { children: React.ReactNode }) => (
   <p className="px-4 pt-5 pb-3 text-[16px] font-medium text-mfneutralsn-400">{children}</p>
 );
 
-// Clickable row for subpages: label / value / chevron → opens EditFieldSheet
 // Clickable row for subpages: icon + value (or "Add X" placeholder) + chevron.
 // Per Figma 1545-22397 there's no label above the value, and the chevron only
 // appears when a value is set. Both states open EditFieldSheet on tap.
@@ -630,11 +692,30 @@ type ContactDef = {
 };
 
 const CONTACTS: ContactDef[] = [
-  { id: "sarah", name: "Sarah Freedman", role: "Mother", avatar: MOTHER_AVATAR, fallback: "SF", primary: true },
-  { id: "michael", name: "Michael Freedman", role: "Father", avatar: FATHER_AVATAR, fallback: "MF", primary: false },
+  { id: "sarah",   name: "Sarah Freedman",   role: "Mother",      avatar: MOTHER_AVATAR, fallback: "SF", primary: true },
+  { id: "michael", name: "Michael Freedman", role: "Father",      avatar: FATHER_AVATAR, fallback: "MF", primary: false },
+  { id: "grandma", name: "Grandma Freedman", role: "Grandmother", avatar: "",            fallback: "GF", primary: false },
+  { id: "grandpa", name: "Grandpa Freedman", role: "Grandfather", avatar: "",            fallback: "GF", primary: false },
 ];
 
+const SIBLING = { name: "Tom Freedman", role: "Sibling", room: "Caterpillars", fallback: "TF" };
+
 type ContactExtras = { email?: string; phone?: string };
+
+// Contact info row (plain — no chevron, no EditableRow)
+const ContactInfoRow = ({
+  icon, value, placeholder, onAdd,
+}: { icon: React.ReactNode; value?: string; placeholder: string; onAdd?: () => void }) => (
+  <div
+    className={`flex items-center gap-3 py-2.5 ${!value && onAdd ? "cursor-pointer" : ""}`}
+    onClick={!value && onAdd ? onAdd : undefined}
+  >
+    <span className={value ? "text-mfneutralsn-400" : "text-mfneutralsn-300"}>{icon}</span>
+    <span className={`text-[14px] ${value ? "text-mfneutralsn-500" : "text-mfneutralsn-300 italic"}`}>
+      {value || placeholder}
+    </span>
+  </div>
+);
 
 const ContactCard = ({
   contact,
@@ -647,54 +728,44 @@ const ContactCard = ({
 }) => {
   const Badge = contact.primary ? PrimaryBadge : SecondaryBadge;
   return (
-    <div className="px-4 pt-4 pb-1 border-b border-mfneutralsn-75 last:border-b-0 flex flex-col gap-2">
-      <div className="flex items-center justify-between gap-3">
+    <div className="mx-4 mb-3 p-4 rounded-2xl border border-[#f1f1f4] bg-white flex flex-col gap-1">
+      {/* Top row: initials avatar + name + pill */}
+      <div className="flex items-center justify-between gap-3 mb-1">
         <div className="flex items-center gap-3 min-w-0">
-          <Avatar className="w-9 h-9 flex-shrink-0">
-            <AvatarImage src={contact.avatar} alt={contact.name} />
-            <AvatarFallback>{contact.fallback}</AvatarFallback>
-          </Avatar>
+          {/* Initials-only avatar matching canvas blue circle style */}
+          <div className="w-10 h-10 rounded-full bg-[#dce8fc] flex items-center justify-center flex-shrink-0">
+            <span className="text-[13px] font-semibold text-[#1a6fc4]">{contact.fallback}</span>
+          </div>
           <div className="min-w-0">
-            <p className="text-[14px] font-medium text-mfneutralsn-500 truncate">{contact.name}</p>
-            <p className="text-[14px] text-mfneutralsn-300">{contact.role}</p>
+            <p className="text-[14px] font-semibold text-mfneutralsn-500 leading-tight">{contact.name}</p>
+            <p className="text-[13px] text-mfneutralsn-300 mt-0.5">{contact.role} · Additional info</p>
           </div>
         </div>
-        <Badge />
+        {contact.primary && <PrimaryBadge />}
       </div>
-      <div className="-mx-4">
-        <EditableRow
-          icon={<MailIcon className="w-4 h-4" />}
-          label="Email"
-          value={extras.email ?? ""}
-          placeholder="Add email"
-          onPress={() =>
-            openEdit({
-              title: `${contact.name} — Email`,
-              subtitle: `Email address we can reach ${contact.role.toLowerCase()} on.`,
-              type: "text",
-              value: extras.email ?? "",
-              placeholder: "name@example.com",
-              key: { section: "family", field: `${contact.id}:email` },
-            })
-          }
-        />
-        <EditableRow
-          icon={<PhoneIcon className="w-4 h-4" />}
-          label="Phone number"
-          value={extras.phone ?? ""}
-          placeholder="Add phone"
-          onPress={() =>
-            openEdit({
-              title: `${contact.name} — Phone`,
-              subtitle: `Phone number we can reach ${contact.role.toLowerCase()} on.`,
-              type: "text",
-              value: extras.phone ?? "",
-              placeholder: "+1 (555) 123-4567",
-              key: { section: "family", field: `${contact.id}:phone` },
-            })
-          }
-        />
-      </div>
+      {/* Contact rows */}
+      <ContactInfoRow
+        icon={<MailIcon className="w-4 h-4" />}
+        value={extras.email}
+        placeholder="Add email"
+        onAdd={() => openEdit({
+          title: `${contact.name} — Email`,
+          subtitle: `Email address we can reach ${contact.role.toLowerCase()} on.`,
+          type: "text", value: extras.email ?? "", placeholder: "name@example.com",
+          key: { section: "family", field: `${contact.id}:email` },
+        })}
+      />
+      <ContactInfoRow
+        icon={<PhoneIcon className="w-4 h-4" />}
+        value={extras.phone}
+        placeholder="Phone missing"
+        onAdd={() => openEdit({
+          title: `${contact.name} — Phone`,
+          subtitle: `Phone number we can reach ${contact.role.toLowerCase()} on.`,
+          type: "text", value: extras.phone ?? "", placeholder: "+1 (555) 123-4567",
+          key: { section: "family", field: `${contact.id}:phone` },
+        })}
+      />
     </div>
   );
 };
@@ -706,34 +777,28 @@ const FamilyDetail = ({
   extras: Record<string, ContactExtras>;
   openEdit: (config: EditFieldConfig & { key: FieldKey }) => void;
 }) => (
-  <div className="flex flex-col pb-24">
-    <SubsectionTitle>Parents</SubsectionTitle>
+  <div className="flex flex-col pt-3 pb-4">
     {CONTACTS.map((c) => (
-      <ContactCard
-        key={c.id}
-        contact={c}
-        extras={extras[c.id] ?? {}}
-        openEdit={openEdit}
-      />
+      <ContactCard key={c.id} contact={c} extras={extras[c.id] ?? {}} openEdit={openEdit} />
     ))}
-
-    <SubsectionTitle>Siblings</SubsectionTitle>
-    <div className="px-4 py-4">
-      <p className="text-[14px] text-mfneutralsn-300 mb-3 leading-snug">
-        Link a sibling so you can see both children in one place.
-      </p>
-      <button className="flex items-center gap-2 h-9 px-3 rounded-lg border border-mfprimaryp-400 text-[14px] font-medium text-mfprimaryp-400 active:bg-mfprimaryp-50">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-          <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        </svg>
-        Link siblings
-      </button>
+    {/* Sibling card */}
+    <div className="mx-4 mt-1 p-4 rounded-2xl border border-[#f1f1f4] bg-white flex items-center gap-3">
+      <div className="w-10 h-10 rounded-full bg-[#dce8fc] flex items-center justify-center flex-shrink-0">
+        <span className="text-[13px] font-semibold text-[#1a6fc4]">{SIBLING.fallback}</span>
+      </div>
+      <div className="min-w-0">
+        <p className="text-[14px] font-semibold text-mfneutralsn-500 leading-tight">{SIBLING.name}</p>
+        <p className="text-[13px] text-mfneutralsn-300 mt-0.5">{SIBLING.role} · {SIBLING.room}</p>
+      </div>
     </div>
   </div>
 );
 
 // ── Main component ────────────────────────────────────────────────────────────
 
+type PanelKey = "family" | "basic" | "health" | "permissions" | "leave" | null;
+
+// Keep the Section type for care navigation (classic layout / care subpage)
 type Section = "care" | "family" | "basic" | "health" | "leave" | "permissions" | null;
 
 const sectionTitles: Record<NonNullable<Section>, string> = {
@@ -914,7 +979,10 @@ export const OverviewContent = (): JSX.Element => {
   const { shouldShowFrame } = useDeviceDetection();
   const navigate = useNavigate();
   const location = useLocation();
+  // For classic layout: full-screen section navigation
   const [section, setSection] = useState<Section>(null);
+  // For new layout: panel overlay
+  const [panel, setPanel] = useState<PanelKey>(null);
   const [showLeaveSheet, setShowLeaveSheet] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -984,15 +1052,9 @@ export const OverviewContent = (): JSX.Element => {
     }
   }, [location.state, navigate]);
 
-  // When entering/leaving a detail section, notify ChildProfile (so it hides
-  // the tabs + child info row while a subpage is open) and then scroll the
-  // surrounding overflow container to the top. The scroll runs in a
-  // requestAnimationFrame so the parent has actually re-rendered with the
-  // hidden tabs by the time we set scrollTop — otherwise the scroll lands at
-  // the old scroll offset and the user sees the middle of the subpage.
+  // Classic layout: scroll to top on section change
   useEffect(() => {
     setShowLeaveSheet(false);
-    setChildProfileSubpageActive(section !== null);
     const handle = requestAnimationFrame(() => {
       const scrollable = rootRef.current?.closest(".overflow-y-auto") as HTMLElement | null;
       if (scrollable) scrollable.scrollTop = 0;
@@ -1000,10 +1062,8 @@ export const OverviewContent = (): JSX.Element => {
     return () => cancelAnimationFrame(handle);
   }, [section]);
 
-  // Make sure the global flag is cleared if this view unmounts mid-subpage.
-  useEffect(() => () => setChildProfileSubpageActive(false), []);
-
-  if (section !== null) {
+  // ── Classic layout full-screen section view ─────────────────────────────────
+  if (design === "classic" && section !== null) {
     return (
       <div ref={rootRef} className="flex flex-col bg-white min-h-full">
         <SectionHeader
@@ -1108,116 +1168,79 @@ export const OverviewContent = (): JSX.Element => {
   return (
     <div ref={rootRef} className="flex flex-col bg-white pb-24">
       {/* Family */}
-      <Section title="Family" description="2 contacts" onViewAll={() => setSection("family")}>
+      <Section
+        Icon={UsersIcon}
+        title="Family"
+        description="4 contacts · 1 sibling"
+        onViewAll={() => setPanel("family")}
+      >
         <ContactSummaryCard
           avatarSrc={MOTHER_AVATAR}
           fallback="SF"
           name="Sarah Freedman"
           relation="Mother"
-          info={familyExtras.sarah?.phone}
+          additionalInfo="Primary contact"
           pill="Primary"
-          onClick={() => setSection("family")}
+          onClick={() => setPanel("family")}
         />
         <ContactSummaryCard
           avatarSrc={FATHER_AVATAR}
           fallback="MF"
           name="Michael Freedman"
           relation="Father"
-          info={familyExtras.michael?.phone}
           pill="Secondary"
-          onClick={() => setSection("family")}
+          onClick={() => setPanel("family")}
         />
       </Section>
 
-      {/* Basic info */}
-      <Section title="Basic info" description="Personal details" onViewAll={() => setSection("basic")}>
-        <InfoRow
-          label="Date of birth"
-          value={`${formatHumanDate(basicInfo.dateOfBirth) || "1 Feb 2025"} (1 year 4 months)`}
+      {/* About / Basic info */}
+      <Section
+        Icon={UserIcon}
+        title="About"
+        description="Personal details"
+        onViewAll={() => setPanel("basic")}
+      >
+        <AboutRow Icon={CakeIcon} value={`${formatHumanDate(basicInfo.dateOfBirth) || "1 Feb 2025"} (1 year 4 months)`} />
+        <AboutRow
+          Icon={LanguagesIcon}
+          value={basicInfo.languages.length ? basicInfo.languages.join(", ") : "Add languages"}
         />
-        <InfoRow
-          label="Languages"
-          value={basicInfo.languages.length ? basicInfo.languages.join(", ") : undefined}
-          onAdd={() =>
-            openEdit({
-              title: "Languages",
-              subtitle: "Languages spoken at home.",
-              type: "select-multiple",
-              value: basicInfo.languages.join(", "),
-              options: LANGUAGE_OPTIONS_ARR,
-              key: { section: "basic", field: "languages" },
-            })
-          }
+        <AboutRow
+          Icon={UserIcon}
+          value={basicInfo.gender || "Add gender"}
         />
-        <InfoRow
-          label="Gender"
-          value={basicInfo.gender || undefined}
-          onAdd={() =>
-            openEdit({
-              title: "Gender",
-              type: "text",
-              value: basicInfo.gender,
-              key: { section: "basic", field: "gender" },
-            })
-          }
-        />
-        <InfoRow
-          label="Allergy"
-          value={basicInfo.allergy || undefined}
-          onAdd={() =>
-            openEdit({
-              title: "Allergy info",
-              subtitle: "List any allergies the centre should know about.",
-              type: "text",
-              value: basicInfo.allergy,
-              placeholder: "Comma separated",
-              key: { section: "basic", field: "allergy" },
-            })
-          }
-        />
+        {basicInfo.allergy && (
+          <AboutRow Icon={AlertTriangleIcon} value={basicInfo.allergy} />
+        )}
       </Section>
 
       {/* Health details */}
-      <Section title="Health details" onViewAll={() => setSection("health")}>
-        <InfoRow
-          label="Doctor"
-          value={health.doctorName || undefined}
-          onAdd={() =>
-            openEdit({
-              title: "Doctor name",
-              type: "text",
-              value: health.doctorName,
-              key: { section: "health", field: "doctorName" },
-            })
-          }
-        />
-        <InfoRow
-          label="Tolerates penicillin"
-          value={health.toleratesPenicillin || undefined}
-        />
-        <InfoRow
-          label="Special notes"
-          value={health.specialNotes || undefined}
-          onAdd={() =>
-            openEdit({
-              title: "Special notes",
-              type: "text",
-              value: health.specialNotes,
-              key: { section: "health", field: "specialNotes" },
-            })
-          }
-        />
+      <Section
+        Icon={StethoscopeIcon}
+        title="Health details"
+        onViewAll={() => setPanel("health")}
+      >
+        <AboutRow Icon={StethoscopeIcon} value={health.doctorName || "Add doctor info"} />
+        <AboutRow Icon={HelpCircleIcon} value={health.toleratesPenicillin ? `Penicillin: ${health.toleratesPenicillin}` : "Add penicillin info"} />
       </Section>
 
       {/* Permissions */}
-      <Section title="Permissions" onViewAll={() => setSection("permissions")}>
+      <Section
+        Icon={ShieldCheckIcon}
+        title="Permissions"
+        onViewAll={() => setPanel("permissions")}
+      >
         {LATEST_PERMISSIONS.map((p) => (
           <PermissionRow key={p.id} item={p} />
         ))}
       </Section>
 
       {/* Leave */}
-      <Section title="Leave" onViewAll={() => setSection("leave")}>
+      <Section
+        Icon={CalendarOffIcon}
+        title="Leave"
+        onViewAll={() => setPanel("leave")}
+      >
         <LeaveRow
           icon={<SunIcon className="w-[18px] h-[18px] text-mfyellowy-400" />}
           label="1 - 10 Jul 26"
@@ -1232,6 +1255,75 @@ export const OverviewContent = (): JSX.Element => {
         />
       </Section>
 
+      {/* Panel overlays */}
+      {panel === "family" && (
+        <DetailPanel
+          title="Family"
+          subtitle="4 contacts · 1 sibling"
+          onClose={() => setPanel(null)}
+          footer={
+            <>
+              <button className="flex-1 h-10 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] font-medium text-mfneutralsn-500 active:bg-gray-50">
+                Link sibling
+              </button>
+              <button className="flex-1 h-10 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] font-medium text-mfneutralsn-500 active:bg-gray-50">
+                Add contact
+              </button>
+            </>
+          }
+        >
+          <FamilyDetail extras={familyExtras} openEdit={openEdit} />
+        </DetailPanel>
+      )}
+      {panel === "basic" && (
+        <DetailPanel
+          title="About"
+          subtitle="Personal details"
+          onClose={() => setPanel(null)}
+        >
+          <BasicInfoDetail state={basicInfo} openEdit={openEdit} />
+        </DetailPanel>
+      )}
+      {panel === "health" && (
+        <DetailPanel
+          title="Health details"
+          onClose={() => setPanel(null)}
+        >
+          <HealthDetailsDetail state={health} openEdit={openEdit} />
+        </DetailPanel>
+      )}
+      {panel === "permissions" && (
+        <DetailPanel
+          title="Permissions"
+          onClose={() => setPanel(null)}
+        >
+          <PermissionsDetail />
+        </DetailPanel>
+      )}
+      {panel === "leave" && (
+        <DetailPanel
+          title="Leave"
+          onClose={() => setPanel(null)}
+          footer={
+            <button
+              type="button"
+              onClick={() => setShowLeaveSheet(true)}
+              className="flex items-center gap-1.5 px-3 h-9 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] font-medium text-mfneutralsn-500 active:bg-gray-50"
+            >
+              <PlusIcon className="w-3.5 h-3.5" />
+              Add leave
+            </button>
+          }
+        >
+          <LeaveDetail />
+        </DetailPanel>
+      )}
+
+      <AddLeaveSheet
+        isOpen={panel === "leave" && showLeaveSheet}
+        onClose={() => setShowLeaveSheet(false)}
+        useAbsolute={shouldShowFrame}
+      />
       <EditFieldSheet
         isOpen={editingField !== null}
         field={editingField}
