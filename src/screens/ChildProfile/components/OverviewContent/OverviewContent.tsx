@@ -1593,24 +1593,32 @@ export const OverviewContent = (): JSX.Element => {
 
       {/* Panel overlays */}
       {panel === "family" && (
-        <DetailPanel
-          title="Family"
-          subtitle="4 contacts · 1 sibling"
-          onClose={() => setPanel(null)}
-          bottomClass={shouldShowFrame ? "bottom-0" : "bottom-20"}
-          footer={
-            <>
-              <button className="flex-1 h-10 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] font-medium text-mfneutralsn-500 active:bg-gray-50">
-                Link sibling
-              </button>
-              <button className="flex-1 h-10 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] font-medium text-mfneutralsn-500 active:bg-gray-50">
-                Add contact
-              </button>
-            </>
-          }
-        >
-          <FamilyDetail extras={familyExtras} openEdit={openEdit} />
-        </DetailPanel>
+        <div className="fixed inset-0 z-50 bg-white flex flex-col">
+          <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-[#f1f1f4] flex-shrink-0">
+            <button
+              onClick={() => setPanel(null)}
+              className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0"
+              aria-label="Back"
+            >
+              <ArrowLeftIcon className="w-4 h-4 text-mfneutralsn-500" />
+            </button>
+            <div className="flex-1 min-w-0">
+              <p className="text-[17px] font-semibold text-mfneutralsn-500 leading-snug">Family</p>
+              <p className="text-[13px] text-mfneutralsn-300 mt-0.5">4 contacts · 1 sibling</p>
+            </div>
+          </div>
+          <div className="flex-1 overflow-y-auto">
+            <FamilyDetail extras={familyExtras} openEdit={openEdit} />
+          </div>
+          <div className="flex-shrink-0 px-4 py-4 border-t border-[#f1f1f4] flex gap-3">
+            <button className="flex-1 h-10 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] font-medium text-mfneutralsn-500 active:bg-gray-50">
+              Link sibling
+            </button>
+            <button className="flex-1 h-10 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] font-medium text-mfneutralsn-500 active:bg-gray-50">
+              Add contact
+            </button>
+          </div>
+        </div>
       )}
       {panel === "basic" && (
         <div className="fixed inset-0 z-50 bg-white flex flex-col">
