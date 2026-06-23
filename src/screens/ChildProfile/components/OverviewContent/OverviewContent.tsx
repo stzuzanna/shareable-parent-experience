@@ -57,18 +57,20 @@ const DetailPanel = ({
   onClose,
   footer,
   children,
+  bottomClass = "bottom-0",
 }: {
   title: string;
   subtitle?: string;
   onClose: () => void;
   footer?: React.ReactNode;
   children: React.ReactNode;
+  bottomClass?: string;
 }) => (
   <>
     {/* backdrop */}
     <div className="fixed inset-0 z-40 bg-black/20" onClick={onClose} />
     {/* panel — slides up from bottom on mobile */}
-    <div className="fixed inset-x-0 bottom-0 top-16 z-50 bg-white flex flex-col rounded-t-2xl overflow-hidden shadow-xl">
+    <div className={`fixed inset-x-0 top-16 z-50 bg-white flex flex-col rounded-t-2xl overflow-hidden shadow-xl ${bottomClass}`}>
       {/* header */}
       <div className="flex items-start justify-between px-4 pt-4 pb-3 border-b border-[#f1f1f4] flex-shrink-0">
         <div>
@@ -1586,6 +1588,7 @@ export const OverviewContent = (): JSX.Element => {
           title="Family"
           subtitle="4 contacts · 1 sibling"
           onClose={() => setPanel(null)}
+          bottomClass={shouldShowFrame ? "bottom-0" : "bottom-20"}
           footer={
             <>
               <button className="flex-1 h-10 rounded-lg border border-mfneutralsn-200 bg-white text-[14px] font-medium text-mfneutralsn-500 active:bg-gray-50">
@@ -1604,7 +1607,7 @@ export const OverviewContent = (): JSX.Element => {
         <>
           {/* backdrop */}
           <div className="fixed inset-0 z-40 bg-black/20" onClick={() => { setPanel(null); setAboutEditing(false); setAboutFocusField(null); }} />
-          <div className="fixed inset-x-0 bottom-0 top-16 z-50 bg-white flex flex-col rounded-t-2xl overflow-hidden shadow-xl">
+          <div className={`fixed inset-x-0 top-16 z-50 bg-white flex flex-col rounded-t-2xl overflow-hidden shadow-xl ${shouldShowFrame ? "bottom-0" : "bottom-20"}`}>
             {/* header */}
             <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-[#f1f1f4] flex-shrink-0">
               {aboutEditing ? (
@@ -1662,7 +1665,7 @@ export const OverviewContent = (): JSX.Element => {
       {panel === "health" && (
         <>
           <div className="fixed inset-0 z-40 bg-black/20" onClick={() => { setPanel(null); setHealthEditing(false); setHealthFocusField(null); }} />
-          <div className="fixed inset-x-0 bottom-0 top-16 z-50 bg-white flex flex-col rounded-t-2xl overflow-hidden shadow-xl">
+          <div className={`fixed inset-x-0 top-16 z-50 bg-white flex flex-col rounded-t-2xl overflow-hidden shadow-xl ${shouldShowFrame ? "bottom-0" : "bottom-20"}`}>
             <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-[#f1f1f4] flex-shrink-0">
               {healthEditing ? (
                 <button
@@ -1717,6 +1720,7 @@ export const OverviewContent = (): JSX.Element => {
         <DetailPanel
           title="Permissions"
           onClose={() => setPanel(null)}
+          bottomClass={shouldShowFrame ? "bottom-0" : "bottom-20"}
         >
           <PermissionsDetail />
         </DetailPanel>
@@ -1725,6 +1729,7 @@ export const OverviewContent = (): JSX.Element => {
         <DetailPanel
           title="Leave"
           onClose={() => setPanel(null)}
+          bottomClass={shouldShowFrame ? "bottom-0" : "bottom-20"}
           footer={
             <button
               type="button"
