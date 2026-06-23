@@ -1,5 +1,5 @@
 import React from "react";
-import { MoreHorizontalIcon, PlusIcon, BellIcon, SearchIcon } from "lucide-react";
+import { BellIcon, SearchIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
 import { useDeviceDetection } from "../../../../hooks/useDeviceDetection";
@@ -35,6 +35,11 @@ const NewHeader = ({ shouldShowFrame }: { shouldShowFrame: boolean }) => (
         <img className="h-4" alt="Status icons" src={`${BASE_PATH}right-side.svg`} />
       </div>
     )}
+
+    {/* Pill in top-right corner, above the avatar */}
+    <div className="flex justify-end w-full mb-3">
+      <DesignPill />
+    </div>
 
     <div className="relative mb-4">
       <Avatar className="w-[88px] h-[88px]">
@@ -74,18 +79,6 @@ const NewHeader = ({ shouldShowFrame }: { shouldShowFrame: boolean }) => (
         Lactose
       </span>
     </div>
-
-    {/* Action bar — pill toggle lives here alongside the Add button */}
-    <div className="flex items-center justify-center gap-3 mt-4">
-      <button className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center text-mfneutralsn-400">
-        <MoreHorizontalIcon className="w-4 h-4" />
-      </button>
-      <button className="h-9 px-5 rounded-full bg-mfprimaryp-400 flex items-center gap-1.5 text-white text-[14px] font-medium">
-        <PlusIcon className="w-4 h-4" />
-        Add
-      </button>
-      <DesignPill />
-    </div>
   </div>
 );
 
@@ -104,15 +97,10 @@ const ClassicHeader = ({ shouldShowFrame }: { shouldShowFrame: boolean }) => {
           <h1 className="text-[20px] font-bold text-mfneutralsn-500 tracking-tight leading-tight">
             Child profile
           </h1>
-          {/* Same multisite-style pill toggle */}
           <DesignPill />
         </div>
         <div className="flex items-center gap-4">
-          <button
-            onClick={() => navigate("/notifications")}
-            aria-label="Notifications"
-            className="relative"
-          >
+          <button onClick={() => navigate("/notifications")} aria-label="Notifications" className="relative">
             <BellIcon className="w-5 h-5 text-mfneutralsn-400" />
             <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full" />
           </button>
