@@ -777,35 +777,57 @@ const BasicInfoDetail = ({
 }: {
   state: BasicInfoState;
   openEdit: (config: EditFieldConfig & { key: FieldKey }) => void;
-}) => {
-  const edit = (title: string, field: string, extras: Partial<EditFieldConfig> = {}) =>
-    openEdit({ title, subtitle: "", type: "text", value: "", key: { section: "basic", field }, ...extras });
-  return (
-    <div className="flex flex-col gap-6 px-4 pt-6 pb-24">
-      {/* Basic info */}
-      <div className="flex flex-col">
-        <PanelSectionLabel>Basic info</PanelSectionLabel>
-        <div className="flex flex-col">
-          <AboutInfoRow first label="Name" value="Abby Freedman" onEdit={() => edit("Child name", "name", { subtitle: "Your child's full name.", value: "Abby Freedman" })} />
-          <AboutInfoRow label="Date of birth" value={state.dateOfBirth ? `${formatHumanDate(state.dateOfBirth)} (1 year 4 months)` : undefined} onAdd={() => edit("Date of birth", "dateOfBirth", { type: "date", value: state.dateOfBirth })} onEdit={() => edit("Date of birth", "dateOfBirth", { type: "date", value: state.dateOfBirth })} />
-          <AboutInfoRow label="Languages" value={state.languages.join(", ") || undefined} onAdd={() => edit("Languages", "languages", { value: state.languages.join(", "), placeholder: "English, Spanish" })} onEdit={() => edit("Languages", "languages", { value: state.languages.join(", "), placeholder: "English, Spanish" })} />
-          <AboutInfoRow label="Gender" value={state.gender || undefined} onAdd={() => edit("Gender", "gender", { type: "select", value: state.gender, options: ["Boy", "Girl", "Other", "Prefer not to say"] })} onEdit={() => edit("Gender", "gender", { type: "select", value: state.gender, options: ["Boy", "Girl", "Other", "Prefer not to say"] })} />
-          <AboutInfoRow label="Nationality" value={state.nationality || undefined} onAdd={() => edit("Nationality", "nationality", { value: state.nationality })} onEdit={() => edit("Nationality", "nationality", { value: state.nationality })} />
-          <AboutInfoRow label="Birthplace" value={state.birthplace || undefined} onAdd={() => edit("Birthplace", "birthplace", { value: state.birthplace })} onEdit={() => edit("Birthplace", "birthplace", { value: state.birthplace })} />
-        </div>
-      </div>
-      {/* Health */}
-      <div className="flex flex-col">
-        <PanelSectionLabel>Health</PanelSectionLabel>
-        <div className="flex flex-col">
-          <AboutInfoRow first label="Allergy" value={state.allergy || undefined} onAdd={() => edit("Allergy info", "allergy", { value: state.allergy, placeholder: "Comma separated" })} onEdit={() => edit("Allergy info", "allergy", { value: state.allergy, placeholder: "Comma separated" })} />
-          <AboutInfoRow label="Dietary preference" onAdd={() => edit("Dietary preference", "specialNotes", { type: "textarea", value: "" })} />
-          <AboutInfoRow label="Medical condition" onAdd={() => edit("Medical condition", "sensitiveInfo", { type: "textarea", value: "" })} />
-        </div>
-      </div>
-    </div>
-  );
-};
+}) => (
+  <div className="flex flex-col pb-24 pt-2">
+    <p className="px-4 pb-2 text-[14px] font-medium text-mfneutralsn-500">Basic info</p>
+    <EditableRow
+      label="Name"
+      value="Abby Freedman"
+      onPress={() => openEdit({ title: "Child name", subtitle: "Your child's full name.", type: "text", value: "Abby Freedman", key: { section: "basic", field: "name" } })}
+    />
+    <EditableRow
+      label="Date of birth"
+      value={state.dateOfBirth ? `${formatHumanDate(state.dateOfBirth)} (1 year 4 months)` : ""}
+      onPress={() => openEdit({ title: "Date of birth", subtitle: "Used to determine the room your child belongs to.", type: "date", value: state.dateOfBirth, key: { section: "basic", field: "dateOfBirth" } })}
+    />
+    <EditableRow
+      label="Languages"
+      value={state.languages.join(", ")}
+      onPress={() => openEdit({ title: "Languages", subtitle: "Comma separated list of languages spoken at home.", type: "text", value: state.languages.join(", "), placeholder: "English, Spanish", key: { section: "basic", field: "languages" } })}
+    />
+    <EditableRow
+      label="Gender"
+      value={state.gender}
+      onPress={() => openEdit({ title: "Gender", subtitle: "How your child identifies.", type: "select", value: state.gender, options: ["Boy", "Girl", "Other", "Prefer not to say"], key: { section: "basic", field: "gender" } })}
+    />
+    <EditableRow
+      label="Allergy"
+      value={state.allergy}
+      placeholder="Add allergy information"
+      onPress={() => openEdit({ title: "Allergy info", subtitle: "List any allergies the centre should know about.", type: "text", value: state.allergy, placeholder: "Comma separated", key: { section: "basic", field: "allergy" } })}
+    />
+    <EditableRow
+      label="Dietary preference"
+      value=""
+      placeholder="Add dietary preference"
+      onPress={() => openEdit({ title: "Dietary preference", subtitle: "Any food restrictions or preferences the centre should follow.", type: "textarea", value: "", key: { section: "basic", field: "specialNotes" } })}
+    />
+    <EditableRow
+      label="Medical condition"
+      value=""
+      placeholder="Add medical condition"
+      onPress={() => openEdit({ title: "Medical condition", subtitle: "Any medical conditions the centre should know about.", type: "textarea", value: "", key: { section: "basic", field: "sensitiveInfo" } })}
+    />
+    {(["nationality", "birthplace"] as OptionalKey[]).map((k) => (
+      <EditableRow
+        key={k}
+        label={OPTIONAL_LABELS[k]}
+        value={state[k]}
+        onPress={() => openEdit({ title: OPTIONAL_LABELS[k], subtitle: `Optional. Update the ${OPTIONAL_LABELS[k].toLowerCase()} for your child.`, type: "text", value: state[k], key: { section: "basic", field: k } })}
+      />
+    ))}
+  </div>
+);
 
 // ── Detail view: Health details ───────────────────────────────────────────────
 
@@ -820,34 +842,21 @@ const HealthDetailsDetail = ({
     openEdit({ title, subtitle: `Update the ${title.toLowerCase()} for your child.`, type: "text", value: state[field], key: { section: "health", field }, ...extras });
 
   return (
-    <div className="flex flex-col gap-6 px-4 pt-6 pb-24">
-      {/* General */}
-      <div className="flex flex-col">
-        <PanelSectionLabel>General</PanelSectionLabel>
-        <div className="flex flex-col">
-          <AboutInfoRow first label="Tolerates penicillin" value={state.toleratesPenicillin || undefined} onAdd={() => open("Tolerates penicillin", "toleratesPenicillin", { type: "select", options: ["Yes", "No", "Unknown"] })} onEdit={() => open("Tolerates penicillin", "toleratesPenicillin", { type: "select", options: ["Yes", "No", "Unknown"] })} />
-          <AboutInfoRow label="Dietary considerations" value={state.diet || undefined} onAdd={() => open("Special dietary considerations", "diet", { type: "textarea" })} onEdit={() => open("Special dietary considerations", "diet", { type: "textarea" })} />
-          <AboutInfoRow label="Special notes" value={state.specialNotes || undefined} onAdd={() => open("Special notes", "specialNotes", { type: "textarea" })} onEdit={() => open("Special notes", "specialNotes", { type: "textarea" })} />
-        </div>
-      </div>
-      {/* Doctor */}
-      <div className="flex flex-col">
-        <PanelSectionLabel>Doctor</PanelSectionLabel>
-        <div className="flex flex-col">
-          <AboutInfoRow first label="Name" value={state.doctorName || undefined} onAdd={() => open("Doctor name", "doctorName")} onEdit={() => open("Doctor name", "doctorName")} />
-          <AboutInfoRow label="Phone" value={state.doctorPhone || undefined} onAdd={() => open("Doctor phone", "doctorPhone")} onEdit={() => open("Doctor phone", "doctorPhone")} />
-          <AboutInfoRow label="Address" value={state.doctorAddress ? state.doctorAddress.replace(/\n/g, ", ") : undefined} onAdd={() => open("Doctor address", "doctorAddress", { type: "textarea" })} onEdit={() => open("Doctor address", "doctorAddress", { type: "textarea" })} />
-        </div>
-      </div>
-      {/* Dentist */}
-      <div className="flex flex-col">
-        <PanelSectionLabel>Dentist</PanelSectionLabel>
-        <div className="flex flex-col">
-          <AboutInfoRow first label="Name" value={state.dentistName || undefined} onAdd={() => open("Dentist name", "dentistName")} onEdit={() => open("Dentist name", "dentistName")} />
-          <AboutInfoRow label="Phone" value={state.dentistPhone || undefined} onAdd={() => open("Dentist phone", "dentistPhone")} onEdit={() => open("Dentist phone", "dentistPhone")} />
-          <AboutInfoRow label="Address" value={state.dentistAddress || undefined} onAdd={() => open("Dentist address", "dentistAddress", { type: "textarea" })} onEdit={() => open("Dentist address", "dentistAddress", { type: "textarea" })} />
-        </div>
-      </div>
+    <div className="flex flex-col pb-24 pt-2">
+      <p className="px-4 pb-2 text-[14px] font-medium text-mfneutralsn-500">Health details</p>
+      <EditableRow label="Tolerates penicillin" value={state.toleratesPenicillin} onPress={() => open("Tolerates penicillin", "toleratesPenicillin", { type: "select", options: ["Yes", "No", "Unknown"] })} />
+      <EditableRow label="Dietary considerations" value={state.diet} placeholder="Add dietary considerations" onPress={() => open("Special dietary considerations", "diet", { type: "textarea" })} />
+      <EditableRow label="Special notes" value={state.specialNotes} placeholder="Add special notes" onPress={() => open("Special notes", "specialNotes", { type: "textarea" })} />
+
+      <SubsectionTitle>Doctor</SubsectionTitle>
+      <EditableRow label="Name" value={state.doctorName} placeholder="Add doctor name" onPress={() => open("Doctor name", "doctorName")} />
+      <EditableRow label="Phone" value={state.doctorPhone} placeholder="Add doctor phone" onPress={() => open("Doctor phone", "doctorPhone")} />
+      <EditableRow label="Address" value={state.doctorAddress ? state.doctorAddress.replace(/\n/g, ", ") : ""} placeholder="Add doctor address" onPress={() => open("Doctor address", "doctorAddress", { type: "textarea" })} />
+
+      <SubsectionTitle>Dentist</SubsectionTitle>
+      <EditableRow label="Name" value={state.dentistName} placeholder="Add dentist name" onPress={() => open("Dentist name", "dentistName")} />
+      <EditableRow label="Phone" value={state.dentistPhone} placeholder="Add dentist phone" onPress={() => open("Dentist phone", "dentistPhone")} />
+      <EditableRow label="Address" value={state.dentistAddress} placeholder="Add dentist address" onPress={() => open("Dentist address", "dentistAddress", { type: "textarea" })} />
     </div>
   );
 };
