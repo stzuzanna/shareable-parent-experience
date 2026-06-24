@@ -923,7 +923,6 @@ const HealthDetailsDetail = ({
     <div className="flex flex-col pb-24 pt-2">
       <p className="px-4 pb-2 text-[14px] font-medium text-mfneutralsn-500">Health details</p>
       <EditableRow
-        icon={<HelpCircleIcon className="w-4 h-4" />}
         label="Tolerates penicillin"
         value={state.toleratesPenicillin}
         onPress={() =>
@@ -935,7 +934,6 @@ const HealthDetailsDetail = ({
         }
       />
       <EditableRow
-        icon={<InfoIcon className="w-4 h-4" />}
         label="Special dietary considerations"
         value={state.diet}
         placeholder="Add dietary considerations"
@@ -947,7 +945,6 @@ const HealthDetailsDetail = ({
         }
       />
       <EditableRow
-        icon={<InfoIcon className="w-4 h-4" />}
         label="Special notes"
         value={state.specialNotes}
         placeholder="Add special notes"
@@ -961,21 +958,18 @@ const HealthDetailsDetail = ({
 
       <SubsectionTitle>Doctor</SubsectionTitle>
       <EditableRow
-        icon={<StethoscopeIcon className="w-4 h-4" />}
         label="Name"
         value={state.doctorName}
         placeholder="Add doctor name"
         onPress={() => open("Doctor name", "doctorName", { subtitle: "Your child's primary doctor." })}
       />
       <EditableRow
-        icon={<PhoneIcon className="w-4 h-4" />}
         label="Phone"
         value={state.doctorPhone}
         placeholder="Add doctor phone"
         onPress={() => open("Doctor phone", "doctorPhone", { subtitle: "Phone number for your doctor." })}
       />
       <EditableRow
-        icon={<MapPinIcon className="w-4 h-4" />}
         label="Address"
         value={state.doctorAddress ? state.doctorAddress.replace(/\n/g, ", ") : ""}
         placeholder="Add doctor address"
@@ -989,21 +983,18 @@ const HealthDetailsDetail = ({
 
       <SubsectionTitle>Dentist</SubsectionTitle>
       <EditableRow
-        icon={<StethoscopeIcon className="w-4 h-4" />}
         label="Name"
         value={state.dentistName}
         placeholder="Add dentist name"
         onPress={() => open("Dentist name", "dentistName", { subtitle: "Your child's dentist." })}
       />
       <EditableRow
-        icon={<PhoneIcon className="w-4 h-4" />}
         label="Phone"
         value={state.dentistPhone}
         placeholder="Add dentist phone"
         onPress={() => open("Dentist phone", "dentistPhone", { subtitle: "Phone number for your dentist." })}
       />
       <EditableRow
-        icon={<MapPinIcon className="w-4 h-4" />}
         label="Address"
         value={state.dentistAddress}
         placeholder="Add dentist address"
