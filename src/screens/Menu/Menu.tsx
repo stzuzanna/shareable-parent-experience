@@ -189,17 +189,50 @@ const SelectField: React.FC<{
 
 // ─── View profile page ────────────────────────────────────────────────────────
 
-const ViewProfileRow: React.FC<{ label: string; value: string }> = ({ label, value }) => (
-  <div className="flex items-center justify-between py-3 border-b border-mfneutralsn-75 last:border-0 gap-4">
-    <span className="text-[14px] text-mfneutralsn-400 flex-shrink-0">{label}</span>
-    <span className="text-[14px] text-mfneutralsn-500 text-right">{value}</span>
-  </div>
-);
-
-export const ViewProfile: React.FC<{ onClose: () => void; onEdit: () => void }> = ({ onClose, onEdit }) => {
+export const ViewProfile: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { shouldShowFrame } = useDeviceDetection();
+
+  const [fields, setFields] = useState({
+    name: "Martha Freedman",
+    preferredName: "Martha",
+    dob: "12 Mar 1985",
+    languages: "English",
+    nationality: "",
+    birthplace: "London",
+    email: "martha.freedman@email.com",
+    phone: "+44 2324932948239",
+    relationship: "Abby's mum",
+  });
+
+  const [editField, setEditField] = useState<{ key: string; label: string; value: string; type: string } | null>(null);
+
+  const fieldRow = (key: keyof typeof fields, label: string, type = "text") => {
+    const value = fields[key];
+    return (
+      <button
+        key={key}
+        onClick={() => setEditField({ key, label, value, type })}
+        className="w-full flex items-center gap-3 px-4 py-2.5 text-left active:bg-gray-50 min-h-[48px]"
+      >
+        {value ? (
+          <>
+            <div className="flex-1 min-w-0">
+              <p className="text-[11px] text-mfneutralsn-300 leading-tight mb-0.5">{label}</p>
+              <p className="text-[14px] text-mfneutralsn-500 leading-tight truncate">{value}</p>
+            </div>
+            <ChevronRightIcon className="w-4 h-4 text-mfneutralsn-300 flex-shrink-0" />
+          </>
+        ) : (
+          <div className="flex-1 min-w-0">
+            <p className="text-[14px] text-mfneutralsn-300 leading-tight truncate">+ Add {label.toLowerCase()}</p>
+          </div>
+        )}
+      </button>
+    );
+  };
+
   return (
-    <div className={`flex flex-col bg-white ${shouldShowFrame ? "h-full" : "min-h-screen"}`}>
+    <div className={`relative flex flex-col bg-white ${shouldShowFrame ? "h-full" : "min-h-screen"}`}>
       {shouldShowFrame && (
         <div className="flex items-center justify-between px-5 pt-2 pb-1">
           <span className="font-semibold text-mfneutralsn-500 text-[15px]">9:41</span>
@@ -228,36 +261,53 @@ export const ViewProfile: React.FC<{ onClose: () => void; onEdit: () => void }> 
           </button>
         </div>
 
-        <div className="px-4">
-          <p className="text-[12px] font-semibold text-mfneutralsn-300 uppercase tracking-wide pb-1 pt-2">Basic info</p>
-          <ViewProfileRow label="Full name" value="Martha Freedman" />
-          <ViewProfileRow label="Preferred name" value="Martha" />
-          <ViewProfileRow label="Date of birth" value="12 Mar 1985" />
-          <ViewProfileRow label="Languages" value="English" />
-          <ViewProfileRow label="Birthplace" value="London" />
+        <div>
+          <p className="text-[12px] font-semibold text-mfneutralsn-300 uppercase tracking-wide pb-1 pt-2 px-4">Basic info</p>
+          {fieldRow("name", "Full name")}
+          {fieldRow("preferredName", "Preferred name")}
+          {fieldRow("dob", "Date of birth")}
+          {fieldRow("languages", "Languages")}
+          {fieldRow("nationality", "Nationality")}
+          {fieldRow("birthplace", "Birthplace")}
         </div>
 
-        <div className="px-4 mt-4">
-          <p className="text-[12px] font-semibold text-mfneutralsn-300 uppercase tracking-wide pb-1 pt-2">Contact</p>
-          <ViewProfileRow label="Email" value="martha.freedman@email.com" />
-          <ViewProfileRow label="Phone number" value="+44 2324932948239" />
+        <div className="mt-4">
+          <p className="text-[12px] font-semibold text-mfneutralsn-300 uppercase tracking-wide pb-1 pt-2 px-4">Contact</p>
+          {fieldRow("email", "Email", "email")}
+          {fieldRow("phone", "Phone number", "tel")}
         </div>
 
-        <div className="px-4 mt-4">
-          <p className="text-[12px] font-semibold text-mfneutralsn-300 uppercase tracking-wide pb-1 pt-2">Role</p>
-          <ViewProfileRow label="Relationship" value="Abby's mum" />
+        <div className="mt-4">
+          <p className="text-[12px] font-semibold text-mfneutralsn-300 uppercase tracking-wide pb-1 pt-2 px-4">Role</p>
+          {fieldRow("relationship", "Relationship")}
         </div>
       </div>
 
-      {/* Edit CTA */}
-      <div className="px-4 pb-8 pt-3 bg-white border-t border-mfneutralsn-75 flex-shrink-0">
-        <button
-          onClick={onEdit}
-          className="w-full h-12 rounded-2xl bg-mfprimaryp-400 text-white text-[15px] font-semibold active:opacity-80 transition-opacity"
-        >
-          Edit
-        </button>
-      </div>
+      {/* Bottom-sheet edit panel */}
+      {editField && (
+        <div className="absolute inset-0 z-50 flex flex-col justify-end">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setEditField(null)} />
+          <div className="relative bg-white rounded-t-2xl px-4 pt-4 pb-8 flex flex-col gap-4">
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-[17px] font-semibold text-mfneutralsn-500">{editField.label}</p>
+              <button onClick={() => setEditField(null)}><XIcon className="w-5 h-5 text-mfneutralsn-400" /></button>
+            </div>
+            <input
+              type={editField.type}
+              value={editField.value}
+              onChange={(e) => setEditField((f) => f ? { ...f, value: e.target.value } : f)}
+              className="h-12 px-4 rounded-xl border border-mfneutralsn-200 bg-white text-[14px] text-mfneutralsn-500 outline-none focus:border-mfprimaryp-400 transition-colors"
+              autoFocus
+            />
+            <button
+              onClick={() => { setFields((f) => ({ ...f, [editField.key]: editField.value })); setEditField(null); }}
+              className="w-full h-12 rounded-2xl bg-mfprimaryp-400 text-white text-[15px] font-semibold active:opacity-80"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -449,7 +499,7 @@ export const Menu = (): JSX.Element => {
   if (showSecuritySettings) return <SecuritySettings onClose={() => setShowSecuritySettings(false)} />;
   if (showLanguageSettings) return <LanguageSettings onClose={() => setShowLanguageSettings(false)} />;
   if (showEditProfile) return <EditProfile onClose={() => setShowEditProfile(false)} />;
-  if (showViewProfile) return <ViewProfile onClose={() => setShowViewProfile(false)} onEdit={() => { setShowViewProfile(false); setShowEditProfile(true); }} />;
+  if (showViewProfile) return <ViewProfile onClose={() => setShowViewProfile(false)} />;
 
   const comingSoon = () => showToast("Coming soon", "info");
 
