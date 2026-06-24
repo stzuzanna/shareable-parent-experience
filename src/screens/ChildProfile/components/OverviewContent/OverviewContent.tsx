@@ -1582,6 +1582,7 @@ export const OverviewContent = (): JSX.Element => {
         {permissionPreview.map((p) => (
           <PermissionRow key={p.id} item={p} hideSubtitle />
         ))}
+        <p className="text-[13px] text-mfneutralsn-300 mt-1">Last updated 2 days ago</p>
       </Section>
 
       {/* About / Basic info */}
