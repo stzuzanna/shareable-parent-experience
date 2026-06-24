@@ -96,7 +96,7 @@ export const NewIdentitySection = (): JSX.Element => (
 
 // Compact identity row shown inside the sticky header when scrolled
 const CompactIdentityRow = (): JSX.Element => (
-  <div className="flex items-center gap-2.5 px-5 pb-3">
+  <div className="flex items-center gap-2.5 px-5 pt-2 pb-3">
     <Avatar className="w-7 h-7 flex-shrink-0">
       <AvatarImage
         src={`${BASE_PATH}pexels-daisy-anderson-5581091-1.png`}
