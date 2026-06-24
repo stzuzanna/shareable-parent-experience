@@ -479,44 +479,27 @@ const AboutViewContent = ({
   state: AboutState;
   onEdit: (field: keyof AboutState) => void;
 }) => (
-  <div className="flex flex-col gap-6 px-4 pt-6 pb-6">
+  <div className="flex flex-col pb-6">
     {/* Basic info section */}
-    <div className="flex flex-col">
-      <PanelSectionLabel>Basic info</PanelSectionLabel>
-      <div className="flex flex-col">
-        <AboutInfoRow first label="Full name"      value={state.fullName}      onEdit={() => onEdit("fullName")} />
-        <AboutInfoRow label="Preferred name" value={state.preferredName || undefined} onAdd={() => onEdit("preferredName")} onEdit={() => onEdit("preferredName")} />
-        <AboutInfoRow
-          label="Date of birth"
-          value={state.dateOfBirth ? `${formatHumanDate(state.dateOfBirth)} (1 year 4 months)` : undefined}
-          onEdit={() => onEdit("dateOfBirth")}
-          onAdd={() => onEdit("dateOfBirth")}
-        />
-        <AboutInfoRow label="Languages"   value={state.languages || undefined}   onAdd={() => onEdit("languages")}   onEdit={() => onEdit("languages")} />
-        <AboutInfoRow label="Nationality" value={state.nationality || undefined} onAdd={() => onEdit("nationality")} onEdit={() => onEdit("nationality")} />
-        <AboutInfoRow label="Birthplace"  value={state.birthplace || undefined}  onAdd={() => onEdit("birthplace")}  onEdit={() => onEdit("birthplace")} />
-      </div>
-    </div>
+    <p className="px-4 pb-2 pt-4 text-[14px] font-medium text-mfneutralsn-500">Basic info</p>
+    <EditableRow label="Full name"      value={state.fullName}      onPress={() => onEdit("fullName")} />
+    <EditableRow label="Preferred name" value={state.preferredName} onPress={() => onEdit("preferredName")} />
+    <EditableRow label="Date of birth"  value={state.dateOfBirth ? `${formatHumanDate(state.dateOfBirth)} (1 year 4 months)` : ""} onPress={() => onEdit("dateOfBirth")} />
+    <EditableRow label="Languages"      value={state.languages}     onPress={() => onEdit("languages")} />
+    <EditableRow label="Nationality"    value={state.nationality}   onPress={() => onEdit("nationality")} />
+    <EditableRow label="Birthplace"     value={state.birthplace}    onPress={() => onEdit("birthplace")} />
 
     {/* Household section */}
-    <div className="flex flex-col">
-      <PanelSectionLabel>Household</PanelSectionLabel>
-      <div className="flex flex-col">
-        <AboutInfoRow first label="Home language"           value={state.homeLanguage || undefined}           onAdd={() => onEdit("homeLanguage")}           onEdit={() => onEdit("homeLanguage")} />
-        <AboutInfoRow label="Lives with"              value={state.livesWith || undefined}              onAdd={() => onEdit("livesWith")}              onEdit={() => onEdit("livesWith")} />
-        <AboutInfoRow label="Parental responsibility" value={state.parentalResponsibility || undefined} onAdd={() => onEdit("parentalResponsibility")} onEdit={() => onEdit("parentalResponsibility")} />
-      </div>
-    </div>
+    <p className="px-4 pb-2 pt-4 text-[14px] font-medium text-mfneutralsn-500">Household</p>
+    <EditableRow label="Home language"           value={state.homeLanguage}           onPress={() => onEdit("homeLanguage")} />
+    <EditableRow label="Lives with"              value={state.livesWith}              onPress={() => onEdit("livesWith")} />
+    <EditableRow label="Parental responsibility" value={state.parentalResponsibility} onPress={() => onEdit("parentalResponsibility")} />
 
     {/* Sensitive info section */}
-    <div className="flex flex-col">
-      <PanelSectionLabel>Sensitive info</PanelSectionLabel>
-      <div className="flex flex-col">
-        <AboutInfoRow first label="Ethnicity"    value={state.ethnicity || undefined}   onAdd={() => onEdit("ethnicity")}    onEdit={() => onEdit("ethnicity")} />
-        <AboutInfoRow label="Religion"     value={state.religion || undefined}     onAdd={() => onEdit("religion")}     onEdit={() => onEdit("religion")} />
-        <AboutInfoRow label="Special note" value={state.specialNote || undefined}  onAdd={() => onEdit("specialNote")}  onEdit={() => onEdit("specialNote")} />
-      </div>
-    </div>
+    <p className="px-4 pb-2 pt-4 text-[14px] font-medium text-mfneutralsn-500">Sensitive info</p>
+    <EditableRow label="Ethnicity"    value={state.ethnicity}   onPress={() => onEdit("ethnicity")} />
+    <EditableRow label="Religion"     value={state.religion}    onPress={() => onEdit("religion")} />
+    <EditableRow label="Special note" value={state.specialNote} onPress={() => onEdit("specialNote")} />
   </div>
 );
 
@@ -642,36 +625,21 @@ const HealthViewContent = ({
   state: HealthState;
   onEdit: (field: keyof HealthState) => void;
 }) => (
-  <div className="flex flex-col gap-6 px-4 pt-6 pb-6">
-    {/* General */}
-    <div className="flex flex-col">
-      <PanelSectionLabel>General</PanelSectionLabel>
-      <div className="flex flex-col">
-        <AboutInfoRow first label="Penicillin"   value={state.toleratesPenicillin || undefined} onAdd={() => onEdit("toleratesPenicillin")} onEdit={() => onEdit("toleratesPenicillin")} />
-        <AboutInfoRow label="Diet"          value={state.diet || undefined}                onAdd={() => onEdit("diet")}                onEdit={() => onEdit("diet")} />
-        <AboutInfoRow label="Special notes" value={state.specialNotes || undefined}       onAdd={() => onEdit("specialNotes")}       onEdit={() => onEdit("specialNotes")} />
-      </div>
-    </div>
+  <div className="flex flex-col pb-6">
+    <p className="px-4 pb-2 pt-4 text-[14px] font-medium text-mfneutralsn-500">General</p>
+    <EditableRow label="Penicillin"    value={state.toleratesPenicillin} onPress={() => onEdit("toleratesPenicillin")} />
+    <EditableRow label="Diet"          value={state.diet}                onPress={() => onEdit("diet")} />
+    <EditableRow label="Special notes" value={state.specialNotes}        onPress={() => onEdit("specialNotes")} />
 
-    {/* Doctor */}
-    <div className="flex flex-col">
-      <PanelSectionLabel>Doctor</PanelSectionLabel>
-      <div className="flex flex-col">
-        <AboutInfoRow first label="Name"    value={state.doctorName || undefined}                                              onAdd={() => onEdit("doctorName")}    onEdit={() => onEdit("doctorName")} />
-        <AboutInfoRow label="Phone"   value={state.doctorPhone || undefined}                                             onAdd={() => onEdit("doctorPhone")}   onEdit={() => onEdit("doctorPhone")} />
-        <AboutInfoRow label="Address" value={state.doctorAddress ? state.doctorAddress.replace(/\n/g, ", ") : undefined} onAdd={() => onEdit("doctorAddress")} onEdit={() => onEdit("doctorAddress")} />
-      </div>
-    </div>
+    <p className="px-4 pb-2 pt-4 text-[14px] font-medium text-mfneutralsn-500">Doctor</p>
+    <EditableRow label="Name"    value={state.doctorName}                                              onPress={() => onEdit("doctorName")} />
+    <EditableRow label="Phone"   value={state.doctorPhone}                                             onPress={() => onEdit("doctorPhone")} />
+    <EditableRow label="Address" value={state.doctorAddress ? state.doctorAddress.replace(/\n/g, ", ") : ""} onPress={() => onEdit("doctorAddress")} />
 
-    {/* Dentist */}
-    <div className="flex flex-col">
-      <PanelSectionLabel>Dentist</PanelSectionLabel>
-      <div className="flex flex-col">
-        <AboutInfoRow first label="Name"    value={state.dentistName || undefined}    onAdd={() => onEdit("dentistName")}    onEdit={() => onEdit("dentistName")} />
-        <AboutInfoRow label="Phone"   value={state.dentistPhone || undefined}   onAdd={() => onEdit("dentistPhone")}   onEdit={() => onEdit("dentistPhone")} />
-        <AboutInfoRow label="Address" value={state.dentistAddress || undefined} onAdd={() => onEdit("dentistAddress")} onEdit={() => onEdit("dentistAddress")} />
-      </div>
-    </div>
+    <p className="px-4 pb-2 pt-4 text-[14px] font-medium text-mfneutralsn-500">Dentist</p>
+    <EditableRow label="Name"    value={state.dentistName}    onPress={() => onEdit("dentistName")} />
+    <EditableRow label="Phone"   value={state.dentistPhone}   onPress={() => onEdit("dentistPhone")} />
+    <EditableRow label="Address" value={state.dentistAddress} onPress={() => onEdit("dentistAddress")} />
   </div>
 );
 
