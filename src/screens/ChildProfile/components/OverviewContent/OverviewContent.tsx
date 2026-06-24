@@ -1553,7 +1553,6 @@ export const OverviewContent = (): JSX.Element => {
     <div ref={rootRef} className="flex flex-col bg-white pt-4 pb-24">
       {/* Permissions */}
       <Section
-        Icon={ShieldCheckIcon}
         title="Permissions"
         description="Parental consent"
         onViewAll={() => setPanel("permissions")}
@@ -1565,7 +1564,6 @@ export const OverviewContent = (): JSX.Element => {
 
       {/* About / Basic info */}
       <Section
-        Icon={UserIcon}
         title="About"
         description="Personal details"
         onViewAll={() => setPanel("basic")}
@@ -1586,7 +1584,6 @@ export const OverviewContent = (): JSX.Element => {
 
       {/* Family */}
       <Section
-        Icon={UsersIcon}
         title="Family"
         description="4 contacts · 1 sibling"
         onViewAll={() => setPanel("family")}
@@ -1612,7 +1609,6 @@ export const OverviewContent = (): JSX.Element => {
 
       {/* Health details */}
       <Section
-        Icon={StethoscopeIcon}
         title="Health details"
         description="Doctor and med info"
         onViewAll={() => setPanel("health")}
@@ -1623,7 +1619,6 @@ export const OverviewContent = (): JSX.Element => {
 
       {/* Leave */}
       <Section
-        Icon={CalendarOffIcon}
         title="Leave"
         description="Upcoming and past absences"
         onViewAll={() => setPanel("leave")}
