@@ -432,6 +432,7 @@ export const Menu = (): JSX.Element => {
   const tabsVariant = useHomeTabsVariant();
   const isPills = tabsVariant === "pills" || tabsVariant === "sidekick";
   const [showInvoice, setShowInvoice] = useState(false);
+  const [invoiceIsPaid, setInvoiceIsPaid] = useState(false);
   const [showChildcareInfo, setShowChildcareInfo] = useState(false);
   const [showPaymentSettings, setShowPaymentSettings] = useState(false);
   const [showSwitchAccount, setShowSwitchAccount] = useState(false);
@@ -504,7 +505,7 @@ export const Menu = (): JSX.Element => {
                       <p className="text-[13px] text-mfneutralsn-400">Everything's settled.</p>
                     ) : (
                       <button
-                        onClick={() => setShowInvoice(true)}
+                        onClick={() => { setInvoiceIsPaid(entry.isPaid); setShowInvoice(true); }}
                         className="w-full h-9 rounded-xl bg-mfprimaryp-400 text-white text-[13px] font-semibold active:opacity-80 transition-opacity"
                       >
                         Pay now
@@ -518,7 +519,7 @@ export const Menu = (): JSX.Element => {
             <PaymentsCard
               isPaid={isPaid}
               onNavigate={() => navigate("/balance")}
-              onPayNow={() => setShowInvoice(true)}
+              onPayNow={() => { setInvoiceIsPaid(isPaid); setShowInvoice(true); }}
             />
           )}
         </div>
@@ -607,7 +608,7 @@ export const Menu = (): JSX.Element => {
         </div>
 
         {showInvoice && (
-          <Invoice onClose={() => setShowInvoice(false)} isPaid={isPaid} onPaymentSuccess={() => setPaid(true)} />
+          <Invoice onClose={() => setShowInvoice(false)} isPaid={invoiceIsPaid} onPaymentSuccess={() => setPaid(true)} />
         )}
 
         <AnimatePresence>
