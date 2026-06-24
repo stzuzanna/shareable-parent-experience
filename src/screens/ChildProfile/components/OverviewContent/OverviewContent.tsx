@@ -415,11 +415,7 @@ const CareDetail = () => (
 );
 
 const PrimaryBadge = () => (
-  <span className="text-[14px] px-2 py-0.5 rounded-full border border-mfprimaryp-400 text-mfprimaryp-400">Primary</span>
-);
-
-const SecondaryBadge = () => (
-  <span className="text-[14px] px-2 py-0.5 rounded-full border border-mfneutralsn-200 text-mfneutralsn-400">Secondary</span>
+  <span className="text-[14px] px-2 py-0.5 rounded-full border border-mfprimaryp-400 text-mfprimaryp-400">Emergency</span>
 );
 
 // ── About panel (canvas child-pro style) ──────────────────────────────────────
@@ -907,7 +903,7 @@ const ContactCard = ({
   extras: ContactExtras;
   openEdit: (config: EditFieldConfig & { key: FieldKey }) => void;
 }) => {
-  const Badge = contact.primary ? PrimaryBadge : SecondaryBadge;
+  const Badge = contact.primary ? PrimaryBadge : null;
   return (
     <div className="mx-4 mb-3 p-4 rounded-2xl border border-[#f1f1f4] bg-white flex flex-col gap-1">
       {/* Top row: initials avatar + name + pill */}
@@ -1378,8 +1374,7 @@ export const OverviewContent = (): JSX.Element => {
 
         <ClassicCard>
           <ClassicSectionCardHeader title="Family" />
-          <ClassicFamilyPreviewRow avatar={MOTHER_AVATAR} fallback="SF" name="Sarah Freedman" role="Mother (Primary)" phone={familyExtras.sarah?.phone} />
-          <ClassicFamilyPreviewRow avatar={FATHER_AVATAR} fallback="MF" name="Michael Freedman" role="Father" phone={familyExtras.michael?.phone} />
+          <ClassicFamilyPreviewRow avatar={MOTHER_AVATAR} fallback="SF" name="Sarah Freedman" role="Mother (Emergency)" phone={familyExtras.sarah?.phone} />
           <ClassicViewAllLink onPress={() => setSection("family")} />
         </ClassicCard>
 
@@ -1459,16 +1454,8 @@ export const OverviewContent = (): JSX.Element => {
           fallback="SF"
           name="Sarah Freedman"
           relation="Mother"
-          additionalInfo="Primary contact"
+          additionalInfo="Emergency contact"
           pill="Primary"
-          onClick={() => setPanel("family")}
-        />
-        <ContactSummaryCard
-          avatarSrc={FATHER_AVATAR}
-          fallback="MF"
-          name="Michael Freedman"
-          relation="Father"
-          pill="Secondary"
           onClick={() => setPanel("family")}
         />
       </Section>
