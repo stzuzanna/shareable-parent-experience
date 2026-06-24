@@ -1519,7 +1519,7 @@ export const OverviewContent = (): JSX.Element => {
             )}
           </div>
           {/* footer */}
-          {aboutEditing ? (
+          {aboutEditing && (
             <div className="flex-shrink-0 px-4 py-4 border-t border-[#f1f1f4] flex gap-3">
               <button
                 onClick={cancelAboutEdit}
@@ -1532,15 +1532,6 @@ export const OverviewContent = (): JSX.Element => {
                 className="flex-1 h-11 rounded-xl bg-mfprimaryp-400 text-white text-[15px] font-semibold active:opacity-90 transition-opacity"
               >
                 Save
-              </button>
-            </div>
-          ) : (
-            <div className="flex-shrink-0 px-4 py-4 border-t border-[#f1f1f4]">
-              <button
-                onClick={() => openAboutEdit(null)}
-                className="w-full h-11 rounded-xl bg-mfprimaryp-400 text-white text-[15px] font-semibold active:opacity-90 transition-opacity"
-              >
-                Edit
               </button>
             </div>
           )}
@@ -1575,7 +1566,7 @@ export const OverviewContent = (): JSX.Element => {
               />
             )}
           </div>
-          {healthEditing ? (
+          {healthEditing && (
             <div className="flex-shrink-0 px-4 py-4 border-t border-[#f1f1f4] flex gap-3">
               <button
                 onClick={cancelHealthEdit}
@@ -1588,15 +1579,6 @@ export const OverviewContent = (): JSX.Element => {
                 className="flex-1 h-11 rounded-xl bg-mfprimaryp-400 text-white text-[15px] font-semibold active:opacity-90 transition-opacity"
               >
                 Save
-              </button>
-            </div>
-          ) : (
-            <div className="flex-shrink-0 px-4 py-4 border-t border-[#f1f1f4]">
-              <button
-                onClick={() => openHealthEdit(null)}
-                className="w-full h-11 rounded-xl bg-mfprimaryp-400 text-white text-[15px] font-semibold active:opacity-90 transition-opacity"
-              >
-                Edit
               </button>
             </div>
           )}
