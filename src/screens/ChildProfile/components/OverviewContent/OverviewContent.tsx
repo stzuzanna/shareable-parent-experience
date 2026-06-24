@@ -355,7 +355,7 @@ const EditableRow = ({
   placeholder,
   onPress,
 }: {
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   label: string;
   value: string;
   placeholder?: string;
@@ -365,9 +365,11 @@ const EditableRow = ({
     onClick={onPress}
     className="w-full flex items-center gap-3 px-4 py-2.5 text-left active:bg-gray-50 min-h-[48px]"
   >
-    <div className="w-7 h-7 rounded-md bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0 text-mfneutralsn-400">
-      {icon}
-    </div>
+    {icon && (
+      <div className="w-7 h-7 rounded-md bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0 text-mfneutralsn-400">
+        {icon}
+      </div>
+    )}
     <div className="flex-1 min-w-0">
       {value && <p className="text-[11px] text-mfneutralsn-300 leading-tight mb-0.5">{label}</p>}
       {value ? (
@@ -779,7 +781,6 @@ const BasicInfoDetail = ({
   <div className="flex flex-col pb-24 pt-2">
     <p className="px-4 pb-2 text-[14px] font-medium text-mfneutralsn-500">Basic info</p>
     <EditableRow
-      icon={<IdCardIcon className="w-4 h-4" />}
       label="Name"
       value="Abby Freedman"
       onPress={() =>
@@ -793,7 +794,6 @@ const BasicInfoDetail = ({
       }
     />
     <EditableRow
-      icon={<LockIcon className="w-4 h-4" />}
       label="Date of birth"
       value={state.dateOfBirth ? `${formatHumanDate(state.dateOfBirth)} (1 year 4 months)` : ""}
       onPress={() =>
@@ -807,7 +807,6 @@ const BasicInfoDetail = ({
       }
     />
     <EditableRow
-      icon={<LanguagesIcon className="w-4 h-4" />}
       label="Languages"
       value={state.languages.join(", ")}
       onPress={() =>
@@ -822,7 +821,6 @@ const BasicInfoDetail = ({
       }
     />
     <EditableRow
-      icon={<MapPinIcon className="w-4 h-4" />}
       label="Gender"
       value={state.gender}
       onPress={() =>
@@ -837,7 +835,6 @@ const BasicInfoDetail = ({
       }
     />
     <EditableRow
-      icon={<AlertTriangleIcon className="w-4 h-4" />}
       label="Allergy"
       value={state.allergy}
       placeholder="Add allergy information"
@@ -853,7 +850,6 @@ const BasicInfoDetail = ({
       }
     />
     <EditableRow
-      icon={<InfoIcon className="w-4 h-4" />}
       label="Dietary preference"
       value=""
       placeholder="Add dietary preference"
@@ -868,7 +864,6 @@ const BasicInfoDetail = ({
       }
     />
     <EditableRow
-      icon={<HeartIcon className="w-4 h-4" />}
       label="Medical condition"
       value=""
       placeholder="Add medical condition"
@@ -885,7 +880,6 @@ const BasicInfoDetail = ({
     {(["nationality", "birthplace"] as OptionalKey[]).map((k) => (
       <EditableRow
         key={k}
-        icon={<InfoIcon className="w-4 h-4" />}
         label={OPTIONAL_LABELS[k]}
         value={state[k]}
         onPress={() =>
