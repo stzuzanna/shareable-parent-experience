@@ -369,7 +369,7 @@ const EditableRow = ({
       {icon}
     </div>
     <div className="flex-1 min-w-0">
-      <p className="text-[11px] text-mfneutralsn-300 leading-tight mb-0.5">{label}</p>
+      {value && <p className="text-[11px] text-mfneutralsn-300 leading-tight mb-0.5">{label}</p>}
       {value ? (
         <p className="text-[14px] text-mfneutralsn-500 leading-tight truncate">{value}</p>
       ) : (
