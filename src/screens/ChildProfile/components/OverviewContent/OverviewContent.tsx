@@ -363,21 +363,22 @@ const EditableRow = ({
 }) => (
   <button
     onClick={onPress}
-    className="w-full flex items-center gap-3 px-4 h-12 text-left active:bg-gray-50"
+    className="w-full flex items-center gap-3 px-4 py-2.5 text-left active:bg-gray-50 min-h-[48px]"
   >
     <div className="w-7 h-7 rounded-md bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0 text-mfneutralsn-400">
       {icon}
     </div>
-    {value ? (
-      <>
-        <p className="text-[14px] text-mfneutralsn-500 leading-tight flex-1 truncate">{value}</p>
-        <ChevronRightIcon className="w-4 h-4 text-mfneutralsn-300 flex-shrink-0" />
-      </>
-    ) : (
-      <p className="text-[14px] text-mfneutralsn-300 leading-tight flex-1 truncate">
-        {placeholder ?? `Add ${label.toLowerCase()}`}
-      </p>
-    )}
+    <div className="flex-1 min-w-0">
+      <p className="text-[11px] text-mfneutralsn-300 leading-tight mb-0.5">{label}</p>
+      {value ? (
+        <p className="text-[14px] text-mfneutralsn-500 leading-tight truncate">{value}</p>
+      ) : (
+        <p className="text-[14px] text-mfneutralsn-300 leading-tight truncate">
+          {placeholder ?? `Add ${label.toLowerCase()}`}
+        </p>
+      )}
+    </div>
+    <ChevronRightIcon className="w-4 h-4 text-mfneutralsn-300 flex-shrink-0" />
   </button>
 );
 
