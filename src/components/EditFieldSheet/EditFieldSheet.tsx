@@ -52,7 +52,7 @@ export const EditFieldSheet: React.FC<EditFieldSheetProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className={`${pos} inset-0 bg-black/40 z-[70]`}
+            className={`${pos} inset-0 bg-black/40 z-[250]`}
             onClick={onClose}
           />
           <motion.div
@@ -60,7 +60,7 @@ export const EditFieldSheet: React.FC<EditFieldSheetProps> = ({
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 28, stiffness: 350 }}
-            className={`${pos} bottom-0 left-0 right-0 bg-white rounded-t-3xl z-[80] max-h-[85%] overflow-hidden flex flex-col`}
+            className={`${pos} bottom-0 left-0 right-0 bg-white rounded-t-3xl z-[260] max-h-[85%] overflow-hidden flex flex-col`}
           >
             <div className="flex justify-center pt-3 pb-2">
               <div className="w-10 h-1 rounded-full bg-gray-200" />
