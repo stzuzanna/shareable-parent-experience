@@ -1210,7 +1210,20 @@ type PermissionStatus = "yes" | "no" | "pending";
 const LATEST_PERMISSIONS: { id: string; label: string; status: PermissionStatus; lastChanged?: string; changedBy?: string }[] = [
   { id: "photos", label: "Can be in photos", status: "yes", lastChanged: "05/25/2026", changedBy: "Sofia Adams Growth" },
   { id: "animals", label: "Can play with animals", status: "no", lastChanged: "05/25/2026", changedBy: "Sofia Adams Growth" },
+  { id: "sunscreen", label: "Can apply sunscreen", status: "yes", lastChanged: "05/25/2026", changedBy: "Sofia Adams Growth" },
+  { id: "trips", label: "Can go on field trips", status: "no", lastChanged: "05/20/2026", changedBy: "Sofia Adams Growth" },
+  { id: "plasters", label: "Can apply plasters", status: "no", lastChanged: "05/20/2026", changedBy: "Sofia Adams Growth" },
+  { id: "social", label: "Can be on social media", status: "no", lastChanged: "05/18/2026", changedBy: "Sofia Adams Growth" },
 ];
+
+const permissionSummary = (() => {
+  const yes = LATEST_PERMISSIONS.filter(p => p.status === "yes").length;
+  const no = LATEST_PERMISSIONS.filter(p => p.status === "no").length;
+  const parts = [];
+  if (no > 0) parts.push(`${no} no`);
+  if (yes > 0) parts.push(`${yes} yes`);
+  return parts.join(", ");
+})();
 
 const PermissionStatusBox = ({ status }: { status: PermissionStatus }) => {
   if (status === "yes") return (
@@ -1232,20 +1245,22 @@ const PermissionStatusBox = ({ status }: { status: PermissionStatus }) => {
 
 const PermissionRow = ({
   item,
+  hideSubtitle = false,
 }: {
   item: { label: string; status: PermissionStatus; lastChanged?: string; changedBy?: string };
+  hideSubtitle?: boolean;
 }) => (
   <div className="py-2 flex items-center gap-3">
     <PermissionStatusBox status={item.status} />
     <div className="flex-1 min-w-0">
       <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">{item.label}</p>
-      {item.lastChanged ? (
+      {!hideSubtitle && (item.lastChanged ? (
         <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">
           Last changed{item.changedBy ? ` by ${item.changedBy}` : ""} on {item.lastChanged}
         </p>
       ) : (
         <p className="text-[14px] text-mfprimaryp-400 mt-1 leading-tight">Needs your response</p>
-      )}
+      ))}
     </div>
   </div>
 );
@@ -1491,7 +1506,7 @@ export const OverviewContent = (): JSX.Element => {
       <div ref={rootRef} className="flex flex-col bg-white pt-4 pb-24 gap-4">
         <ClassicCard>
           <ClassicSectionCardHeader title="Permissions" subtitle="Parental consent" />
-          <div className="px-4">{LATEST_PERMISSIONS.map((p) => <PermissionRow key={p.id} item={p} />)}</div>
+          <div className="px-4">{LATEST_PERMISSIONS.slice(0, 2).map((p) => <PermissionRow key={p.id} item={p} hideSubtitle />)}</div>
           <ClassicViewAllLink onPress={() => setSection("permissions")} />
         </ClassicCard>
 
@@ -1554,11 +1569,11 @@ export const OverviewContent = (): JSX.Element => {
       {/* Permissions */}
       <Section
         title="Permissions"
-        description="Parental consent"
+        description={permissionSummary}
         onViewAll={() => setPanel("permissions")}
       >
-        {LATEST_PERMISSIONS.map((p) => (
-          <PermissionRow key={p.id} item={p} />
+        {LATEST_PERMISSIONS.slice(0, 2).map((p) => (
+          <PermissionRow key={p.id} item={p} hideSubtitle />
         ))}
       </Section>
 
