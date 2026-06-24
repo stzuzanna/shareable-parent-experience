@@ -454,7 +454,7 @@ export const Menu = (): JSX.Element => {
   const comingSoon = () => showToast("Coming soon", "info");
 
   const settingsList: { id: string; label: string; icon: React.ElementType; onClick: () => void }[] = [
-    { id: "payments", label: "Payer preferences", icon: CreditCardIcon, onClick: () => setShowPaymentSettings(true) },
+    { id: "payments", label: "Payment methods", icon: CreditCardIcon, onClick: () => setShowPaymentSettings(true) },
     { id: "notifications", label: "Notifications and messaging", icon: BellIcon, onClick: () => setShowNotificationSettings(true) },
     { id: "password", label: "Password and sign in", icon: LockIcon, onClick: () => setShowSecuritySettings(true) },
     { id: "language", label: "Language", icon: UserCogIcon, onClick: () => setShowLanguageSettings(true) },

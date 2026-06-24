@@ -149,7 +149,7 @@ export const PaymentSettings: React.FC<PaymentSettingsProps> = ({ onClose }): JS
           >
             <ChevronLeftIcon className="w-4 h-4 text-mfneutralsn-400" />
           </button>
-          <h1 className="text-[18px] font-semibold text-mfneutralsn-500 flex-1">Payer preferences</h1>
+          <h1 className="text-[18px] font-semibold text-mfneutralsn-500 flex-1">Payment methods</h1>
         </div>
       </header>
 
