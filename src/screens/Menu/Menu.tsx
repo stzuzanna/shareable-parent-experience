@@ -482,8 +482,8 @@ export const Menu = (): JSX.Element => {
               {/* Side-by-side child cards */}
               <div className="grid grid-cols-2 gap-3">
                 {[
+                  { id: "tobin", childName: "Tobin", isPaid: false },
                   { id: "anny", childName: "Anny", isPaid: isPaid },
-                  { id: "tobin", childName: "Tobin", isPaid: true },
                 ].map((entry) => (
                   <div
                     key={entry.id}
