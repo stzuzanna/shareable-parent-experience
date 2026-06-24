@@ -1492,7 +1492,7 @@ export const OverviewContent = (): JSX.Element => {
           {/* header */}
           <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-[#f1f1f4] flex-shrink-0">
             <button
-              onClick={aboutEditing ? cancelAboutEdit : () => { setPanel(null); }}
+              onClick={() => { setPanel(null); }}
               className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0"
               aria-label="Back"
             >
@@ -1500,23 +1500,31 @@ export const OverviewContent = (): JSX.Element => {
             </button>
             <div className="flex-1 min-w-0">
               <p className="text-[17px] font-semibold text-mfneutralsn-500 leading-snug">About</p>
-              {!aboutEditing && <p className="text-[13px] text-mfneutralsn-300 mt-0.5">Personal details</p>}
+              <p className="text-[13px] text-mfneutralsn-300 mt-0.5">Personal details</p>
             </div>
           </div>
           {/* body */}
           <div className="flex-1 overflow-y-auto">
-            {aboutEditing ? (
-              <AboutEditContent
-                state={aboutDraft!}
-                focusField={aboutFocusField}
-                onChange={(field, value) => setAboutDraft((prev) => prev ? { ...prev, [field]: value } : prev)}
-              />
-            ) : (
-              <AboutViewContent
-                state={aboutState}
-                onEdit={(field) => openAboutEdit(field)}
-              />
-            )}
+            <AboutViewContent
+              state={aboutState}
+              onEdit={(field) => {
+                const configs: Record<keyof AboutState, EditFieldConfig & { key: FieldKey }> = {
+                  fullName:              { title: "Full name",              subtitle: "Your child's full name.",             type: "text",     value: aboutState.fullName,              key: { section: "basic", field: "fullName" } },
+                  preferredName:         { title: "Preferred name",         subtitle: "What people call your child.",        type: "text",     value: aboutState.preferredName,         key: { section: "basic", field: "preferredName" } },
+                  dateOfBirth:           { title: "Date of birth",          subtitle: "Used to determine room placement.",   type: "date",     value: aboutState.dateOfBirth,           key: { section: "basic", field: "dateOfBirth" } },
+                  languages:             { title: "Languages",              subtitle: "Languages spoken at home.",           type: "text",     value: aboutState.languages,             key: { section: "basic", field: "languages" } },
+                  nationality:           { title: "Nationality",            subtitle: "",                                    type: "text",     value: aboutState.nationality,           key: { section: "basic", field: "nationality" } },
+                  birthplace:            { title: "Birthplace",             subtitle: "",                                    type: "text",     value: aboutState.birthplace,            key: { section: "basic", field: "birthplace" } },
+                  homeLanguage:          { title: "Home language",          subtitle: "",                                    type: "text",     value: aboutState.homeLanguage,          key: { section: "basic", field: "homeLanguage" } },
+                  livesWith:             { title: "Lives with",             subtitle: "",                                    type: "text",     value: aboutState.livesWith,             key: { section: "basic", field: "livesWith" } },
+                  parentalResponsibility:{ title: "Parental responsibility",subtitle: "",                                    type: "text",     value: aboutState.parentalResponsibility,key: { section: "basic", field: "parentalResponsibility" } },
+                  ethnicity:             { title: "Ethnicity",              subtitle: "",                                    type: "text",     value: aboutState.ethnicity,             key: { section: "basic", field: "ethnicity" } },
+                  religion:              { title: "Religion",               subtitle: "",                                    type: "text",     value: aboutState.religion,              key: { section: "basic", field: "religion" } },
+                  specialNote:           { title: "Special note",           subtitle: "",                                    type: "textarea", value: aboutState.specialNote,           key: { section: "basic", field: "specialNote" } },
+                };
+                openEdit(configs[field]);
+              }}
+            />
           </div>
           {/* footer */}
           {aboutEditing && (
@@ -1541,7 +1549,7 @@ export const OverviewContent = (): JSX.Element => {
         <div className="fixed inset-0 z-[200] bg-white flex flex-col">
           <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-[#f1f1f4] flex-shrink-0">
             <button
-              onClick={healthEditing ? cancelHealthEdit : () => { setPanel(null); }}
+              onClick={() => { setPanel(null); }}
               className="w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center flex-shrink-0"
               aria-label="Back"
             >
@@ -1549,22 +1557,27 @@ export const OverviewContent = (): JSX.Element => {
             </button>
             <div className="flex-1 min-w-0">
               <p className="text-[17px] font-semibold text-mfneutralsn-500 leading-snug">Health details</p>
-              {!healthEditing && <p className="text-[13px] text-mfneutralsn-300 mt-0.5">Doctor and med info</p>}
+              <p className="text-[13px] text-mfneutralsn-300 mt-0.5">Doctor and med info</p>
             </div>
           </div>
           <div className="flex-1 overflow-y-auto">
-            {healthEditing ? (
-              <HealthEditContent
-                state={healthDraft!}
-                focusField={healthFocusField}
-                onChange={(field, value) => setHealthDraft((prev) => prev ? { ...prev, [field]: value } : prev)}
-              />
-            ) : (
-              <HealthViewContent
-                state={health}
-                onEdit={(field) => openHealthEdit(field)}
-              />
-            )}
+            <HealthViewContent
+              state={health}
+              onEdit={(field) => {
+                const configs: Record<keyof HealthState, EditFieldConfig & { key: FieldKey }> = {
+                  toleratesPenicillin: { title: "Tolerates penicillin",    subtitle: "Whether your child can take penicillin.", type: "select",   value: health.toleratesPenicillin, options: ["Yes", "No", "Unknown"], key: { section: "health", field: "toleratesPenicillin" } },
+                  diet:                { title: "Dietary considerations",   subtitle: "Food restrictions or preferences.",       type: "textarea", value: health.diet,                key: { section: "health", field: "diet" } },
+                  specialNotes:        { title: "Special notes",            subtitle: "Anything else about your child's health.",type: "textarea", value: health.specialNotes,        key: { section: "health", field: "specialNotes" } },
+                  doctorName:          { title: "Doctor name",              subtitle: "",                                        type: "text",     value: health.doctorName,           key: { section: "health", field: "doctorName" } },
+                  doctorPhone:         { title: "Doctor phone",             subtitle: "",                                        type: "text",     value: health.doctorPhone,          key: { section: "health", field: "doctorPhone" } },
+                  doctorAddress:       { title: "Doctor address",           subtitle: "",                                        type: "textarea", value: health.doctorAddress,        key: { section: "health", field: "doctorAddress" } },
+                  dentistName:         { title: "Dentist name",             subtitle: "",                                        type: "text",     value: health.dentistName,          key: { section: "health", field: "dentistName" } },
+                  dentistPhone:        { title: "Dentist phone",            subtitle: "",                                        type: "text",     value: health.dentistPhone,         key: { section: "health", field: "dentistPhone" } },
+                  dentistAddress:      { title: "Dentist address",          subtitle: "",                                        type: "textarea", value: health.dentistAddress,       key: { section: "health", field: "dentistAddress" } },
+                };
+                openEdit(configs[field]);
+              }}
+            />
           </div>
           {healthEditing && (
             <div className="flex-shrink-0 px-4 py-4 border-t border-[#f1f1f4] flex gap-3">
