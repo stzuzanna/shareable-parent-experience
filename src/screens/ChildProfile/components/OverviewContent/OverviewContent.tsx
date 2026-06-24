@@ -376,11 +376,11 @@ const EditableRow = ({
         <p className="text-[14px] text-mfneutralsn-500 leading-tight truncate">{value}</p>
       ) : (
         <p className="text-[14px] text-mfneutralsn-300 leading-tight truncate">
-          {placeholder ?? `Add ${label.toLowerCase()}`}
+          + {placeholder ?? `Add ${label.toLowerCase()}`}
         </p>
       )}
     </div>
-    <ChevronRightIcon className="w-4 h-4 text-mfneutralsn-300 flex-shrink-0" />
+    {value && <ChevronRightIcon className="w-4 h-4 text-mfneutralsn-300 flex-shrink-0" />}
   </button>
 );
 
