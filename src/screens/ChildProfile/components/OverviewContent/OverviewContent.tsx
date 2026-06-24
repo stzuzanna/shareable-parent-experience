@@ -1207,13 +1207,13 @@ const LeaveDetail = () => (
 
 type PermissionStatus = "yes" | "no" | "pending";
 
-const LATEST_PERMISSIONS: { id: string; label: string; status: PermissionStatus; lastChanged?: string; changedBy?: string }[] = [
-  { id: "photos", label: "Can be in photos", status: "yes", lastChanged: "05/25/2026", changedBy: "Sofia Adams Growth" },
-  { id: "animals", label: "Can play with animals", status: "no", lastChanged: "05/25/2026", changedBy: "Sofia Adams Growth" },
-  { id: "sunscreen", label: "Can apply sunscreen", status: "yes", lastChanged: "05/25/2026", changedBy: "Sofia Adams Growth" },
-  { id: "trips", label: "Can go on field trips", status: "no", lastChanged: "05/20/2026", changedBy: "Sofia Adams Growth" },
-  { id: "plasters", label: "Can apply plasters", status: "no", lastChanged: "05/20/2026", changedBy: "Sofia Adams Growth" },
-  { id: "social", label: "Can be on social media", status: "no", lastChanged: "05/18/2026", changedBy: "Sofia Adams Growth" },
+const LATEST_PERMISSIONS: { id: string; label: string; status: PermissionStatus; lastChanged?: string; changedBy?: string; daysAgo?: number }[] = [
+  { id: "photos", label: "Can be in photos", status: "yes", lastChanged: "06/22/2026", changedBy: "Sofia Adams Growth", daysAgo: 2 },
+  { id: "animals", label: "Can play with animals", status: "no", lastChanged: "06/22/2026", changedBy: "Sofia Adams Growth", daysAgo: 2 },
+  { id: "sunscreen", label: "Can apply sunscreen", status: "yes", lastChanged: "06/20/2026", changedBy: "Sofia Adams Growth", daysAgo: 4 },
+  { id: "trips", label: "Can go on field trips", status: "no", lastChanged: "06/18/2026", changedBy: "Sofia Adams Growth", daysAgo: 6 },
+  { id: "plasters", label: "Can apply plasters", status: "no", lastChanged: "06/15/2026", changedBy: "Sofia Adams Growth", daysAgo: 9 },
+  { id: "social", label: "Can be on social media", status: "no", lastChanged: "06/10/2026", changedBy: "Sofia Adams Growth", daysAgo: 14 },
 ];
 
 const permissionPreview = [...LATEST_PERMISSIONS]
@@ -1252,22 +1252,28 @@ const PermissionStatusBox = ({ status }: { status: PermissionStatus }) => {
 
 const PermissionRow = ({
   item,
-  hideSubtitle = false,
+  compact = false,
 }: {
-  item: { label: string; status: PermissionStatus; lastChanged?: string; changedBy?: string };
-  hideSubtitle?: boolean;
+  item: { label: string; status: PermissionStatus; lastChanged?: string; changedBy?: string; daysAgo?: number };
+  compact?: boolean;
 }) => (
   <div className="py-2 flex items-center gap-3">
     <PermissionStatusBox status={item.status} />
     <div className="flex-1 min-w-0">
       <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">{item.label}</p>
-      {!hideSubtitle && (item.lastChanged ? (
-        <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">
-          Last changed{item.changedBy ? ` by ${item.changedBy}` : ""} on {item.lastChanged}
-        </p>
+      {compact ? (
+        item.daysAgo !== undefined && (
+          <p className="text-[13px] text-mfneutralsn-300 mt-0.5 leading-tight">Last updated {item.daysAgo} days ago</p>
+        )
       ) : (
-        <p className="text-[14px] text-mfprimaryp-400 mt-1 leading-tight">Needs your response</p>
-      ))}
+        item.lastChanged ? (
+          <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight">
+            Last changed{item.changedBy ? ` by ${item.changedBy}` : ""} on {item.lastChanged}
+          </p>
+        ) : (
+          <p className="text-[14px] text-mfprimaryp-400 mt-1 leading-tight">Needs your response</p>
+        )
+      )}
     </div>
   </div>
 );
@@ -1513,7 +1519,7 @@ export const OverviewContent = (): JSX.Element => {
       <div ref={rootRef} className="flex flex-col bg-white pt-4 pb-24 gap-4">
         <ClassicCard>
           <ClassicSectionCardHeader title="Permissions" subtitle="Parental consent" />
-          <div className="px-4">{permissionPreview.map((p) => <PermissionRow key={p.id} item={p} hideSubtitle />)}</div>
+          <div className="px-4">{permissionPreview.map((p) => <PermissionRow key={p.id} item={p} compact />)}</div>
           <ClassicViewAllLink onPress={() => setSection("permissions")} />
         </ClassicCard>
 
@@ -1580,9 +1586,8 @@ export const OverviewContent = (): JSX.Element => {
         onViewAll={() => setPanel("permissions")}
       >
         {permissionPreview.map((p) => (
-          <PermissionRow key={p.id} item={p} hideSubtitle />
+          <PermissionRow key={p.id} item={p} compact />
         ))}
-        <p className="text-[13px] text-mfneutralsn-300 mt-1">Last updated 2 days ago</p>
       </Section>
 
       {/* About / Basic info */}
