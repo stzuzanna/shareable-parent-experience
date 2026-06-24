@@ -498,7 +498,7 @@ export const Menu = (): JSX.Element => {
 
                     {/* Balance */}
                     <span className={`text-[28px] font-normal leading-tight tracking-tight text-mfneutralsn-500`}>
-                      {entry.isPaid ? "$0" : `–$${OUTSTANDING_AMOUNT}`}
+                      {entry.isPaid ? "$0" : `$${OUTSTANDING_AMOUNT}`}
                     </span>
 
                     {entry.isPaid ? (
