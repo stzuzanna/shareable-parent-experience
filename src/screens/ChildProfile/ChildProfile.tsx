@@ -27,7 +27,6 @@ const NEW_PRIORITY_ITEMS: {
   iconColor: string;
 }[] = [
   { id: "med", label: "Active medication", sublabel: "Zyrtec", Icon: PillIcon, iconBg: "#ebf5fe", iconColor: "#067aef" },
-  { id: "holiday", label: "Upcoming holiday", sublabel: "Jun 21", Icon: SunIcon, iconBg: "#fef0cd", iconColor: "#c08700" },
 ];
 
 const NewPrioritySection = (): JSX.Element => (
@@ -50,7 +49,6 @@ const NewPrioritySection = (): JSX.Element => (
 
 const CLASSIC_PRIORITY_ITEMS: { id: string; label: string; Icon: React.ElementType }[] = [
   { id: "med", label: "Active medication - Zyrtec", Icon: PillIcon },
-  { id: "holiday", label: "Upcoming holiday - Jun 21", Icon: SunIcon },
 ];
 
 const ClassicPrioritySection = (): JSX.Element => {

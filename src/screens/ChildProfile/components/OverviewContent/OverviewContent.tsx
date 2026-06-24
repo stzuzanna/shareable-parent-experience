@@ -251,9 +251,10 @@ const ClassicCardHeader = ({ title, onPress }: { title: string; onPress?: () => 
   </button>
 );
 
-const ClassicSectionCardHeader = ({ title }: { title: string }) => (
-  <div className="w-full flex items-center px-4 pt-4 pb-2">
+const ClassicSectionCardHeader = ({ title, subtitle }: { title: string; subtitle?: string }) => (
+  <div className="w-full flex flex-col px-4 pt-4 pb-2">
     <span className="text-[16px] font-semibold text-mfneutralsn-500">{title}</span>
+    {subtitle && <span className="text-[13px] text-mfneutralsn-300 mt-0.5">{subtitle}</span>}
   </div>
 );
 
@@ -761,6 +762,12 @@ const HealthEditField = ({
 
 // ── Detail view: Basic info (classic layout) ──────────────────────────────────
 
+type OptionalKey = "nationality" | "birthplace";
+const OPTIONAL_LABELS: Record<OptionalKey, string> = {
+  nationality: "Nationality",
+  birthplace: "Birthplace",
+};
+
 const BasicInfoDetail = ({
   state,
   openEdit,
@@ -1205,10 +1212,22 @@ const LATEST_PERMISSIONS: { id: string; label: string; status: PermissionStatus;
   { id: "animals", label: "Can play with animals", status: "no", lastChanged: "05/25/2026", changedBy: "Sofia Adams Growth" },
 ];
 
-const PermissionStatusIcon = ({ status }: { status: PermissionStatus }) => {
-  if (status === "yes") return <CheckCircle2Icon className="w-4 h-4 text-green-500" />;
-  if (status === "no") return <XCircleIcon className="w-4 h-4 text-mfredr-400" />;
-  return <HelpCircleIcon className="w-4 h-4 text-mfprimaryp-400" />;
+const PermissionStatusBox = ({ status }: { status: PermissionStatus }) => {
+  if (status === "yes") return (
+    <div className="w-6 h-6 rounded-md bg-green-100 flex items-center justify-center flex-shrink-0">
+      <CheckCircle2Icon className="w-4 h-4 text-green-700" />
+    </div>
+  );
+  if (status === "no") return (
+    <div className="w-6 h-6 rounded-md bg-red-100 flex items-center justify-center flex-shrink-0">
+      <XCircleIcon className="w-4 h-4 text-red-700" />
+    </div>
+  );
+  return (
+    <div className="w-6 h-6 rounded-md bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0">
+      <HelpCircleIcon className="w-4 h-4 text-mfprimaryp-400" />
+    </div>
+  );
 };
 
 const PermissionRow = ({
@@ -1216,10 +1235,8 @@ const PermissionRow = ({
 }: {
   item: { label: string; status: PermissionStatus; lastChanged?: string; changedBy?: string };
 }) => (
-  <div className="px-4 py-3 flex items-start gap-3">
-    <div className="pt-0.5 flex-shrink-0">
-      <PermissionStatusIcon status={item.status} />
-    </div>
+  <div className="py-2 flex items-center gap-3">
+    <PermissionStatusBox status={item.status} />
     <div className="flex-1 min-w-0">
       <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">{item.label}</p>
       {item.lastChanged ? (
@@ -1266,9 +1283,7 @@ const PermissionsDetail = () => {
             key={item.id}
             className="flex items-center gap-3 py-2.5"
           >
-            <div className="w-6 h-6 rounded-md bg-mfneutralsn-75 flex items-center justify-center flex-shrink-0">
-              <PermissionStatusIcon status={item.answer ?? "pending"} />
-            </div>
+            <PermissionStatusBox status={item.answer ?? "pending"} />
             <span className="flex-1 text-sm font-medium text-mfneutralsn-500">{item.label}</span>
             {isEditing ? (
               <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -1475,8 +1490,8 @@ export const OverviewContent = (): JSX.Element => {
     return (
       <div ref={rootRef} className="flex flex-col bg-white pt-4 pb-24 gap-4">
         <ClassicCard>
-          <ClassicSectionCardHeader title="Permissions" />
-          {LATEST_PERMISSIONS.map((p) => <PermissionRow key={p.id} item={p} />)}
+          <ClassicSectionCardHeader title="Permissions" subtitle="Parental consent" />
+          <div className="px-4">{LATEST_PERMISSIONS.map((p) => <PermissionRow key={p.id} item={p} />)}</div>
           <ClassicViewAllLink onPress={() => setSection("permissions")} />
         </ClassicCard>
 
@@ -1503,16 +1518,19 @@ export const OverviewContent = (): JSX.Element => {
         </ClassicCard>
 
         <ClassicCard>
-          <ClassicSectionCardHeader title="Health details" />
+          <ClassicSectionCardHeader title="Health details" subtitle="Doctor and med info" />
           <SummaryRow icon={<StethoscopeIcon className="w-4 h-4" />} label={health.doctorName || "Add doctor info"} />
           <SummaryRow icon={<MapPinIcon className="w-4 h-4" />} label={health.doctorAddress ? health.doctorAddress.split("\n")[0] : "Add address"} />
           <ClassicViewAllLink onPress={() => setSection("health")} />
         </ClassicCard>
 
         <ClassicCard>
-          <ClassicCardHeader title="Leave" onPress={() => setSection("leave")} />
-          <LeaveRow icon={<SunIcon className="w-[18px] h-[18px] text-mfyellowy-400" />} label="1 - 10 Jul 26" sublabel="Holiday · Opted out of meals" trailing="Upcoming" />
-          <LeaveRow icon={<ThermometerIcon className="w-[18px] h-[18px] text-mfredr-400" />} label="4 Mar 26" sublabel="Sick" trailing="Past" />
+          <ClassicSectionCardHeader title="Leave" subtitle="Upcoming and past absences" />
+          <div className="px-4">
+            <LeaveRow icon={<div className="w-6 h-6 rounded-md bg-yellow-100 flex items-center justify-center flex-shrink-0"><SunIcon className="w-4 h-4 text-yellow-700" /></div>} label="1 - 10 Jul 26" sublabel="Holiday · Opted out of meals" trailing="Upcoming" />
+            <LeaveRow icon={<div className="w-6 h-6 rounded-md bg-red-100 flex items-center justify-center flex-shrink-0"><ThermometerIcon className="w-4 h-4 text-red-700" /></div>} label="4 Mar 26" sublabel="Sick" trailing="Past" />
+          </div>
+          <ClassicViewAllLink onPress={() => setSection("leave")} />
         </ClassicCard>
 
         {variant === "v1" && (
@@ -1532,7 +1550,40 @@ export const OverviewContent = (): JSX.Element => {
 
   // ── New (child-pro) layout ──────────────────────────────────────────────────
   return (
-    <div ref={rootRef} className="flex flex-col bg-white pb-24">
+    <div ref={rootRef} className="flex flex-col bg-white pt-4 pb-24">
+      {/* Permissions */}
+      <Section
+        Icon={ShieldCheckIcon}
+        title="Permissions"
+        description="Parental consent"
+        onViewAll={() => setPanel("permissions")}
+      >
+        {LATEST_PERMISSIONS.map((p) => (
+          <PermissionRow key={p.id} item={p} />
+        ))}
+      </Section>
+
+      {/* About / Basic info */}
+      <Section
+        Icon={UserIcon}
+        title="About"
+        description="Personal details"
+        onViewAll={() => setPanel("basic")}
+      >
+        <AboutRow Icon={CakeIcon} value={`${formatHumanDate(basicInfo.dateOfBirth) || "1 Feb 2025"} (1 year 4 months)`} />
+        <AboutRow
+          Icon={LanguagesIcon}
+          value={basicInfo.languages.length ? basicInfo.languages.join(", ") : "Add languages"}
+        />
+        <AboutRow
+          Icon={UserIcon}
+          value={basicInfo.gender || "Add gender"}
+        />
+        {basicInfo.allergy && (
+          <AboutRow Icon={AlertTriangleIcon} value={basicInfo.allergy} />
+        )}
+      </Section>
+
       {/* Family */}
       <Section
         Icon={UsersIcon}
@@ -1559,62 +1610,32 @@ export const OverviewContent = (): JSX.Element => {
         />
       </Section>
 
-      {/* About / Basic info */}
-      <Section
-        Icon={UserIcon}
-        title="About"
-        description="Personal details"
-        onViewAll={() => setPanel("basic")}
-      >
-        <AboutRow Icon={CakeIcon} value={`${formatHumanDate(basicInfo.dateOfBirth) || "1 Feb 2025"} (1 year 4 months)`} />
-        <AboutRow
-          Icon={LanguagesIcon}
-          value={basicInfo.languages.length ? basicInfo.languages.join(", ") : "Add languages"}
-        />
-        <AboutRow
-          Icon={UserIcon}
-          value={basicInfo.gender || "Add gender"}
-        />
-        {basicInfo.allergy && (
-          <AboutRow Icon={AlertTriangleIcon} value={basicInfo.allergy} />
-        )}
-      </Section>
-
       {/* Health details */}
       <Section
         Icon={StethoscopeIcon}
         title="Health details"
+        description="Doctor and med info"
         onViewAll={() => setPanel("health")}
       >
         <AboutRow Icon={StethoscopeIcon} value={health.doctorName || "Add doctor info"} />
         <AboutRow Icon={HelpCircleIcon} value={health.toleratesPenicillin ? `Penicillin: ${health.toleratesPenicillin}` : "Add penicillin info"} />
       </Section>
 
-      {/* Permissions */}
-      <Section
-        Icon={ShieldCheckIcon}
-        title="Permissions"
-        onViewAll={() => setPanel("permissions")}
-      >
-        {LATEST_PERMISSIONS.map((p) => (
-          <PermissionRow key={p.id} item={p} />
-        ))}
-      </Section>
-
       {/* Leave */}
       <Section
         Icon={CalendarOffIcon}
         title="Leave"
+        description="Upcoming and past absences"
         onViewAll={() => setPanel("leave")}
       >
         <LeaveRow
-          icon={<SunIcon className="w-[18px] h-[18px] text-mfyellowy-400" />}
+          icon={<div className="w-6 h-6 rounded-md bg-yellow-100 flex items-center justify-center flex-shrink-0"><SunIcon className="w-4 h-4 text-yellow-700" /></div>}
           label="1 - 10 Jul 26"
           sublabel="Holiday · Opted out of meals"
           trailing="Upcoming"
         />
         <LeaveRow
-          icon={<ThermometerIcon className="w-[18px] h-[18px] text-mfredr-400" />}
+          icon={<div className="w-6 h-6 rounded-md bg-red-100 flex items-center justify-center flex-shrink-0"><ThermometerIcon className="w-4 h-4 text-red-700" /></div>}
           label="4 Mar 26"
           sublabel="Sick"
           trailing="Past"
@@ -1721,7 +1742,7 @@ export const OverviewContent = (): JSX.Element => {
             </button>
             <div className="flex-1 min-w-0">
               <p className="text-[17px] font-semibold text-mfneutralsn-500 leading-snug">Health details</p>
-              {!healthEditing && <p className="text-[13px] text-mfneutralsn-300 mt-0.5">Medical information</p>}
+              {!healthEditing && <p className="text-[13px] text-mfneutralsn-300 mt-0.5">Doctor and med info</p>}
             </div>
           </div>
           <div className="flex-1 overflow-y-auto">
@@ -1792,7 +1813,10 @@ export const OverviewContent = (): JSX.Element => {
             >
               <ArrowLeftIcon className="w-4 h-4 text-mfneutralsn-500" />
             </button>
-            <p className="text-[17px] font-semibold text-mfneutralsn-500 flex-1">Leave</p>
+            <div className="flex-1 min-w-0">
+              <p className="text-[17px] font-semibold text-mfneutralsn-500 leading-snug">Leave</p>
+              <p className="text-[13px] text-mfneutralsn-300 mt-0.5">Upcoming and past absences</p>
+            </div>
             <button
               type="button"
               onClick={() => setShowLeaveSheet(true)}
@@ -1825,10 +1849,8 @@ export const OverviewContent = (): JSX.Element => {
 };
 
 const LeaveRow = ({ icon, label, sublabel, trailing }: { icon: React.ReactNode; label: string; sublabel: string; trailing: string }) => (
-  <div className="px-4 py-2.5 flex items-center gap-3">
-    <div className="w-10 h-10 rounded-full bg-mfneutralsn-50 flex items-center justify-center flex-shrink-0">
-      {icon}
-    </div>
+  <div className="py-2 flex items-center gap-3">
+    {icon}
     <div className="flex-1 min-w-0">
       <p className="text-[14px] font-medium text-mfneutralsn-500 leading-tight">{label}</p>
       <p className="text-[14px] text-mfneutralsn-300 mt-1 leading-tight truncate">{sublabel}</p>

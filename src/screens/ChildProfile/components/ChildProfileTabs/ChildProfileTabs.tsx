@@ -13,7 +13,7 @@ interface ChildProfileTabsProps {
 
 export const ChildProfileTabs: React.FC<ChildProfileTabsProps> = ({ activeTab, onTabChange, tabs }): JSX.Element => {
   return (
-    <div className="bg-white px-4 sticky top-0 z-20 border-b border-[#e2e2e9]">
+    <div className="bg-white px-4 pt-4 sticky top-0 z-20">
       <div className="flex items-center justify-start">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;

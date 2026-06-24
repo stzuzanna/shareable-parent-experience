@@ -4,22 +4,19 @@ import { useNavigate } from "react-router-dom";
 import {
   ChevronRightIcon,
   ChevronLeftIcon,
+  XIcon,
+  CameraIcon,
   LogOutIcon,
-  FileTextIcon,
-  PencilIcon,
   LockIcon,
-  HelpCircleIcon,
-  ScaleIcon,
   CreditCardIcon,
   BellIcon,
   SearchIcon,
   UserCogIcon,
   HeartIcon,
   ArrowLeftRightIcon,
-  MapPinIcon,
-  PhoneIcon,
-  MailIcon,
-  UserIcon,
+  ExternalLinkIcon,
+  HelpCircleIcon,
+  ScaleIcon,
 } from "lucide-react";
 import { BASE_PATH } from "../../constants";
 import { useDeviceDetection } from "../../hooks/useDeviceDetection";
@@ -190,6 +187,83 @@ const SelectField: React.FC<{
   </div>
 );
 
+// ─── View profile page ────────────────────────────────────────────────────────
+
+const ViewProfileRow: React.FC<{ label: string; value: string }> = ({ label, value }) => (
+  <div className="flex items-center justify-between py-3 border-b border-mfneutralsn-75 last:border-0 gap-4">
+    <span className="text-[14px] text-mfneutralsn-400 flex-shrink-0">{label}</span>
+    <span className="text-[14px] text-mfneutralsn-500 text-right">{value}</span>
+  </div>
+);
+
+export const ViewProfile: React.FC<{ onClose: () => void; onEdit: () => void }> = ({ onClose, onEdit }) => {
+  const { shouldShowFrame } = useDeviceDetection();
+  return (
+    <div className={`flex flex-col bg-white ${shouldShowFrame ? "h-full" : "min-h-screen"}`}>
+      {shouldShowFrame && (
+        <div className="flex items-center justify-between px-5 pt-2 pb-1">
+          <span className="font-semibold text-mfneutralsn-500 text-[15px]">9:41</span>
+          <img className="h-4" alt="Status icons" src={`${BASE_PATH}right-side.svg`} />
+        </div>
+      )}
+      {/* Header */}
+      <div className="relative flex items-center justify-center px-4 pt-4 pb-3 border-b border-[#f1f1f4]">
+        <button onClick={onClose} className="absolute left-4 w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center active:bg-mfneutralsn-50 transition-colors">
+          <ChevronLeftIcon className="w-4 h-4 text-mfneutralsn-400" />
+        </button>
+        <p className="text-[17px] font-semibold text-mfneutralsn-500">About</p>
+      </div>
+
+      {/* Scrollable content */}
+      <div className="flex-1 overflow-y-auto">
+        {/* Centered avatar */}
+        <div className="flex flex-col items-center pt-6 pb-4">
+          <button className="relative">
+            <div className="w-20 h-20 rounded-full bg-[#EBF5FE] flex items-center justify-center">
+              <span className="text-[20px] font-semibold text-[#067AEF]">MF</span>
+            </div>
+            <div className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-mfneutralsn-500 border-2 border-white flex items-center justify-center">
+              <CameraIcon className="w-3 h-3 text-white" />
+            </div>
+          </button>
+        </div>
+
+        <div className="px-4">
+          <p className="text-[12px] font-semibold text-mfneutralsn-300 uppercase tracking-wide pb-1 pt-2">Basic info</p>
+          <ViewProfileRow label="Full name" value="Martha Freedman" />
+          <ViewProfileRow label="Preferred name" value="Martha" />
+          <ViewProfileRow label="Date of birth" value="12 Mar 1985" />
+          <ViewProfileRow label="Languages" value="English" />
+          <ViewProfileRow label="Birthplace" value="London" />
+        </div>
+
+        <div className="px-4 mt-4">
+          <p className="text-[12px] font-semibold text-mfneutralsn-300 uppercase tracking-wide pb-1 pt-2">Contact</p>
+          <ViewProfileRow label="Email" value="martha.freedman@email.com" />
+          <ViewProfileRow label="Phone number" value="+44 2324932948239" />
+        </div>
+
+        <div className="px-4 mt-4">
+          <p className="text-[12px] font-semibold text-mfneutralsn-300 uppercase tracking-wide pb-1 pt-2">Role</p>
+          <ViewProfileRow label="Relationship" value="Abby's mum" />
+        </div>
+      </div>
+
+      {/* Edit CTA */}
+      <div className="px-4 pb-8 pt-3 bg-white border-t border-mfneutralsn-75 flex-shrink-0">
+        <button
+          onClick={onEdit}
+          className="w-full h-12 rounded-2xl bg-mfprimaryp-400 text-white text-[15px] font-semibold active:opacity-80 transition-opacity"
+        >
+          Edit
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ─── Edit profile page ────────────────────────────────────────────────────────
+
 export const EditProfile: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { shouldShowFrame } = useDeviceDetection();
   const [fields, setFields] = useState({
@@ -208,25 +282,32 @@ export const EditProfile: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
   return (
     <div className={`flex flex-col bg-white ${shouldShowFrame ? "h-full" : "min-h-screen"}`}>
+      {shouldShowFrame && (
+        <div className="flex items-center justify-between px-5 pt-2 pb-1">
+          <span className="font-semibold text-mfneutralsn-500 text-[15px]">9:41</span>
+          <img className="h-4" alt="Status icons" src={`${BASE_PATH}right-side.svg`} />
+        </div>
+      )}
       {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-mfneutralsn-75">
-        <button onClick={onClose} className="w-9 h-9 rounded-full border border-mfneutralsn-100 flex items-center justify-center active:bg-mfneutralsn-50 transition-colors flex-shrink-0">
+      <div className="relative flex items-center justify-center px-4 pt-4 pb-3 border-b border-[#f1f1f4]">
+        <button onClick={onClose} className="absolute left-4 w-9 h-9 rounded-full border border-mfneutralsn-200 bg-white flex items-center justify-center active:bg-mfneutralsn-50 transition-colors">
           <ChevronLeftIcon className="w-4 h-4 text-mfneutralsn-400" />
         </button>
-        <h1 className="text-[16px] font-semibold text-mfneutralsn-500">About</h1>
-        <button onClick={onClose} className="w-9 h-9 rounded-full border border-mfneutralsn-100 flex items-center justify-center active:bg-mfneutralsn-50 transition-colors flex-shrink-0">
-          <span className="text-[16px] text-mfneutralsn-400 leading-none">✕</span>
-        </button>
+        <p className="text-[17px] font-semibold text-mfneutralsn-500">About</p>
       </div>
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto pb-28">
-        {/* Avatar row */}
-        <div className="flex items-center gap-3 px-4 py-4">
-          <div className="w-11 h-11 rounded-full bg-[#EBF5FE] flex items-center justify-center flex-shrink-0">
-            <span className="text-[14px] font-semibold text-[#067AEF]">MF</span>
-          </div>
-          <span className="text-[16px] font-semibold text-mfneutralsn-500">{fields.name}</span>
+        {/* Centered avatar */}
+        <div className="flex flex-col items-center pt-6 pb-4">
+          <button className="relative">
+            <div className="w-20 h-20 rounded-full bg-[#EBF5FE] flex items-center justify-center">
+              <span className="text-[20px] font-semibold text-[#067AEF]">MF</span>
+            </div>
+            <div className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-mfneutralsn-500 border-2 border-white flex items-center justify-center">
+              <CameraIcon className="w-3 h-3 text-white" />
+            </div>
+          </button>
         </div>
 
         <div className="px-4 flex flex-col gap-4">
@@ -258,7 +339,7 @@ export const EditProfile: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       </div>
 
       {/* Cancel + Save */}
-      <div className="fixed bottom-0 left-0 right-0 flex gap-3 px-4 pb-8 pt-3 bg-white border-t border-mfneutralsn-75">
+      <div className="flex gap-3 px-4 pb-8 pt-3 bg-white border-t border-mfneutralsn-75 flex-shrink-0">
         <button
           onClick={onClose}
           className="flex-1 h-12 rounded-2xl border border-mfneutralsn-200 text-[15px] font-semibold text-mfneutralsn-500 active:bg-mfneutralsn-50 transition-colors"
@@ -278,47 +359,25 @@ export const EditProfile: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
 // ─── Profile header card ─────────────────────────────────────────────────────
 
-const ProfileCard: React.FC<{ onEdit: () => void; onSwitchAccount: () => void }> = ({ onEdit, onSwitchAccount }) => (
+const ProfileCard: React.FC<{ onEdit: () => void }> = ({ onEdit }) => (
   <div className="pt-4 pb-2">
-    {/* Horizontal layout: avatar | name+contact+pill | edit */}
-    <div className="flex items-center gap-4">
+    <button onClick={onEdit} className="flex items-center gap-4 w-full text-left active:bg-mfneutralsn-50 transition-colors rounded-xl">
       <Avatar className="w-[72px] h-[72px] flex-shrink-0 border-2 border-white shadow-sm">
         <AvatarImage src={`${BASE_PATH}avatar-2.png`} alt="Matt Freedman" className="object-cover" />
         <AvatarFallback>MF</AvatarFallback>
       </Avatar>
 
       <div className="flex-1 min-w-0 flex flex-col gap-1.5">
-        <p className="text-[16px] font-semibold text-mfneutralsn-500 leading-snug">Martha Freedman</p>
-        <div className="flex flex-col gap-0.5">
-          <span className="text-[12px] text-mfneutralsn-300 leading-snug">matt.freedman@email.com</span>
-          <span className="text-[12px] text-mfneutralsn-300 leading-snug">+44 2324932948239</span>
-        </div>
+        <p className="text-[16px] font-semibold text-mfneutralsn-500 leading-snug">Matt Freedman</p>
+        <span className="text-[12px] text-mfneutralsn-300 leading-snug">matt.freedman@email.com</span>
         {/* Role pill */}
         <div className="inline-flex items-center gap-1 h-6 px-2.5 rounded-full border border-[#067AEF] bg-[#F5FAFF] self-start mt-0.5">
           <HeartIcon className="w-3 h-3 text-[#067AEF] fill-[#067AEF] flex-shrink-0" />
-          <span className="text-[13px] text-mfneutralsn-500 leading-none">Abby's mum</span>
+          <span className="text-[13px] text-mfneutralsn-500 leading-none">Parent</span>
         </div>
       </div>
 
-      <button
-        onClick={onEdit}
-        className="w-8 h-8 rounded-full flex items-center justify-center active:bg-mfneutralsn-50 transition-colors flex-shrink-0"
-        aria-label="Edit profile"
-      >
-        <PencilIcon className="w-4 h-4 text-mfneutralsn-400" />
-      </button>
-    </div>
-
-    {/* Switch account row */}
-    <button
-      onClick={onSwitchAccount}
-      className="flex items-center justify-between w-full h-12 mt-1 active:bg-mfneutralsn-50 transition-colors"
-    >
-      <div className="flex items-center gap-2">
-        <ArrowLeftRightIcon className="w-[22px] h-[22px] text-mfneutralsn-400" />
-        <span className="text-[14px] text-mfneutralsn-500">Switch account</span>
-      </div>
-      <ChevronRightIcon className="w-4 h-4 text-mfneutralsn-300" />
+      <ChevronRightIcon className="w-4 h-4 text-mfneutralsn-300 flex-shrink-0" />
     </button>
   </div>
 );
@@ -330,46 +389,37 @@ const PaymentsCard: React.FC<{
   onNavigate: () => void;
   onPayNow: () => void;
 }> = ({ isPaid, onNavigate, onPayNow }) => (
-  <div className="rounded-2xl p-4 border border-[#F4EDFC]" style={{ backgroundColor: "#F5FAFF" }}>
-    {/* Balance + chevron */}
-    <button onClick={onNavigate} className="w-full text-left flex items-start justify-between mb-3">
-      <div>
-        <p className={`text-[32px] font-normal leading-tight tracking-tight ${isPaid ? "text-mfneutralsn-500" : "text-red-600"}`}>
-          {isPaid ? "$0" : `–$${OUTSTANDING_AMOUNT}`}
-        </p>
-        <p className="text-[14px] text-mfneutralsn-300 mt-0.5">
-          {isPaid ? (
-            <><span className="font-medium text-mfneutralsn-500">Everything's settled. </span>You don't owe anything.</>
-          ) : (
-            "You owe money to the centre."
-          )}
-        </p>
+  <button onClick={onNavigate} className="w-full text-left rounded-2xl p-3 border border-mfneutralsn-100 bg-white active:bg-mfneutralsn-50 transition-colors">
+    {/* Balance header row */}
+    <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center gap-1.5">
+        <span className="text-[14px] text-mfneutralsn-300">Balance</span>
+        <span className="w-1 h-1 rounded-full bg-mfneutralsn-300 flex-shrink-0" />
+        <span className="text-[14px] text-mfneutralsn-300">Anny</span>
       </div>
-      <ChevronRightIcon className="w-5 h-5 text-mfneutralsn-300 flex-shrink-0 mt-2" />
-    </button>
-
-    {/* Latest invoice subcard */}
-    <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2">
-      <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#EBF5FE" }}>
-        <FileTextIcon className="w-4 h-4 text-[#067AEF]" />
-      </div>
-      <div className="flex flex-col gap-0.5 min-w-0">
-        <span className="text-[12px] text-mfneutralsn-300 leading-tight">
-          Latest invoice&nbsp;•&nbsp;Charged on Nov 24
-        </span>
-        <span className="text-[14px] text-mfneutralsn-500 leading-tight">Invoice for $1024.00</span>
-      </div>
+      <ChevronRightIcon className="w-5 h-5 text-mfneutralsn-300 flex-shrink-0" />
     </div>
 
-    {!isPaid && (
+    {/* Balance amount */}
+    <p className={`text-[32px] font-normal leading-tight tracking-tight mb-3 ${isPaid ? "text-mfneutralsn-500" : "text-red-600"}`}>
+      {isPaid ? "$0" : `–$${OUTSTANDING_AMOUNT}`}
+    </p>
+
+    {isPaid ? (
+      <div className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full border border-mfneutralsn-200 bg-mfneutralsn-50">
+        <span className="text-[13px] text-mfneutralsn-400">Paying automatically</span>
+        <span className="w-1 h-1 rounded-full bg-mfneutralsn-300 flex-shrink-0" />
+        <span className="text-[13px] text-mfneutralsn-400">Visa 4242</span>
+      </div>
+    ) : (
       <Button
-        onClick={onPayNow}
-        className="w-full h-12 bg-mfprimaryp-400 hover:bg-mfprimaryp-400/90 text-white rounded-xl font-medium mt-3"
+        onClick={(e) => { e.stopPropagation(); onPayNow(); }}
+        className="w-full h-9 bg-mfprimaryp-400 hover:bg-mfprimaryp-400/90 text-white rounded-xl font-medium"
       >
         Pay now
       </Button>
     )}
-  </div>
+  </button>
 );
 
 // ─── Main component ───────────────────────────────────────────────────────────
@@ -386,6 +436,7 @@ export const Menu = (): JSX.Element => {
   const [showPaymentSettings, setShowPaymentSettings] = useState(false);
   const [showSwitchAccount, setShowSwitchAccount] = useState(false);
   const [showMultisite, setShowMultisite] = useState(false);
+  const [showViewProfile, setShowViewProfile] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showNotificationSettings, setShowNotificationSettings] = useState(false);
   const [showSecuritySettings, setShowSecuritySettings] = useState(false);
@@ -397,6 +448,7 @@ export const Menu = (): JSX.Element => {
   if (showSecuritySettings) return <SecuritySettings onClose={() => setShowSecuritySettings(false)} />;
   if (showLanguageSettings) return <LanguageSettings onClose={() => setShowLanguageSettings(false)} />;
   if (showEditProfile) return <EditProfile onClose={() => setShowEditProfile(false)} />;
+  if (showViewProfile) return <ViewProfile onClose={() => setShowViewProfile(false)} onEdit={() => { setShowViewProfile(false); setShowEditProfile(true); }} />;
 
   const comingSoon = () => showToast("Coming soon", "info");
 
@@ -407,77 +459,61 @@ export const Menu = (): JSX.Element => {
     { id: "language", label: "Language", icon: UserCogIcon, onClick: () => setShowLanguageSettings(true) },
   ];
 
-  const supportList: { id: string; label: string; icon: React.ElementType; onClick: () => void }[] = [
-    { id: "help", label: "Help and support", icon: HelpCircleIcon, onClick: comingSoon },
-    { id: "terms", label: "Terms and policies", icon: ScaleIcon, onClick: comingSoon },
-  ];
-
   const content = (
     <div className={`flex-1 overflow-y-auto ${!shouldShowFrame ? "touch:pb-24" : ""}`}>
       <div className="px-4 pb-8">
         {/* Profile */}
-        <ProfileCard onEdit={() => setShowEditProfile(true)} onSwitchAccount={() => setShowSwitchAccount(true)} />
+        <ProfileCard onEdit={() => setShowViewProfile(true)} />
 
         {/* Payments */}
         <div className="mb-5">
           <SectionLabel>Payments</SectionLabel>
           {showMultisite ? (
-            <div className="flex flex-col gap-3">
-              {[
-                { id: "sunflower", siteName: "Little Explorers", childName: "Abby Freedman", isPaid: isPaid },
-                { id: "oaktree", siteName: "Christmas Adventurers", childName: "Abby Freedman", isPaid: true },
-              ].map((entry) => (
-                <div
-                  key={entry.id}
-                  className="rounded-[14px] border border-[#F4EDFC] p-4 flex flex-col gap-3"
-                  style={{ backgroundColor: "#F5FAFF" }}
-                >
-                  {/* Site • Child header */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-[14px] font-medium text-mfneutralsn-400">{entry.siteName}</span>
-                    <span className="w-1 h-1 rounded-full bg-mfneutralsn-300 flex-shrink-0" />
-                    <span className="text-[14px] font-medium text-mfneutralsn-400">{entry.childName}</span>
-                  </div>
+            <>
+              {/* Switch account button */}
+              <button
+                onClick={() => setShowSwitchAccount(true)}
+                className="flex items-center justify-center gap-2 w-full h-11 mb-3 rounded-2xl border border-mfneutralsn-200 active:bg-mfneutralsn-50 transition-colors"
+              >
+                <ArrowLeftRightIcon className="w-4 h-4 text-mfneutralsn-400" />
+                <span className="text-[14px] font-medium text-mfneutralsn-500">Switch account</span>
+              </button>
 
-                  {/* Balance row */}
-                  <button onClick={() => navigate("/balance")} className="flex items-center justify-between w-full">
-                    <span className={`text-[32px] font-normal leading-tight tracking-tight ${entry.isPaid ? "text-mfneutralsn-500" : "text-red-600"}`}>
+              {/* Side-by-side child cards */}
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { id: "anny", childName: "Anny", isPaid: isPaid },
+                  { id: "tobin", childName: "Tobin", isPaid: true },
+                ].map((entry) => (
+                  <div
+                    key={entry.id}
+                    className="rounded-2xl border border-mfneutralsn-100 bg-white p-3 flex flex-col gap-3"
+                  >
+                    {/* Child name + chevron */}
+                    <button onClick={() => navigate("/balance")} className="flex items-center justify-between w-full">
+                      <span className="text-[14px] text-mfneutralsn-400">{entry.childName}</span>
+                      <ChevronRightIcon className="w-4 h-4 text-mfneutralsn-300 flex-shrink-0" />
+                    </button>
+
+                    {/* Balance */}
+                    <span className={`text-[28px] font-normal leading-tight tracking-tight ${entry.isPaid ? "text-mfneutralsn-500" : "text-red-600"}`}>
                       {entry.isPaid ? "$0" : `–$${OUTSTANDING_AMOUNT}`}
                     </span>
-                    <ChevronRightIcon className="w-5 h-5 text-mfneutralsn-300 flex-shrink-0" />
-                  </button>
 
-                  {/* Status */}
-                  <div className="flex flex-col gap-2">
-                    <p className="text-[14px] text-mfneutralsn-400">
-                      {entry.isPaid ? (
-                        <><span className="font-medium text-mfneutralsn-500">Everything's settled.</span> You don't owe anything.</>
-                      ) : "You owe money to the centre."}
-                    </p>
-
-                    {/* Invoice subcard */}
-                    <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2">
-                      <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#EBF5FE" }}>
-                        <FileTextIcon className="w-4 h-4 text-[#067AEF]" />
-                      </div>
-                      <div className="flex flex-col gap-0.5 min-w-0">
-                        <span className="text-[12px] text-mfneutralsn-300 leading-tight">Latest invoice&nbsp;•&nbsp;Charged on Nov 24</span>
-                        <span className="text-[14px] text-mfneutralsn-500 leading-tight">Invoice for $1024.00</span>
-                      </div>
-                    </div>
+                    {entry.isPaid ? (
+                      <p className="text-[13px] text-mfneutralsn-400">Everything's settled.</p>
+                    ) : (
+                      <button
+                        onClick={() => setShowInvoice(true)}
+                        className="w-full h-9 rounded-xl bg-mfprimaryp-400 text-white text-[13px] font-semibold active:opacity-80 transition-opacity"
+                      >
+                        Pay now
+                      </button>
+                    )}
                   </div>
-
-                  {!entry.isPaid && (
-                    <button
-                      onClick={() => setShowInvoice(true)}
-                      className="w-full h-10 rounded-xl bg-mfprimaryp-400 text-white text-[14px] font-semibold active:opacity-80 transition-opacity"
-                    >
-                      Pay now
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </>
           ) : (
             <PaymentsCard
               isPaid={isPaid}
@@ -497,20 +533,32 @@ export const Menu = (): JSX.Element => {
           </div>
         </div>
 
-        {/* Support */}
-        <div className="border-t border-mfneutralsn-75 pt-4 mb-1">
-          <SectionLabel>Support</SectionLabel>
-          <div className="flex flex-col">
-            {supportList.map(({ id, label, icon, onClick }) => (
-              <MenuRow key={id} icon={icon} label={label} onClick={onClick} />
-            ))}
+        {/* Help & Legal */}
+        <div className="border-t border-mfneutralsn-75 pt-3 mb-1">
+          <div className="flex">
+            <button
+              onClick={comingSoon}
+              className="flex-1 flex items-center gap-1 py-2.5 text-[14px] text-mfneutralsn-400 active:text-mfneutralsn-500 transition-colors"
+            >
+              <HelpCircleIcon className="w-[14px] h-[14px] flex-shrink-0" />
+              <span>Help centre</span>
+              <ExternalLinkIcon className="w-[14px] h-[14px] flex-shrink-0 ml-0.5" />
+            </button>
+            <button
+              onClick={comingSoon}
+              className="flex-1 flex items-center gap-1 py-2.5 text-[14px] text-mfneutralsn-400 active:text-mfneutralsn-500 transition-colors"
+            >
+              <ScaleIcon className="w-[14px] h-[14px] flex-shrink-0" />
+              <span>Legal terms</span>
+              <ExternalLinkIcon className="w-[14px] h-[14px] flex-shrink-0 ml-0.5" />
+            </button>
           </div>
         </div>
 
         {/* Log out */}
         <button
           onClick={comingSoon}
-          className="flex items-center gap-2 mt-4 py-3 text-[16px] text-[#C20A0A]"
+          className="flex items-center justify-center gap-2 w-full mt-4 py-3 text-[16px] text-[#C20A0A]"
         >
           <LogOutIcon className="w-[18px] h-[18px]" />
           <span>Log out</span>
