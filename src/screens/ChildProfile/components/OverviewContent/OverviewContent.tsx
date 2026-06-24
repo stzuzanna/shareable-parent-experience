@@ -1216,6 +1216,13 @@ const LATEST_PERMISSIONS: { id: string; label: string; status: PermissionStatus;
   { id: "social", label: "Can be on social media", status: "no", lastChanged: "05/18/2026", changedBy: "Sofia Adams Growth" },
 ];
 
+const permissionPreview = [...LATEST_PERMISSIONS]
+  .sort((a, b) => {
+    const parse = (d?: string) => d ? new Date(d.replace(/(\d\d)\/(\d\d)\/(\d{4})/, "$3-$1-$2")).getTime() : 0;
+    return parse(b.lastChanged) - parse(a.lastChanged);
+  })
+  .slice(0, 2);
+
 const permissionSummary = (() => {
   const yes = LATEST_PERMISSIONS.filter(p => p.status === "yes").length;
   const no = LATEST_PERMISSIONS.filter(p => p.status === "no").length;
@@ -1506,7 +1513,7 @@ export const OverviewContent = (): JSX.Element => {
       <div ref={rootRef} className="flex flex-col bg-white pt-4 pb-24 gap-4">
         <ClassicCard>
           <ClassicSectionCardHeader title="Permissions" subtitle="Parental consent" />
-          <div className="px-4">{LATEST_PERMISSIONS.slice(0, 2).map((p) => <PermissionRow key={p.id} item={p} hideSubtitle />)}</div>
+          <div className="px-4">{permissionPreview.map((p) => <PermissionRow key={p.id} item={p} hideSubtitle />)}</div>
           <ClassicViewAllLink onPress={() => setSection("permissions")} />
         </ClassicCard>
 
@@ -1572,7 +1579,7 @@ export const OverviewContent = (): JSX.Element => {
         description={permissionSummary}
         onViewAll={() => setPanel("permissions")}
       >
-        {LATEST_PERMISSIONS.slice(0, 2).map((p) => (
+        {permissionPreview.map((p) => (
           <PermissionRow key={p.id} item={p} hideSubtitle />
         ))}
       </Section>
