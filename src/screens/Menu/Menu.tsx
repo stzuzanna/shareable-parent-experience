@@ -497,7 +497,7 @@ export const Menu = (): JSX.Element => {
                     </button>
 
                     {/* Balance */}
-                    <span className={`text-[28px] font-normal leading-tight tracking-tight ${entry.isPaid ? "text-mfneutralsn-500" : "text-red-600"}`}>
+                    <span className={`text-[28px] font-normal leading-tight tracking-tight text-mfneutralsn-500`}>
                       {entry.isPaid ? "$0" : `–$${OUTSTANDING_AMOUNT}`}
                     </span>
 
