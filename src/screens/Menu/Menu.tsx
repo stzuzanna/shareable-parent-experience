@@ -468,7 +468,6 @@ export const Menu = (): JSX.Element => {
 
         {/* Payments */}
         <div className="mb-5">
-          <SectionLabel>Payments</SectionLabel>
           {showMultisite ? (
             <>
               {/* Switch account button */}
@@ -479,6 +478,8 @@ export const Menu = (): JSX.Element => {
                 <ArrowLeftRightIcon className="w-4 h-4 text-mfneutralsn-400" />
                 <span className="text-[14px] font-medium text-mfneutralsn-500">Switch account</span>
               </button>
+
+              <SectionLabel>Payments</SectionLabel>
 
               {/* Side-by-side child cards */}
               <div className="grid grid-cols-2 gap-3">
@@ -516,11 +517,14 @@ export const Menu = (): JSX.Element => {
               </div>
             </>
           ) : (
-            <PaymentsCard
-              isPaid={isPaid}
-              onNavigate={() => navigate("/balance")}
-              onPayNow={() => { setInvoiceIsPaid(isPaid); setShowInvoice(true); }}
-            />
+            <>
+              <SectionLabel>Payments</SectionLabel>
+              <PaymentsCard
+                isPaid={isPaid}
+                onNavigate={() => navigate("/balance")}
+                onPayNow={() => { setInvoiceIsPaid(isPaid); setShowInvoice(true); }}
+              />
+            </>
           )}
         </div>
 
